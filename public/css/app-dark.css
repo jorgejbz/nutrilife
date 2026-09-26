@@ -1,0 +1,62 @@
+/* =============================================================
+   NUTRILIFE — SITIO PÚBLICO · MODO OSCURO
+   Solo valores; la estructura vive en app.css.
+============================================================= */
+
+:root:not([data-theme="light"]),
+[data-theme="dark"] {
+
+    /* Variables propias del landing (mismos nombres que antes) */
+    --landing-dark: var(--nl-forest-deep);
+    --landing-dark-soft: var(--nl-forest);
+    --landing-green: var(--nl-forest-soft);
+    --landing-green-light: var(--nl-mint);
+    --landing-lime: var(--nl-mint-pale);
+    --landing-white: var(--nl-cream);
+    --landing-muted: rgba(var(--nl-sage-mist-rgb), .62);
+    --landing-muted-strong: rgba(var(--nl-sage-mist-rgb), .80);
+    --landing-card-bg: rgba(255, 255, 255, .04);
+    --landing-card-bg-soft: rgba(255, 255, 255, .055);
+    --landing-card-border: rgba(var(--nl-mint-rgb), .13);
+    --landing-navbar-bg: rgba(var(--nl-forest-deep-rgb), .35);
+    --landing-navbar-bg-scrolled: rgba(var(--nl-forest-deep-rgb), .92);
+    --landing-shadow: 0 20px 45px rgba(4, 12, 7, .30);
+
+    --organic-bg: var(--nl-forest-deep);
+    --organic-bg-soft: var(--nl-forest);
+    --organic-panel: rgba(var(--nl-forest-soft-rgb), .76);
+    --organic-line: rgba(var(--nl-mint-rgb), .14);
+    --organic-text: var(--nl-cream);
+    --organic-muted: rgba(var(--nl-sage-mist-rgb), .68);
+    --organic-accent: var(--nl-mint);
+    --organic-lime: var(--nl-mint-pale);
+
+    /* Genéricos (ver admin-dark.css) */
+    --text-primary: var(--nl-cream);
+    --text-secondary: rgba(var(--nl-sage-mist-rgb), .76);
+    --text-muted: rgba(var(--nl-sage-mist-rgb), .56);
+    --text-faint: rgba(var(--nl-sage-mist-rgb), .40);
+    --accent: var(--nl-mint);
+    --accent-text: var(--nl-mint);
+
+    --nl-overlay-rgb: 255, 255, 255;
+    --nl-highlight-rgb: 255, 255, 255;
+    --nl-shadow-rgb: 4, 12, 7;
+    --nl-surface-rgb: var(--nl-forest-deep-rgb);
+    --nl-surface-raised-rgb: var(--nl-forest-soft-rgb);
+    --nl-accent-deep-rgb: var(--nl-green-rgb);
+    --nl-accent-strong-rgb: var(--nl-mint-strong-rgb);
+    --nl-accent-rgb: var(--nl-mint-rgb);
+    --nl-accent-soft-rgb: 196, 236, 203;
+    --nl-on-accent-rgb: var(--nl-forest-rgb);
+    --nl-danger-text: #F0A8A8;
+    --nl-warning-text: #E8D08E;
+    --nl-info-text: #A3D6CF;
+
+    color-scheme: dark;
+}
+
+:root:not([data-theme="light"]) .nl-logo--on-light,
+[data-theme="dark"] .nl-logo--on-light {
+    display: none !important;
+}

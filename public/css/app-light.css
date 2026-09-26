@@ -1,0 +1,75 @@
+/* =============================================================
+   NUTRILIFE — SITIO PÚBLICO · MODO CLARO
+   Solo valores y los ajustes de fondo propios del modo claro;
+   la estructura vive en app.css.
+============================================================= */
+
+[data-theme="light"] {
+    --landing-dark: var(--nl-cream);
+    --landing-dark-soft: var(--nl-cream-2);
+    --landing-green: var(--nl-green-dark);
+    --landing-green-light: var(--nl-green-dark);
+    --landing-lime: var(--nl-green);
+    --landing-white: var(--nl-forest);
+    --landing-muted: rgba(var(--nl-forest-rgb), .64);
+    --landing-muted-strong: rgba(var(--nl-forest-rgb), .82);
+    --landing-card-bg: #FFFFFF;
+    --landing-card-bg-soft: #FFFFFF;
+    --landing-card-border: rgba(var(--nl-forest-rgb), .10);
+    --landing-navbar-bg: rgba(var(--nl-cream-rgb), .78);
+    --landing-navbar-bg-scrolled: rgba(var(--nl-cream-rgb), .96);
+    --landing-shadow: 0 15px 35px rgba(var(--nl-forest-rgb), .09);
+
+    --organic-bg: var(--nl-cream);
+    --organic-bg-soft: var(--nl-cream-2);
+    --organic-panel: rgba(255, 255, 255, .92);
+    --organic-line: rgba(var(--nl-forest-rgb), .12);
+    --organic-text: var(--nl-forest);
+    --organic-muted: rgba(var(--nl-forest-rgb), .64);
+    --organic-accent: var(--nl-green-dark);
+    --organic-lime: var(--nl-green);
+
+    --text-primary: var(--nl-forest);
+    --text-secondary: rgba(var(--nl-forest-rgb), .76);
+    --text-muted: rgba(var(--nl-forest-rgb), .60);
+    --text-faint: rgba(var(--nl-forest-rgb), .46);
+    --accent: var(--nl-green);
+    --accent-text: var(--nl-green-dark);
+
+    --nl-overlay-rgb: var(--nl-forest-rgb);
+    --nl-highlight-rgb: 255, 255, 255;
+    --nl-shadow-rgb: var(--nl-forest-rgb);
+    --nl-surface-rgb: 255, 255, 255;
+    --nl-surface-raised-rgb: 255, 255, 255;
+    --nl-accent-deep-rgb: var(--nl-green-dark-rgb);
+    --nl-accent-strong-rgb: var(--nl-green-dark-rgb);
+    --nl-accent-rgb: var(--nl-green-rgb);
+    --nl-accent-soft-rgb: var(--nl-mint-rgb);
+    --nl-on-accent-rgb: 255, 255, 255;
+    --nl-danger-text: #A73C3C;
+    --nl-warning-text: #8A6A1E;
+    --nl-info-text: #2F6F77;
+
+    color-scheme: light;
+}
+
+[data-theme="light"] .nl-logo--on-dark {
+    display: none !important;
+}
+
+/* En claro las secciones usan fondo liso en lugar de las
+   fotografías oscuras del modo oscuro */
+[data-theme="light"] .features-section,
+[data-theme="light"] .how-section,
+[data-theme="light"] .product-demo-section,
+[data-theme="light"] .pricing-section,
+[data-theme="light"] .faq-section {
+    background: var(--landing-dark);
+}
+
+[data-theme="light"] .hero-section {
+    background-color: var(--landing-dark);
+    /* --hero-bg-image-light lo define la vista (landing/index) con asset();
+       antes el modo claro leía --hero-bg-image y mostraba la foto oscura. */
+    background-image: var(--hero-bg-image-light, url('../images/landing/fondoheroblanco.jpeg'));
+}

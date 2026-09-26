@@ -1,0 +1,89 @@
+/* =============================================================
+   NUTRILIFE — LOGIN / AUTENTICACIÓN · MODO CLARO
+   Solo valores; la estructura vive en login.css.
+============================================================= */
+
+[data-theme="light"] {
+    --login-bg:
+        radial-gradient(circle at 10% 15%, rgba(var(--nl-mint-rgb), .30), transparent 32%),
+        radial-gradient(circle at 90% 80%, rgba(var(--nl-sage-mist-rgb), .90), transparent 32%),
+        linear-gradient(160deg, var(--nl-cream) 0%, var(--nl-cream-2) 55%, var(--nl-sage-mist) 100%);
+    --login-text: var(--nl-forest);
+    --login-muted: rgba(var(--nl-forest-rgb), .60);
+    --login-muted-strong: rgba(var(--nl-forest-rgb), .78);
+    --login-card-bg: #FFFFFF;
+    --login-card-bg-soft: #FFFFFF;
+    --login-card-border: rgba(var(--nl-forest-rgb), .10);
+    --login-shadow: 0 18px 40px rgba(var(--nl-forest-rgb), .10);
+    --login-ambient-opacity: .35;
+
+    --text-primary: var(--nl-forest);
+    --text-secondary: rgba(var(--nl-forest-rgb), .74);
+    --text-muted: rgba(var(--nl-forest-rgb), .58);
+    --text-faint: rgba(var(--nl-forest-rgb), .44);
+    --input-bg: #FFFFFF;
+    --input-border: rgba(var(--nl-forest-rgb), .18);
+    --input-text: var(--nl-forest);
+    --accent: var(--nl-green);
+    --accent-text: var(--nl-green-dark);
+
+    --nl-overlay-rgb: var(--nl-forest-rgb);
+    --nl-highlight-rgb: 255, 255, 255;
+    --nl-shadow-rgb: var(--nl-forest-rgb);
+    --nl-surface-rgb: 255, 255, 255;
+    --nl-surface-raised-rgb: 255, 255, 255;
+    --nl-accent-deep-rgb: var(--nl-green-dark-rgb);
+    --nl-accent-strong-rgb: var(--nl-green-dark-rgb);
+    --nl-accent-rgb: var(--nl-green-rgb);
+    --nl-accent-soft-rgb: var(--nl-mint-rgb);
+    --nl-on-accent-rgb: 255, 255, 255;
+    --nl-danger-text: #A73C3C;
+    --nl-warning-text: #8A6A1E;
+    --nl-info-text: #2F6F77;
+
+    color-scheme: light;
+}
+
+/* Logotipo: versión para fondo claro */
+[data-theme="light"] .nl-logo--on-dark {
+    display: none !important;
+}
+
+/* -------------------------------------------------------------
+   Panel de marca del login: es una franja SIEMPRE oscura (decisión
+   de diseño que ya tenía el proyecto). En modo claro se le vuelven
+   a declarar los valores oscuros para que su texto, sus tarjetas y
+   su logo sigan siendo legibles.
+------------------------------------------------------------- */
+[data-theme="light"] .brand-panel {
+    --login-text: var(--nl-cream);
+    --login-muted: rgba(var(--nl-sage-mist-rgb), .58);
+    --login-muted-strong: rgba(var(--nl-sage-mist-rgb), .80);
+    --login-card-bg: rgba(255, 255, 255, .045);
+    --login-card-bg-soft: rgba(255, 255, 255, .06);
+    --login-card-border: rgba(var(--nl-mint-rgb), .14);
+    --text-primary: var(--nl-cream);
+    --text-secondary: rgba(var(--nl-sage-mist-rgb), .74);
+    --text-muted: rgba(var(--nl-sage-mist-rgb), .54);
+    --text-faint: rgba(var(--nl-sage-mist-rgb), .38);
+    --accent: var(--nl-mint);
+    --accent-text: var(--nl-mint);
+    --nl-overlay-rgb: 255, 255, 255;
+    --nl-shadow-rgb: 4, 12, 7;
+    --nl-surface-rgb: var(--nl-forest-deep-rgb);
+    --nl-surface-raised-rgb: var(--nl-forest-soft-rgb);
+    --nl-accent-deep-rgb: var(--nl-green-rgb);
+    --nl-accent-strong-rgb: var(--nl-mint-strong-rgb);
+    --nl-accent-rgb: var(--nl-mint-rgb);
+    --nl-accent-soft-rgb: 196, 236, 203;
+    --nl-on-accent-rgb: var(--nl-forest-rgb);
+    color-scheme: dark;
+}
+
+[data-theme="light"] .brand-panel .nl-logo--on-light {
+    display: none !important;
+}
+
+[data-theme="light"] .brand-panel .nl-logo--on-dark {
+    display: block !important;
+}

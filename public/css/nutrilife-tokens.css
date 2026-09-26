@@ -1,0 +1,65 @@
+/* =============================================================
+   NUTRILIFE — PALETA DE MARCA (fuente única de color)
+   -------------------------------------------------------------
+   Colores oficiales tomados de la guía "Nutrilife-Guía".
+   Ningún otro archivo CSS debe escribir estos colores a mano:
+   los archivos *-light.css / *-dark.css construyen sus variables
+   temáticas a partir de aquí.
+
+   Cada color se expone dos veces:
+     --nl-<nombre>      → valor hex, para usar directo
+     --nl-<nombre>-rgb  → triplete "r, g, b", para rgba(var(...), .5)
+
+   Para cambiar la identidad visual basta con editar este archivo.
+   Se carga en TODAS las secciones (público, admin y login).
+============================================================= */
+
+:root {
+    /* Verdes de marca */
+    --nl-forest: #1B3625;          /* Bosque — fondo oscuro, texto principal en claro */
+    --nl-forest-rgb: 27, 54, 37;
+    --nl-green: #459C4D;           /* Verde primario */
+    --nl-green-rgb: 69, 156, 77;
+    --nl-green-mid: #529B56;       /* Verde medio */
+    --nl-green-mid-rgb: 82, 155, 86;
+    --nl-mint: #97D7A5;            /* Menta — acento en oscuro */
+    --nl-mint-rgb: 151, 215, 165;
+    --nl-mint-pale: #E6FCE5;       /* Menta pálida */
+    --nl-mint-pale-rgb: 230, 252, 229;
+
+    /* Neutros de marca */
+    --nl-sage-mist: #E1EEDC;       /* Salvia niebla */
+    --nl-sage-mist-rgb: 225, 238, 220;
+    --nl-sage: #6F876F;            /* Salvia */
+    --nl-sage-rgb: 111, 135, 111;
+    --nl-gray: #8F958B;            /* Gris verdoso */
+    --nl-gray-rgb: 143, 149, 139;
+    --nl-cream: #FEFBF4;           /* Crema — fondo claro */
+    --nl-cream-rgb: 254, 251, 244;
+    --nl-cream-2: #FAF8EC;         /* Crema 2 */
+    --nl-cream-2-rgb: 250, 248, 236;
+
+    /* Derivados (tonos intermedios de la misma familia, no son colores nuevos) */
+    --nl-forest-deep: #12261A;     /* Bosque más profundo para degradados en oscuro */
+    --nl-forest-deep-rgb: 18, 38, 26;
+    --nl-forest-soft: #24462F;     /* Bosque elevado (superficies en oscuro) */
+    --nl-forest-soft-rgb: 36, 70, 47;
+    --nl-green-dark: #2F7A38;      /* Verde primario oscurecido (contraste AA en claro) */
+    --nl-green-dark-rgb: 47, 122, 56;
+    --nl-mint-strong: #6DBB7A;     /* Entre verde medio y menta */
+    --nl-mint-strong-rgb: 109, 187, 122;
+
+    /* Estados (fuera de la paleta verde, se mantienen neutros para todo el sitio) */
+    --nl-danger: #C65B5B;
+    --nl-danger-rgb: 198, 91, 91;
+    --nl-warning: #C9A24B;
+    --nl-warning-rgb: 201, 162, 75;
+    --nl-info: #4D9AA3;
+    --nl-info-rgb: 77, 154, 163;
+
+    /* Tipografía y forma */
+    --nl-font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --nl-radius-sm: 10px;
+    --nl-radius: 16px;
+    --nl-radius-lg: 24px;
+}

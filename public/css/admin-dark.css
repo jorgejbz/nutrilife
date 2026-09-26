@@ -1,0 +1,135 @@
+/* =============================================================
+   NUTRILIFE — ADMIN · MODO OSCURO
+   -------------------------------------------------------------
+   Solo valores del tema oscuro del panel. La estructura vive en
+   admin.css y lee estas variables. Los colores base salen de
+   nutrilife-tokens.css.
+
+   Se aplica cuando <html data-theme="dark"> (o sin atributo, que
+   es el valor por defecto de la marca). theme.js deshabilita este
+   archivo cuando el usuario elige modo claro.
+============================================================= */
+
+:root:not([data-theme="light"]),
+[data-theme="dark"] {
+
+    /* ---------- Fondo de página ---------- */
+    --page-bg:
+        radial-gradient(circle at 12% 12%, rgba(var(--nl-green-rgb), .20), transparent 30%),
+        radial-gradient(circle at 91% 40%, rgba(var(--nl-mint-rgb), .10), transparent 28%),
+        linear-gradient(135deg, var(--nl-forest-deep) 0%, var(--nl-forest) 52%, var(--nl-forest-deep) 100%);
+
+    /* ---------- Texto ---------- */
+    --text-primary: var(--nl-cream);
+    --text-secondary: rgba(var(--nl-sage-mist-rgb), .74);
+    --text-muted: rgba(var(--nl-sage-mist-rgb), .52);
+    --text-faint: rgba(var(--nl-sage-mist-rgb), .36);
+
+    /* ---------- Tarjetas "glass" ---------- */
+    --card-bg: linear-gradient(145deg, rgba(255, 255, 255, .075), rgba(255, 255, 255, .022));
+    --card-bg-soft: linear-gradient(145deg, rgba(255, 255, 255, .065), rgba(255, 255, 255, .018));
+    --card-border: rgba(var(--nl-mint-rgb), .14);
+    --card-border-soft: rgba(var(--nl-mint-rgb), .09);
+    --card-shadow: 0 20px 45px rgba(4, 12, 7, .28);
+    --card-blur: blur(24px) saturate(140%);
+    --card-inset-highlight: inset 0 1px 0 rgba(255, 255, 255, .12);
+
+    /* ---------- Inputs ---------- */
+    --input-bg: rgba(255, 255, 255, .04);
+    --input-bg-focus: rgba(255, 255, 255, .07);
+    --input-border: rgba(var(--nl-mint-rgb), .16);
+    --input-text: var(--nl-cream);
+    --input-placeholder: rgba(var(--nl-sage-mist-rgb), .32);
+
+    /* ---------- Acento ---------- */
+    --accent: var(--nl-mint);
+    --accent-strong: var(--nl-mint-strong);
+    --accent-soft-bg: rgba(var(--nl-mint-rgb), .10);
+    --accent-text-on-soft: var(--nl-mint);
+    --accent-text: var(--nl-mint);
+
+    /* ---------- Tokens temáticos (triplete rgb) ----------
+       Generados a partir de los colores fijos del CSS anterior:
+       overlay   → capas translúcidas "vidrio" (antes blanco)
+       highlight → brillos internos (inset)
+       shadow    → sombras
+       surface   → superficies sólidas oscuras (tooltips, selects…)
+       accent-*  → escala de verdes de marca
+       on-accent → texto sobre botones/insignias de acento        */
+    --nl-overlay-rgb: 255, 255, 255;
+    --nl-highlight-rgb: 255, 255, 255;
+    --nl-shadow-rgb: 4, 12, 7;
+    --nl-surface-rgb: var(--nl-forest-deep-rgb);
+    --nl-surface-raised-rgb: var(--nl-forest-soft-rgb);
+    --nl-accent-deep-rgb: var(--nl-green-rgb);
+    --nl-accent-strong-rgb: var(--nl-mint-strong-rgb);
+    --nl-accent-rgb: var(--nl-mint-rgb);
+    --nl-accent-soft-rgb: 196, 236, 203;
+    --nl-on-accent-rgb: var(--nl-forest-rgb);
+
+    --nl-danger-text: #F0A8A8;
+    --nl-warning-text: #E8D08E;
+    --nl-info-text: #A3D6CF;
+
+    /* ---------- Chrome de AdminLTE ---------- */
+    --sidebar-bg: linear-gradient(180deg, rgba(var(--nl-forest-deep-rgb), .92), rgba(var(--nl-forest-rgb), .88));
+    --sidebar-border: rgba(var(--nl-mint-rgb), .10);
+    --surface-solid: #1F3D2A;          /* menús desplegables, modales */
+    --ambient-opacity: .20;
+    --native-color-scheme: dark;
+
+    /* ---------- Gráficas (leídas por resources/js/chart-theme.js) ---------- */
+    --chart-grid: rgba(255, 255, 255, .06);
+    --chart-label: rgba(var(--nl-sage-mist-rgb), .55);
+    --chart-primary: var(--nl-mint);
+    --chart-primary-rgb: var(--nl-mint-rgb);
+    --chart-secondary: #5E7D66;
+    --chart-tooltip-bg: rgba(var(--nl-forest-deep-rgb), .96);
+    --chart-tooltip-border: rgba(var(--nl-mint-rgb), .18);
+    --chart-point-border: var(--nl-forest);
+    --chart-warning: #D9BF70;
+    --chart-info: #87BEB0;
+
+    /* ---------- Bootstrap 5.3 / AdminLTE 4 ---------- */
+    --bs-body-bg: var(--nl-forest-deep);
+    --bs-body-color: var(--nl-cream);
+    --bs-emphasis-color: var(--nl-cream);
+    --bs-secondary-color: rgba(var(--nl-sage-mist-rgb), .66);
+    --bs-tertiary-color: rgba(var(--nl-sage-mist-rgb), .45);
+    --bs-secondary-bg: var(--nl-forest-soft);
+    --bs-tertiary-bg: var(--nl-forest);
+    --bs-border-color: rgba(var(--nl-mint-rgb), .14);
+    --bs-primary: var(--nl-mint);
+    --bs-primary-rgb: var(--nl-mint-rgb);
+    --bs-success: var(--nl-mint);
+    --bs-success-rgb: var(--nl-mint-rgb);
+    --bs-link-color: var(--nl-mint);
+    --bs-link-color-rgb: var(--nl-mint-rgb);
+    --bs-link-hover-color: var(--nl-mint-pale);
+    --bs-link-hover-color-rgb: var(--nl-mint-pale-rgb);
+    --bs-focus-ring-color: rgba(var(--nl-mint-rgb), .25);
+    color-scheme: dark;
+}
+
+/* Sidebar de AdminLTE: variables propias del paquete */
+:root:not([data-theme="light"]) .app-sidebar,
+[data-theme="dark"] .app-sidebar {
+    --lte-sidebar-color: rgba(var(--nl-sage-mist-rgb), .78);
+    --lte-sidebar-hover-color: var(--nl-cream);
+    --lte-sidebar-hover-bg: rgba(var(--nl-mint-rgb), .08);
+    --lte-sidebar-active-color: var(--nl-mint);
+    --lte-sidebar-menu-active-color: var(--nl-forest);
+    --lte-sidebar-menu-active-bg: var(--nl-mint);
+    --lte-sidebar-header-color: rgba(var(--nl-sage-mist-rgb), .40);
+    --lte-sidebar-submenu-color: rgba(var(--nl-sage-mist-rgb), .70);
+    --lte-sidebar-submenu-bg: transparent;
+    --lte-sidebar-submenu-hover-color: var(--nl-cream);
+    --lte-sidebar-submenu-hover-bg: rgba(var(--nl-mint-rgb), .08);
+    --lte-sidebar-submenu-active-color: var(--nl-mint);
+    --lte-sidebar-submenu-active-bg: rgba(var(--nl-mint-rgb), .12);
+}
+
+:root:not([data-theme="light"]) .nl-logo--on-light,
+[data-theme="dark"] .nl-logo--on-light {
+    display: none !important;
+}

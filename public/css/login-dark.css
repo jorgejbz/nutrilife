@@ -1,0 +1,54 @@
+/* =============================================================
+   NUTRILIFE — LOGIN / AUTENTICACIÓN · MODO OSCURO
+   Solo valores; la estructura vive en login.css.
+============================================================= */
+
+:root:not([data-theme="light"]),
+[data-theme="dark"] {
+    --login-bg:
+        radial-gradient(circle at 10% 20%, rgba(var(--nl-green-rgb), .22), transparent 28%),
+        radial-gradient(circle at 89% 78%, rgba(var(--nl-mint-strong-rgb), .16), transparent 30%),
+        radial-gradient(circle at 75% 5%, rgba(var(--nl-mint-rgb), .08), transparent 22%),
+        linear-gradient(135deg, var(--nl-forest-deep) 0%, var(--nl-forest) 48%, var(--nl-forest-deep) 100%);
+    --login-text: var(--nl-cream);
+    --login-muted: rgba(var(--nl-sage-mist-rgb), .58);
+    --login-muted-strong: rgba(var(--nl-sage-mist-rgb), .80);
+    --login-card-bg: rgba(255, 255, 255, .045);
+    --login-card-bg-soft: rgba(255, 255, 255, .06);
+    --login-card-border: rgba(var(--nl-mint-rgb), .14);
+    --login-shadow: 0 25px 60px rgba(4, 12, 7, .32);
+    --login-ambient-opacity: 1;
+
+    /* Genéricos (compartidos con la conversión de colores) */
+    --text-primary: var(--nl-cream);
+    --text-secondary: rgba(var(--nl-sage-mist-rgb), .74);
+    --text-muted: rgba(var(--nl-sage-mist-rgb), .54);
+    --text-faint: rgba(var(--nl-sage-mist-rgb), .38);
+    --input-bg: rgba(255, 255, 255, .045);
+    --input-border: rgba(var(--nl-mint-rgb), .16);
+    --input-text: var(--nl-cream);
+    --accent: var(--nl-mint);
+    --accent-text: var(--nl-mint);
+
+    --nl-overlay-rgb: 255, 255, 255;
+    --nl-highlight-rgb: 255, 255, 255;
+    --nl-shadow-rgb: 4, 12, 7;
+    --nl-surface-rgb: var(--nl-forest-deep-rgb);
+    --nl-surface-raised-rgb: var(--nl-forest-soft-rgb);
+    --nl-accent-deep-rgb: var(--nl-green-rgb);
+    --nl-accent-strong-rgb: var(--nl-mint-strong-rgb);
+    --nl-accent-rgb: var(--nl-mint-rgb);
+    --nl-accent-soft-rgb: 196, 236, 203;
+    --nl-on-accent-rgb: var(--nl-forest-rgb);
+    --nl-danger-text: #F0A8A8;
+    --nl-warning-text: #E8D08E;
+    --nl-info-text: #A3D6CF;
+
+    color-scheme: dark;
+}
+
+/* Logotipo: versión para fondo oscuro */
+:root:not([data-theme="light"]) .nl-logo--on-light,
+[data-theme="dark"] .nl-logo--on-light {
+    display: none !important;
+}

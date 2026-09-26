@@ -1,0 +1,157 @@
+/* =============================================================
+   NUTRILIFE — ADMIN · MODO CLARO
+   -------------------------------------------------------------
+   Solo valores del tema claro del panel. La estructura vive en
+   admin.css y lee estas variables.
+
+   IMPORTANTE: el "vidrio" del modo oscuro (capas blancas
+   translúcidas) no se puede invertir mecánicamente: una tarjeta
+   blanca al 5% sobre fondo claro es invisible. Por eso aquí:
+     - las tarjetas principales son sólidas con sombra suave;
+     - las capas translúcidas usan el verde bosque (overlay-rgb),
+       de modo que bordes, chips y hovers siguen siendo visibles.
+============================================================= */
+
+[data-theme="light"] {
+
+    /* ---------- Fondo de página ---------- */
+    --page-bg:
+        radial-gradient(circle at 12% 8%, rgba(var(--nl-mint-rgb), .22), transparent 32%),
+        radial-gradient(circle at 90% 35%, rgba(var(--nl-sage-mist-rgb), .70), transparent 30%),
+        linear-gradient(160deg, var(--nl-cream) 0%, var(--nl-cream-2) 55%, var(--nl-sage-mist) 100%);
+
+    /* ---------- Texto ---------- */
+    --text-primary: var(--nl-forest);
+    --text-secondary: rgba(var(--nl-forest-rgb), .74);
+    --text-muted: rgba(var(--nl-forest-rgb), .58);
+    --text-faint: rgba(var(--nl-forest-rgb), .44);
+
+    /* ---------- Tarjetas sólidas ---------- */
+    --card-bg: #FFFFFF;
+    --card-bg-soft: #FFFFFF;
+    --card-border: rgba(var(--nl-forest-rgb), .10);
+    --card-border-soft: rgba(var(--nl-forest-rgb), .07);
+    --card-shadow: 0 12px 30px rgba(var(--nl-forest-rgb), .08);
+    --card-blur: none;
+    --card-inset-highlight: none;
+
+    /* ---------- Inputs ---------- */
+    --input-bg: #FFFFFF;
+    --input-bg-focus: #FFFFFF;
+    --input-border: rgba(var(--nl-forest-rgb), .18);
+    --input-text: var(--nl-forest);
+    --input-placeholder: rgba(var(--nl-forest-rgb), .38);
+
+    /* ---------- Acento ---------- */
+    --accent: var(--nl-green);
+    --accent-strong: var(--nl-green-dark);
+    --accent-soft-bg: rgba(var(--nl-green-rgb), .10);
+    --accent-text-on-soft: var(--nl-green-dark);
+    --accent-text: var(--nl-green-dark);
+
+    /* ---------- Tokens temáticos (ver admin-dark.css) ---------- */
+    --nl-overlay-rgb: var(--nl-forest-rgb);
+    --nl-highlight-rgb: 255, 255, 255;
+    --nl-shadow-rgb: var(--nl-forest-rgb);
+    --nl-surface-rgb: 255, 255, 255;
+    --nl-surface-raised-rgb: 255, 255, 255;
+    --nl-accent-deep-rgb: var(--nl-green-dark-rgb);
+    --nl-accent-strong-rgb: var(--nl-green-dark-rgb);
+    --nl-accent-rgb: var(--nl-green-rgb);
+    --nl-accent-soft-rgb: var(--nl-mint-rgb);
+    --nl-on-accent-rgb: 255, 255, 255;
+
+    --nl-danger-text: #A73C3C;
+    --nl-warning-text: #8A6A1E;
+    --nl-info-text: #2F6F77;
+
+    /* ---------- Chrome de AdminLTE ---------- */
+    --sidebar-bg: linear-gradient(180deg, #FFFFFF, var(--nl-cream));
+    --sidebar-border: rgba(var(--nl-forest-rgb), .08);
+    --surface-solid: #FFFFFF;
+    --ambient-opacity: .10;
+    --native-color-scheme: light;
+
+    /* ---------- Gráficas ---------- */
+    --chart-grid: rgba(var(--nl-forest-rgb), .08);
+    --chart-label: rgba(var(--nl-forest-rgb), .58);
+    --chart-primary: var(--nl-green);
+    --chart-primary-rgb: var(--nl-green-rgb);
+    --chart-secondary: var(--nl-sage-mist);
+    --chart-tooltip-bg: rgba(var(--nl-forest-rgb), .94);
+    --chart-tooltip-border: rgba(var(--nl-forest-rgb), .10);
+    --chart-point-border: #FFFFFF;
+    --chart-warning: #B98C2A;
+    --chart-info: #3F8C94;
+
+    /* ---------- Bootstrap 5.3 / AdminLTE 4 ---------- */
+    --bs-body-bg: var(--nl-cream);
+    --bs-body-color: var(--nl-forest);
+    --bs-emphasis-color: var(--nl-forest);
+    --bs-secondary-color: rgba(var(--nl-forest-rgb), .68);
+    --bs-tertiary-color: rgba(var(--nl-forest-rgb), .48);
+    --bs-secondary-bg: var(--nl-sage-mist);
+    --bs-tertiary-bg: var(--nl-cream-2);
+    --bs-border-color: rgba(var(--nl-forest-rgb), .12);
+    --bs-primary: var(--nl-green);
+    --bs-primary-rgb: var(--nl-green-rgb);
+    --bs-success: var(--nl-green);
+    --bs-success-rgb: var(--nl-green-rgb);
+    --bs-link-color: var(--nl-green-dark);
+    --bs-link-color-rgb: var(--nl-green-dark-rgb);
+    --bs-link-hover-color: var(--nl-forest);
+    --bs-link-hover-color-rgb: var(--nl-forest-rgb);
+    --bs-focus-ring-color: rgba(var(--nl-green-rgb), .25);
+    color-scheme: light;
+}
+
+[data-theme="light"] .app-sidebar {
+    --lte-sidebar-color: rgba(var(--nl-forest-rgb), .74);
+    --lte-sidebar-hover-color: var(--nl-forest);
+    --lte-sidebar-hover-bg: rgba(var(--nl-green-rgb), .08);
+    --lte-sidebar-active-color: var(--nl-green-dark);
+    --lte-sidebar-menu-active-color: #FFFFFF;
+    --lte-sidebar-menu-active-bg: var(--nl-green);
+    --lte-sidebar-header-color: rgba(var(--nl-forest-rgb), .45);
+    --lte-sidebar-submenu-color: rgba(var(--nl-forest-rgb), .70);
+    --lte-sidebar-submenu-bg: transparent;
+    --lte-sidebar-submenu-hover-color: var(--nl-forest);
+    --lte-sidebar-submenu-hover-bg: rgba(var(--nl-green-rgb), .08);
+    --lte-sidebar-submenu-active-color: var(--nl-green-dark);
+    --lte-sidebar-submenu-active-bg: rgba(var(--nl-green-rgb), .10);
+}
+
+/* En claro las decoraciones de hojas/blobs se suavizan */
+[data-theme="light"] .ambient,
+[data-theme="light"] .dashboard-background__blob {
+    opacity: var(--ambient-opacity);
+}
+
+[data-theme="light"] .nl-logo--on-dark {
+    display: none !important;
+}
+
+/* -------------------------------------------------------------
+   Paneles "glass" de los módulos (pacientes, citas, consultas,
+   pagos, evaluaciones, progreso). En oscuro son vidrio translúcido;
+   en claro se muestran como tarjetas sólidas, igual que el dashboard,
+   para mantener contraste y una apariencia uniforme.
+------------------------------------------------------------- */
+[data-theme="light"] :is(
+    .hero-glass, .liquid-stat, .search-glass, .patient-glass-card, .empty-liquid,
+    .form-glass-card, .profile-preview-glass, .side-info-glass, .edit-glass-card,
+    .preview-glass, .patient-hero-glass, .glass-card, .goal-glass, .privacy-glass,
+    .evaluation-glass, .weight-chart-glass, .history-glass, .progress-section,
+    .chart-waiting-glass, .empty-evaluation-glass, .calendar-hero, .calendar-glass-card,
+    .today-glass, .upcoming-glass, .selected-day-panel, .appointment-form-glass,
+    .appointment-preview-glass, .agenda-tip-glass, .consultation-stat, .consultations-card,
+    .payment-stat, .payments-card, .payment-glass-card, .evaluation-form-glass,
+    .live-summary-glass, .measure-preview-glass, .progress-stat, .progress-panel,
+    .detail-stat, .progress-chart-card, .history-card
+) {
+    background: var(--card-bg);
+    border-color: var(--card-border);
+    box-shadow: var(--card-shadow);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
