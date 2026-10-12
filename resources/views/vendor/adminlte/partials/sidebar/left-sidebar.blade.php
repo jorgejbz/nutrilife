@@ -34,6 +34,10 @@
 
     {{-- Sidebar menu --}}
     <div class="sidebar-wrapper">
+
+        {{-- NutriLife: tarjeta del nutriólogo (nombre + tipo de cuenta) --}}
+        @include('partials.sidebar-user')
+
         {{-- The 'navigation' id is the target of the skip link. Without it the
              AdminLTE accessibility script falls back to the first nav element
              of the document, which is the header toolbar. --}}

@@ -5,10 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 
 class AppointmentController extends Controller
 {
+    /** Valores de appointments.status (VARCHAR, por defecto 'Pendiente'). */
+    public const STATUSES = ['Pendiente', 'Confirmada', 'Completada', 'Cancelada'];
+
     public function index()
     {
         $appointments = Appointment::where('user_id', Auth::id())
@@ -31,12 +35,27 @@ class AppointmentController extends Controller
 
     public function store(Request $request)
     {
-         $validated = $request->validate([
-        'patient_id' => ['required', 'exists:patients,id'],
+    $validated = $request->validate([
+        // FK a patients: paciente propio, vigente y activo (los mismos que
+        // ofrece el formulario). Antes cualquier id existente pasaba la
+        // validación y terminaba en un 404 de firstOrFail().
+        'patient_id' => [
+            'required',
+            'integer',
+            Rule::exists('patients', 'id')
+                ->where('user_id', Auth::id())
+                ->where('active', true)
+                ->whereNull('deleted_at'),
+        ],
         'appointment_at' => ['required', 'date'],
         'reason' => ['nullable', 'string', 'max:255'],
-        'status' => ['required', 'in:Pendiente,Confirmada,Cancelada,Completada'],
-        'notes' => ['nullable', 'string', 'max:2000'],
+        'status' => ['required', Rule::in(self::STATUSES)],
+        // El formulario limita (y cuenta) 1000 caracteres; antes el backend
+        // aceptaba 2000. Columna: appointments.notes TEXT.
+        'notes' => ['nullable', 'string', 'max:1000'],
+    ], [
+        'patient_id.exists' => 'Selecciona un paciente activo de tu consultorio.',
+        'status.in' => 'Selecciona un estado válido.',
     ]);
 
     $patient = \App\Models\Patient::where('id', $validated['patient_id'])
@@ -58,6 +77,13 @@ class AppointmentController extends Controller
     public function cancel(Appointment $cita)
 {
     abort_if($cita->user_id !== Auth::id(), 403);
+
+    // Igual que en el calendario: solo se cancelan citas abiertas.
+    if (! in_array($cita->status, ['Pendiente', 'Confirmada'], true)) {
+        return redirect()
+            ->route('citas.index')
+            ->with('error', 'Solo se pueden cancelar citas pendientes o confirmadas.');
+    }
 
     $cita->update([
         'status' => 'Cancelada',

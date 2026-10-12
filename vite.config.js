@@ -10,6 +10,7 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/js/app.js',
                 'resources/js/theme.js',
+                'resources/js/forms.js',
 
                 // Dashboard
                 // Los estilos ya no pasan por Vite: viven en public/css
@@ -20,6 +21,7 @@ export default defineConfig({
                 'resources/js/pages/patients-index.js',
                 'resources/js/pages/patients-create.js',
                 'resources/js/pages/patients-edit.js',
+                'resources/js/pages/patients-clinical.js',
                 'resources/js/pages/patients-show.js',
 
                 // Citas
@@ -28,6 +30,7 @@ export default defineConfig({
 
                 // Consultas
                 'resources/js/pages/consultations-create.js',
+                'resources/js/pages/payments-create.js',
 
                 // Evaluaciones
                 'resources/js/pages/evaluations-create.js',
@@ -38,6 +41,8 @@ export default defineConfig({
                 // Marketing / Auth
                 'resources/js/pages/marketing.js',
                 'resources/js/pages/auth-login.js',
+                'resources/js/pages/auth-register.js',
+                'resources/js/pages/profile-edit.js',
             ],
             refresh: true,
         }),

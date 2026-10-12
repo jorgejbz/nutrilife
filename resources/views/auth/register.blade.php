@@ -41,7 +41,7 @@
             <div class="register-info-content">
 
                 <div class="register-badge">
-                    🌿 Plataforma para profesionales de la nutrición
+                    <i class="fas fa-leaf" aria-hidden="true"></i> Plataforma para profesionales de la nutrición
                 </div>
 
                 <h1>
@@ -126,255 +126,185 @@
             </div>
 
 
+            {{-- =========================================================
+                 Registro de nutriólogo
+                 Solo se piden los datos que existen en la tabla `users`
+                 (BD definitiva): name, email y password. El servidor asigna
+                 role_id = 1 (nutriólogo) y genera access_code (6 dígitos únicos).
+                 Teléfono, cédula, especialidad, foto, horarios, etc. no tienen
+                 columna en la BD, por eso no se solicitan.
+                 ========================================================= --}}
             <form
                 method="POST"
                 action="{{ route('register') }}"
+                id="registerForm"
+                novalidate
             >
 
                 @csrf
 
+                <p class="form-required-note">
+                    <span class="required-mark" aria-hidden="true">*</span> Todos los campos son obligatorios.
+                </p>
 
-                {{-- NOMBRE --}}
+                {{-- NOMBRE (users.name) --}}
                 <div class="form-group">
-
-                    <label
-                        class="form-label"
-                        for="name"
-                    >
-                        Nombre completo
+                    <label class="form-label" for="name">
+                        Nombre completo <span class="required-mark" aria-hidden="true">*</span>
                     </label>
-
-                    <div class="input-wrapper">
-
-                        <svg
-                            class="input-icon"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                        >
-                            <path d="M20 21a8 8 0 0 0-16 0"/>
-                            <circle cx="12" cy="7" r="4"/>
-                        </svg>
-
+                    <div class="input-wrapper @error('name') has-error @enderror">
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>
                         <input
                             id="name"
                             class="form-input"
                             type="text"
                             name="name"
+                            maxlength="255"
                             value="{{ old('name') }}"
                             required
                             autofocus
                             autocomplete="name"
-                            placeholder="Ej. Andrea López"
+                            placeholder="Ej. Andrea López Martínez"
+                            @error('name') aria-invalid="true" aria-describedby="name_error" @enderror
                         >
-
                     </div>
-
+                    <small class="form-hint">Así aparecerá tu nombre en el panel.</small>
                     @error('name')
-                        <div class="form-error">
+                        <div class="form-error" id="name_error" role="alert">
                             {{ $message }}
                         </div>
                     @enderror
-
                 </div>
 
-
-
-                {{-- EMAIL --}}
+                {{-- CORREO (users.email, UNIQUE) --}}
                 <div class="form-group">
-
-                    <label
-                        class="form-label"
-                        for="email"
-                    >
-                        Correo electrónico
+                    <label class="form-label" for="email">
+                        Correo electrónico <span class="required-mark" aria-hidden="true">*</span>
                     </label>
-
-                    <div class="input-wrapper">
-
-                        <svg
-                            class="input-icon"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                        >
-                            <rect
-                                x="3"
-                                y="5"
-                                width="18"
-                                height="14"
-                                rx="2"
-                            />
-
-                            <path d="m3 7 9 6 9-6"/>
-                        </svg>
-
+                    <div class="input-wrapper @error('email') has-error @enderror">
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
                         <input
                             id="email"
                             class="form-input"
                             type="email"
                             name="email"
+                            maxlength="255"
                             value="{{ old('email') }}"
                             required
-                            autocomplete="username"
+                            autocomplete="email"
+                            inputmode="email"
                             placeholder="correo@ejemplo.com"
+                            @error('email') aria-invalid="true" aria-describedby="email_error" @enderror
                         >
-
                     </div>
-
+                    <small class="form-hint">Con este correo iniciarás sesión.</small>
                     @error('email')
-                        <div class="form-error">
+                        <div class="form-error" id="email_error" role="alert">
                             {{ $message }}
                         </div>
                     @enderror
-
                 </div>
 
-
-
-                {{-- PASSWORD --}}
+                {{-- CONTRASEÑA (users.password, se guarda cifrada) --}}
                 <div class="form-group">
-
-                    <label
-                        class="form-label"
-                        for="password"
-                    >
-                        Contraseña
+                    <label class="form-label" for="password">
+                        Contraseña <span class="required-mark" aria-hidden="true">*</span>
                     </label>
-
-                    <div class="input-wrapper">
-
-                        <svg
-                            class="input-icon"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                        >
-                            <rect
-                                x="5"
-                                y="10"
-                                width="14"
-                                height="10"
-                                rx="2"
-                            />
-
-                            <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
-                        </svg>
-
+                    <div class="input-wrapper has-toggle @error('password') has-error @enderror">
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
                         <input
                             id="password"
                             class="form-input"
                             type="password"
                             name="password"
+                            minlength="8"
                             required
                             autocomplete="new-password"
                             placeholder="Mínimo 8 caracteres"
+                            aria-describedby="password_hint @error('password') password_error @enderror"
+                            @error('password') aria-invalid="true" @enderror
                         >
-
+                        <button type="button" class="password-toggle" data-password-toggle="password" aria-label="Mostrar contraseña" aria-pressed="false">
+                            <i class="far fa-eye" aria-hidden="true"></i>
+                        </button>
                     </div>
 
+                    <div class="password-strength" id="passwordStrength" data-level="0" aria-live="polite">
+                        <div class="password-strength-bar"><span></span><span></span><span></span><span></span></div>
+                        <span class="password-strength-label" id="passwordStrengthLabel"></span>
+                    </div>
+
+                    <small class="form-hint" id="password_hint">
+                        Usa al menos 8 caracteres. Combinar letras, números y símbolos la hace más segura.
+                    </small>
                     @error('password')
-                        <div class="form-error">
+                        <div class="form-error" id="password_error" role="alert">
                             {{ $message }}
                         </div>
                     @enderror
-
                 </div>
 
-
-
-                {{-- CONFIRMAR PASSWORD --}}
+                {{-- CONFIRMACIÓN (solo validación, no se guarda) --}}
                 <div class="form-group">
-
-                    <label
-                        class="form-label"
-                        for="password_confirmation"
-                    >
-                        Confirmar contraseña
+                    <label class="form-label" for="password_confirmation">
+                        Confirmar contraseña <span class="required-mark" aria-hidden="true">*</span>
                     </label>
-
-                    <div class="input-wrapper">
-
-                        <svg
-                            class="input-icon"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                        >
-                            <path d="M20 6 9 17l-5-5"/>
-                        </svg>
-
+                    <div class="input-wrapper has-toggle @error('password_confirmation') has-error @enderror">
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
                         <input
                             id="password_confirmation"
                             class="form-input"
                             type="password"
                             name="password_confirmation"
+                            minlength="8"
                             required
                             autocomplete="new-password"
                             placeholder="Repite tu contraseña"
+                            aria-describedby="password_match"
                         >
-
+                        <button type="button" class="password-toggle" data-password-toggle="password_confirmation" aria-label="Mostrar contraseña" aria-pressed="false">
+                            <i class="far fa-eye" aria-hidden="true"></i>
+                        </button>
                     </div>
-
+                    <small class="form-hint password-match" id="password_match" aria-live="polite"></small>
                     @error('password_confirmation')
-                        <div class="form-error">
+                        <div class="form-error" id="password_confirmation_error" role="alert">
                             {{ $message }}
                         </div>
                     @enderror
-
                 </div>
 
+                {{-- Qué ocurre al crear la cuenta (datos reales de la BD) --}}
+                <div class="register-next">
+                    <p class="register-next-title">
+                        <i class="fas fa-circle-info" aria-hidden="true"></i>
+                        Al crear tu cuenta
+                    </p>
+                    <ul>
+                        <li>Entrarás directamente a tu panel para registrar pacientes y citas.</li>
+                        <li>Recibirás un <strong>código de acceso de 6 dígitos</strong> para que tus pacientes entren a la app móvil.</li>
+                        <li>Podrás completar y editar tus datos después desde <strong>Mi perfil</strong>.</li>
+                    </ul>
+                </div>
 
-
-                {{-- BOTÓN --}}
-                <button
-                    type="submit"
-                    class="register-button"
-                >
-
+                <button type="submit" class="register-button" data-loading-text="Creando tu cuenta…">
                     Crear mi cuenta
-
-                    <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                    >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                         <path d="M5 12h14"/>
                         <path d="m13 6 6 6-6 6"/>
                     </svg>
-
                 </button>
 
-
                 <div class="login-text">
-
                     ¿Ya tienes una cuenta?
-
-                    <a href="{{ route('login') }}">
-                        Inicia sesión
-                    </a>
-
+                    <a href="{{ route('login') }}">Inicia sesión</a>
                 </div>
 
-
                 <div class="register-security">
-
-                    <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                    >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                     </svg>
-
-                    Tus datos están protegidos
-
+                    Tu contraseña se guarda cifrada.
                 </div>
 
             </form>
@@ -385,5 +315,6 @@
 
 </div>
 
+    @vite(['resources/js/pages/auth-register.js'])
 </body>
 </html>

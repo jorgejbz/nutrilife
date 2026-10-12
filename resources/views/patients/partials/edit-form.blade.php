@@ -98,6 +98,7 @@
                                         type="text"
                                         id="first_name"
                                         name="first_name"
+                                        maxlength="100"
                                         value="{{ old('first_name', $paciente->first_name) }}"
                                         required
                                     >
@@ -143,6 +144,7 @@
                                         type="text"
                                         id="last_name"
                                         name="last_name"
+                                        maxlength="100"
                                         value="{{ old('last_name', $paciente->last_name) }}"
                                         required
                                     >
@@ -185,6 +187,7 @@
                                         type="date"
                                         id="birth_date"
                                         name="birth_date"
+                                        max="{{ now()->format('Y-m-d') }}"
                                         value="{{ old(
                                             'birth_date',
                                             $paciente->birth_date
@@ -416,9 +419,10 @@
 
 
                                     <input
-                                        type="text"
+                                        type="tel"
                                         id="phone"
                                         name="phone"
+                                        maxlength="20"
                                         value="{{ old('phone', $paciente->phone) }}"
                                         placeholder="33 1234 5678"
                                     >
@@ -462,6 +466,7 @@
                                         type="email"
                                         id="email"
                                         name="email"
+                                        maxlength="255"
                                         value="{{ old('email', $paciente->email) }}"
                                         placeholder="paciente@correo.com"
                                         required
@@ -505,6 +510,7 @@
                                         type="text"
                                         id="occupation"
                                         name="occupation"
+                                        maxlength="150"
                                         value="{{ old('occupation', $paciente->occupation) }}"
                                         placeholder="Ej. Estudiante"
                                     >
@@ -535,7 +541,7 @@
                      OBJETIVO
                 =========================================== --}}
 
-                <div class="form-section last-section">
+                <div class="form-section">
 
 
                     <div class="section-heading">
@@ -606,6 +612,13 @@
 
 
                 </div>
+
+
+
+                {{-- ==================================================
+                     HISTORIAL CLÍNICO (patologías y alergias)
+                =================================================== --}}
+                @include('patients.partials.clinical-fields', ['sectionNumber' => '04'])
 
 
 

@@ -60,13 +60,29 @@ npm run dev       # desarrollo
 
 ## Planes y prueba gratuita
 
-Al registrarse, un nutriólogo recibe una prueba de 7 días (`subscriptions`,
-`status = en_prueba`). La nueva BD exige `subscription_plan_id`, por lo que la
-prueba se asocia al plan **activo más económico** de `subscription_plans`.
+Todo nutriólogo nuevo empieza con una **prueba gratuita de 7 días**: una fila
+en `subscriptions` con `status = en_prueba`. Se ve en todo el panel (indicador
+en la barra superior, `partials/trial-badge`) y en el dashboard, hasta que la
+suscripción pasa a `activa` (cuando compra el sistema).
 
-Si todavía no hay planes registrados, el registro funciona igual y
-simplemente no se crea la prueba (no se inventan planes). Para activarla,
-registra al menos un plan en `subscription_plans`.
+1. **Insertar los planes una vez** (obligatorio: `subscription_plan_id` no
+   puede ser nulo). Solo inserta datos, no cambia la estructura:
+
+   ```bash
+   php artisan db:seed --class=SubscriptionPlanSeeder
+   ```
+
+   Crea Esencial ($249), Pro ($399) y Consultorio ($599), mensuales, con los
+   precios de la landing. Puede ejecutarse varias veces sin duplicar.
+
+2. Al registrarse se crea la prueba ligada al plan activo más económico.
+3. El middleware `EnsureTrialSubscription` (rutas del panel):
+   - crea la prueba si el nutriólogo no tiene suscripción (p. ej. se
+     registró antes de que existieran planes; sus 7 días cuentan desde ese
+     momento);
+   - cambia `en_prueba` → `vencida` cuando pasa la fecha de fin.
+4. Al terminar la prueba el panel muestra "Prueba terminada · Elegir plan".
+   El acceso no se bloquea.
 
 Cada nutriólogo recibe automáticamente un `access_code` único de 6 dígitos
 (credencial de sus pacientes para la app móvil).
@@ -131,3 +147,30 @@ sistema.
 
 Los archivos originales de la guía de marca están en
 `resources/brand/originales/` y el favicon anterior en `resources/brand/legado/`.
+
+---
+
+## Registro de nutriólogos
+
+El registro pide solo lo que la tabla `users` puede guardar (BD definitiva):
+nombre, correo y contraseña. El servidor asigna `role_id = 1` y genera el
+`access_code` de 6 dígitos (visible en **Mi perfil**).
+
+Teléfono, cédula profesional, especialidad, años de experiencia, biografía,
+foto, zona de atención, modalidad y horarios **no tienen columna ni tabla**
+en la BD, por eso no se solicitan. Para agregarlos haría falta ampliar la BD
+(ver propuesta en `docs/PROPUESTA_PERFIL_NUTRIOLOGO.md`).
+
+## Landing
+
+- Dirigida a nutriólogos. Secciones: hero, confianza, funciones, cómo
+  funciona, vista del panel (maquetas HTML/SVG en
+  `resources/views/landing/partials/mockups`), app para pacientes, planes,
+  preguntas frecuentes y pie de página.
+- Las maquetas usan datos de ejemplo y siguen el modo claro/oscuro; las
+  capturas PNG anteriores (con la marca previa) están en
+  `resources/brand/legado/landing/`.
+- Correo de contacto público: `NUTRILIFE_CONTACT_EMAIL` en `.env`
+  (`config/nutrilife.php`). Si está vacío, la landing no muestra contacto.
+- Los precios de la sección de planes están escritos en la vista; no se leen
+  de `subscription_plans`.

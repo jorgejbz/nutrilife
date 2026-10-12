@@ -26,6 +26,7 @@ class Evaluation extends Model
     protected function casts(): array
     {
         return [
+            'patient_id' => 'integer',
             'evaluation_date' => 'date',
 
             'weight' => 'float',
@@ -43,8 +44,13 @@ class Evaluation extends Model
         ];
     }
 
+    /**
+     * patients usa borrado lógico; el historial (citas, consultas, pagos,
+     * evaluaciones) debe seguir mostrando al paciente aunque se elimine,
+     * por eso la relación incluye pacientes eliminados.
+     */
     public function patient(): BelongsTo
     {
-        return $this->belongsTo(Patient::class);
+        return $this->belongsTo(Patient::class)->withTrashed();
     }
 }

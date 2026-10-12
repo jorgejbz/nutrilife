@@ -22,4 +22,14 @@ class Role extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    /** Nombre para mostrar (roles.name es técnico: "nutriologo", "admin"). */
+    public function label(): string
+    {
+        return match ($this->name) {
+            'nutriologo' => 'Nutriólogo',
+            'admin' => 'Administrador',
+            default => ucfirst((string) $this->name),
+        };
+    }
 }

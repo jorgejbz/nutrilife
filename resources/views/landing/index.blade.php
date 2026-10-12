@@ -470,6 +470,11 @@
 </section>
 
 
+{{-- CONFIANZA --}}
+@include('landing.partials.trust')
+
+
+
 
 
 
@@ -498,7 +503,7 @@
 
             <span class="section-eyebrow">
 
-                <i class="fas fa-sparkles"></i>
+                <i class="fas fa-wand-magic-sparkles"></i>
 
                 TODO EN UN SOLO LUGAR
 
@@ -1292,6 +1297,8 @@
 
                 todo en segundos.
 
+            
+                <span class="demo-note">Vistas ilustrativas con datos de ejemplo.</span>
             </p>
 
         </div>
@@ -1417,13 +1424,7 @@
 
                 <div class="demo-browser-image">
 
-                    <img
-
-                        src="{{ asset('images/landing/dashboard.png') }}"
-
-                        alt="Dashboard de NutriLife"
-
-                    >
+                    @include('landing.partials.mockups.dashboard')
 
                 </div>
 
@@ -1456,13 +1457,7 @@
 
                 <div class="demo-card-image">
 
-                    <img
-
-                        src="{{ asset('images/landing/citas.png') }}"
-
-                        alt="Agenda y calendario de NutriLife"
-
-                    >
+                    @include('landing.partials.mockups.calendar')
 
                 </div>
 
@@ -1511,10 +1506,7 @@
             <article class="demo-card">
 
                 <div class="demo-card-image">
-                    <img
-                        src="{{ asset('images/landing/progreso.png') }}"
-                        alt="Progreso de pacientes en NutriLife"
-                    >
+                    @include('landing.partials.mockups.progress')
                 </div>
 
                 <div class="demo-card-content">
@@ -1542,10 +1534,7 @@
             <article class="demo-card">
 
                 <div class="demo-card-image">
-                    <img
-                        src="{{ asset('images/landing/pagos.png') }}"
-                        alt="Control de pagos en NutriLife"
-                    >
+                    @include('landing.partials.mockups.payments')
                 </div>
 
                 <div class="demo-card-content">
@@ -1614,6 +1603,10 @@
     </div>
 
 </section>
+
+{{-- APP PARA PACIENTES (código de acceso) --}}
+@include('landing.partials.patients-app')
+
 
 {{-- ======================================================
 
@@ -2303,22 +2296,31 @@
                         </strong>
 
                         <span>
-
-                            Estamos para ayudarte.
-
+                            @if (config('nutrilife.contact_email'))
+                                Escríbenos y te ayudamos.
+                            @else
+                                Pruébalo 7 días sin costo y resuelve tus dudas usándolo.
+                            @endif
                         </span>
 
                     </div>
 
 
 
-                    <a href="#contacto">
-
-                        Contactar
-
-                        <i class="fas fa-arrow-right"></i>
-
-                    </a>
+                    {{-- Antes enlazaba a #contacto, que no existe. El correo se
+                         configura en .env (NUTRILIFE_CONTACT_EMAIL); sin él se
+                         ofrece crear la cuenta de prueba. --}}
+                    @if (config('nutrilife.contact_email'))
+                        <a href="mailto:{{ config('nutrilife.contact_email') }}">
+                            Escríbenos
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    @else
+                        <a href="{{ route('register') }}">
+                            Probar gratis
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    @endif
 
                 </div>
 

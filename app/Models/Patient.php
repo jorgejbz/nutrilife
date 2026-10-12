@@ -19,6 +19,9 @@ class Patient extends Model
 {
     use SoftDeletes;
 
+    /** Valores de patient_allergens.severity (ENUM). */
+    public const ALLERGY_SEVERITIES = ['leve', 'moderada', 'severa'];
+
     protected $fillable = [
         'user_id',
         'first_name',
@@ -35,6 +38,7 @@ class Patient extends Model
     protected function casts(): array
     {
         return [
+            'user_id' => 'integer',
             'birth_date' => 'date',
             'active' => 'boolean',
         ];

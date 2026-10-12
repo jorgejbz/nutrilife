@@ -281,6 +281,7 @@
                                         id="reason"
                                         name="reason"
                                         value="{{ old('reason') }}"
+                                        maxlength="255"
                                         placeholder="Ej. Consulta de seguimiento"
                                     >
 
@@ -310,6 +311,7 @@
 
                                 <label for="status">
                                     Estado
+                                    <span class="required">*</span>
                                 </label>
 
 

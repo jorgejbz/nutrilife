@@ -73,3 +73,28 @@
        antes el modo claro leía --hero-bg-image y mostraba la foto oscura. */
     background-image: var(--hero-bg-image-light, url('../images/landing/fondoheroblanco.jpeg'));
 }
+
+/* Legibilidad del hero en claro: la fotografía clara tiene aguacate y
+   hojas justo detrás del título. Un velo crema a la izquierda (y arriba
+   en móvil, donde el texto va centrado) mantiene el contraste sin tapar
+   la imagen. */
+[data-theme="light"] .hero-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(90deg,
+        rgba(var(--nl-cream-rgb), .94) 0%,
+        rgba(var(--nl-cream-rgb), .82) 38%,
+        rgba(var(--nl-cream-rgb), 0) 62%);
+}
+
+@media (max-width: 1000px) {
+    [data-theme="light"] .hero-section::before {
+        background: linear-gradient(180deg,
+            rgba(var(--nl-cream-rgb), .92) 0%,
+            rgba(var(--nl-cream-rgb), .80) 55%,
+            rgba(var(--nl-cream-rgb), .35) 100%);
+    }
+}

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Middleware\EnsureTrialSubscription;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\EvaluationController;
 use App\Http\Controllers\AppointmentController;
@@ -25,7 +26,8 @@ Route::get('/', [LandingController::class, 'index'])
 | Rutas autenticadas
 |--------------------------------------------------------------------------
 */
-Route::middleware('auth')->group(function () {
+// EnsureTrialSubscription: crea/actualiza la prueba gratuita del nutriólogo
+Route::middleware(['auth', EnsureTrialSubscription::class])->group(function () {
 
     /*
     |----------------------------------------------------------------

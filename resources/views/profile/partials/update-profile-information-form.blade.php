@@ -1,64 +1,101 @@
-<section>
-    <header>
-        <h2 class="text-lg font-medium text-gray-900">
-            {{ __('Profile Information') }}
-        </h2>
+{{-- =========================================================
+     DATOS DE LA CUENTA (users.name, users.email)
+     Ruta: PATCH profile.update → ProfileController@update
+     Validación: ProfileUpdateRequest (correo en minúsculas, único).
+     Si cambia el correo, email_verified_at vuelve a null.
+     ========================================================= --}}
+<section class="nl-settings">
 
-        <p class="mt-1 text-sm text-gray-600">
-            {{ __("Update your account's profile information and email address.") }}
-        </p>
+    <header class="nl-settings-head">
+        <span class="nl-settings-icon" aria-hidden="true"><i class="far fa-id-card"></i></span>
+        <div>
+            <h3>Datos de la cuenta</h3>
+            <p>Tu nombre aparece en el panel; con tu correo inicias sesión.</p>
+        </div>
     </header>
 
-    <form id="send-verification" method="post" action="{{ route('verification.send') }}">
+    {{-- Reenviar verificación (se envía desde el botón del aviso de abajo) --}}
+    <form id="send-verification" method="post" action="{{ route('verification.send') }}" data-no-submit-guard>
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" class="nl-settings-form" novalidate>
         @csrf
         @method('patch')
 
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
-            <x-input-error class="mt-2" :messages="$errors->get('name')" />
+        <div class="nl-field">
+            <label for="name">Nombre completo <span class="nl-req" aria-hidden="true">*</span></label>
+            <div class="nl-input @error('name') has-error @enderror">
+                <i class="far fa-user" aria-hidden="true"></i>
+                <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    value="{{ old('name', $user->name) }}"
+                    maxlength="255"
+                    required
+                    autocomplete="name"
+                    placeholder="Ej. Dra. Andrea López Martínez"
+                    @error('name') aria-invalid="true" aria-describedby="name_error" @enderror
+                >
+            </div>
+            @error('name')
+                <p class="nl-field-error" id="name_error"><i class="fas fa-circle-exclamation" aria-hidden="true"></i> {{ $message }}</p>
+            @enderror
         </div>
 
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
-            <x-input-error class="mt-2" :messages="$errors->get('email')" />
+        <div class="nl-field">
+            <label for="email">Correo electrónico <span class="nl-req" aria-hidden="true">*</span></label>
+            <div class="nl-input @error('email') has-error @enderror">
+                <i class="far fa-envelope" aria-hidden="true"></i>
+                <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value="{{ old('email', $user->email) }}"
+                    maxlength="255"
+                    required
+                    autocomplete="username"
+                    inputmode="email"
+                    placeholder="correo@ejemplo.com"
+                    @error('email') aria-invalid="true" aria-describedby="email_error" @enderror
+                >
+            </div>
+            @error('email')
+                <p class="nl-field-error" id="email_error"><i class="fas fa-circle-exclamation" aria-hidden="true"></i> {{ $message }}</p>
+            @enderror
 
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
-                <div>
-                    <p class="text-sm mt-2 text-gray-800">
-                        {{ __('Your email address is unverified.') }}
-
-                        <button form="send-verification" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            {{ __('Click here to re-send the verification email.') }}
+                <div class="nl-inline-notice">
+                    <i class="fas fa-envelope-circle-check" aria-hidden="true"></i>
+                    <div>
+                        Tu correo aún no está verificado.
+                        <button form="send-verification" type="submit" class="nl-link-button">
+                            Reenviar correo de verificación
                         </button>
-                    </p>
-
-                    @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 font-medium text-sm text-green-600">
-                            {{ __('A new verification link has been sent to your email address.') }}
-                        </p>
-                    @endif
+                        @if (session('status') === 'verification-link-sent')
+                            <span class="nl-inline-ok">Te enviamos un nuevo enlace de verificación.</span>
+                        @endif
+                    </div>
                 </div>
             @endif
+
+            <p class="nl-field-hint">Si cambias tu correo tendrás que verificarlo de nuevo.</p>
         </div>
 
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
+        <div class="nl-settings-actions">
+            <button type="submit" class="nl-btn nl-btn--primary" data-loading-text="Guardando…">
+                <i class="fas fa-floppy-disk" aria-hidden="true"></i>
+                Guardar cambios
+            </button>
 
             @if (session('status') === 'profile-updated')
-                <p
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600"
-                >{{ __('Saved.') }}</p>
+                <span class="nl-saved" role="status" data-autohide>
+                    <i class="fas fa-circle-check" aria-hidden="true"></i>
+                    Cambios guardados
+                </span>
             @endif
         </div>
     </form>
+
 </section>

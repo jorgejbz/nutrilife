@@ -30,9 +30,11 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
-            // Nueva BD: rol obligatorio (1 = nutriólogo). El access_code lo
-            // genera el modelo User al crear el registro.
+            // Nueva BD: rol obligatorio (1 = nutriólogo) y access_code NOT NULL.
+            // El código se genera aquí además de en el evento "creating" del
+            // modelo, porque DatabaseSeeder usa WithoutModelEvents.
             'role_id' => Role::NUTRITIONIST,
+            'access_code' => User::generateAccessCode(),
             'remember_token' => Str::random(10),
         ];
     }

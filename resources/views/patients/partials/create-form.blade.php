@@ -109,6 +109,7 @@
                                         type="text"
                                         id="first_name"
                                         name="first_name"
+                                        maxlength="100"
                                         value="{{ old('first_name') }}"
                                         placeholder="Ej. Juan"
                                         required
@@ -159,6 +160,7 @@
                                         type="text"
                                         id="last_name"
                                         name="last_name"
+                                        maxlength="100"
                                         value="{{ old('last_name') }}"
                                         placeholder="Ej. García Lizaola"
                                         required
@@ -206,6 +208,7 @@
                                         type="date"
                                         id="birth_date"
                                         name="birth_date"
+                                        max="{{ now()->format('Y-m-d') }}"
                                         value="{{ old('birth_date') }}"
                                     >
 
@@ -317,9 +320,10 @@
                                     </div>
 
                                     <input
-                                        type="text"
+                                        type="tel"
                                         id="phone"
                                         name="phone"
+                                        maxlength="20"
                                         value="{{ old('phone') }}"
                                         placeholder="33 1234 5678"
                                         autocomplete="tel"
@@ -400,6 +404,7 @@
                                         type="email"
                                         id="email"
                                         name="email"
+                                        maxlength="255"
                                         value="{{ old('email') }}"
                                         placeholder="paciente@correo.com"
                                         autocomplete="email"
@@ -447,6 +452,7 @@
                                         type="text"
                                         id="occupation"
                                         name="occupation"
+                                        maxlength="150"
                                         value="{{ old('occupation') }}"
                                         placeholder="Ej. Estudiante"
                                     >
@@ -479,7 +485,7 @@
                 {{-- ==================================================
                      OBJETIVO
                 =================================================== --}}
-                <div class="form-section last-section">
+                <div class="form-section">
 
                     <div class="section-label">
 
@@ -555,6 +561,13 @@
                     </div>
 
                 </div>
+
+
+
+                {{-- ==================================================
+                     HISTORIAL CLÍNICO (patologías y alergias)
+                =================================================== --}}
+                @include('patients.partials.clinical-fields', ['sectionNumber' => '04'])
 
 
 
