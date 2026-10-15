@@ -132,4 +132,6 @@
 :root:not([data-theme="light"]) .nl-logo--on-light,
 [data-theme="dark"] .nl-logo--on-light {
     display: none !important;
+
+    
 }

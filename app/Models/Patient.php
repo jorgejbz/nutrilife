@@ -40,6 +40,7 @@ class Patient extends Model
         ];
     }
 
+    
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -83,4 +84,6 @@ class Patient extends Model
             ->withPivot('severity')
             ->withTimestamps();
     }
+
+    
 }

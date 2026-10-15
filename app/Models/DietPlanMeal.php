@@ -6,14 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-/** Tiempo de comida de un plan (tabla `diet_plan_meals`). */
 class DietPlanMeal extends Model
 {
-    protected $fillable = ['diet_plan_id', 'meal_name', 'meal_order'];
+    protected $fillable = [
+        'diet_plan_id',
+        'meal_name',
+        'meal_order',
+    ];
 
     protected function casts(): array
     {
-        return ['meal_order' => 'integer'];
+        return [
+            'meal_order' => 'integer',
+        ];
     }
 
     public function dietPlan(): BelongsTo

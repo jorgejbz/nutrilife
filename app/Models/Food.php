@@ -4,18 +4,26 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-/** Alimento / equivalente (tabla `foods`). */
 class Food extends Model
 {
-    /** "food" es incontable para el pluralizador; se fija el nombre real. */
-    protected $table = 'foods';
 
+    protected $table = 'foods';
     protected $fillable = [
-        'food_group_id', 'name', 'portion_grams', 'portion_description',
-        'kcal', 'protein_g', 'lipids_g', 'carbs_g', 'fiber_g', 'sodium_mg',
-        'glycemic_index', 'source', 'active',
+        'food_group_id',
+        'name',
+        'portion_grams',
+        'portion_description',
+        'kcal',
+        'protein_g',
+        'lipids_g',
+        'carbs_g',
+        'fiber_g',
+        'sodium_mg',
+        'glycemic_index',
+        'source',
+        'active',
     ];
 
     protected function casts(): array
@@ -28,18 +36,17 @@ class Food extends Model
             'carbs_g' => 'decimal:2',
             'fiber_g' => 'decimal:2',
             'sodium_mg' => 'decimal:2',
-            'glycemic_index' => 'integer',
             'active' => 'boolean',
         ];
     }
 
-    public function group(): BelongsTo
+    public function foodGroup(): BelongsTo
     {
-        return $this->belongsTo(FoodGroup::class, 'food_group_id');
+        return $this->belongsTo(FoodGroup::class);
     }
 
-    public function allergens(): BelongsToMany
+    public function dietPlanItems(): HasMany
     {
-        return $this->belongsToMany(Allergen::class, 'food_allergens');
+        return $this->hasMany(DietPlanItem::class);
     }
 }

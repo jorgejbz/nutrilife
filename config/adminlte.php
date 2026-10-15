@@ -796,6 +796,15 @@ return [
         'icon' => 'fas fa-fw fa-chart-line',
     ],
 
+        [
+    'header' => 'NUTRICIÓN',
+],
+
+    [
+    'text' => 'Planes alimenticios',
+    'route' => 'diet-plans.index',
+    'icon' => 'fas fa-utensils',
+    ],
     ['header' => 'ADMINISTRACIÓN'],
 
     [
