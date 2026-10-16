@@ -7,6 +7,9 @@ use App\Models\Consultation;
 use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 
 class ConsultationController extends Controller
 {
@@ -51,6 +54,8 @@ class ConsultationController extends Controller
                 'Pendiente',
                 'Confirmada'
             ])
+            // Solo citas de pacientes vigentes (patients usa borrado lógico)
+            ->whereHas('patient', fn ($query) => $query->whereNull('patients.deleted_at'))
             ->with('patient')
             ->orderBy('appointment_at')
             ->get();
@@ -65,102 +70,64 @@ class ConsultationController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            // FK a patients: debe ser un paciente del nutriólogo y no eliminado.
             'patient_id' => [
                 'required',
-                'exists:patients,id'
+                'integer',
+                Rule::exists('patients', 'id')
+                    ->where('user_id', Auth::id())
+                    ->whereNull('deleted_at'),
             ],
 
+            // FK opcional a appointments: cita propia y aún abierta
+            // (el formulario solo ofrece citas Pendiente / Confirmada).
             'appointment_id' => [
                 'nullable',
-                'exists:appointments,id'
+                'integer',
+                Rule::exists('appointments', 'id')
+                    ->where('user_id', Auth::id())
+                    ->whereIn('status', ['Pendiente', 'Confirmada']),
             ],
 
-            'consultation_at' => [
-                'required',
-                'date'
-            ],
-
-            'reason' => [
-                'nullable',
-                'string',
-                'max:255'
-            ],
-
-            'observations' => [
-                'nullable',
-                'string',
-                'max:5000'
-            ],
-
-            'recommendations' => [
-                'nullable',
-                'string',
-                'max:5000'
-            ],
-
-            'next_visit' => [
-                'nullable',
-                'date',
-                'after_or_equal:today'
-            ],
+            'consultation_at' => ['required', 'date'],
+            'reason' => ['nullable', 'string', 'max:255'],
+            'observations' => ['nullable', 'string', 'max:5000'],
+            'recommendations' => ['nullable', 'string', 'max:5000'],
+            'next_visit' => ['nullable', 'date', 'after_or_equal:today'],
+        ], [
+            'patient_id.exists' => 'Selecciona un paciente válido de tu consultorio.',
+            'appointment_id.exists' => 'La cita seleccionada no existe o ya fue completada/cancelada.',
+            'next_visit.after_or_equal' => 'La próxima consulta no puede ser una fecha pasada.',
         ]);
 
+        $appointment = null;
 
-        // Verificar que el paciente pertenece al nutriólogo
-        $patient = Patient::where('id', $validated['patient_id'])
-            ->where('user_id', Auth::id())
-            ->firstOrFail();
+        if (! empty($validated['appointment_id'])) {
+            $appointment = Appointment::where('user_id', Auth::id())
+                ->findOrFail($validated['appointment_id']);
 
-
-        // Si seleccionaron una cita
-        if (!empty($validated['appointment_id'])) {
-
-            $appointment = Appointment::where(
-                'id',
-                $validated['appointment_id']
-            )
-                ->where('user_id', Auth::id())
-                ->firstOrFail();
-
-
-            // La cita debe pertenecer al mismo paciente
-            abort_if(
-                $appointment->patient_id !== $patient->id,
-                422,
-                'La cita seleccionada no pertenece al paciente.'
-            );
-
-        } else {
-
-            $appointment = null;
+            // La cita debe pertenecer al mismo paciente. Antes era un abort(422)
+            // que mostraba una página de error; ahora regresa al formulario
+            // conservando lo capturado.
+            if ((int) $appointment->patient_id !== (int) $validated['patient_id']) {
+                throw ValidationException::withMessages([
+                    'appointment_id' => 'La cita seleccionada pertenece a otro paciente.',
+                ]);
+            }
         }
-
 
         $validated['user_id'] = Auth::id();
-        $validated['patient_id'] = $patient->id;
 
+        // Crear la consulta y completar la cita deben ocurrir juntos.
+        DB::transaction(function () use ($validated, $appointment) {
+            Consultation::create($validated);
 
-        Consultation::create($validated);
-
-
-        // Si la consulta provino de una cita,
-        // la marcamos automáticamente como completada.
-        if ($appointment) {
-
-            $appointment->update([
-                'status' => 'Completada'
-            ]);
-        }
-
+            // Si la consulta provino de una cita, se marca como completada.
+            $appointment?->update(['status' => 'Completada']);
+        });
 
         return redirect()
             ->route('consultas.index')
-            ->with(
-                'success',
-                'Consulta registrada correctamente.'
-            );
+            ->with('success', 'Consulta registrada correctamente.');
     }
-
-
-
 }

@@ -89,12 +89,12 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Paciente *</label>
+                        <label for="patient_id">Paciente <span class="required">*</span></label>
 
-                        <div class="liquid-input liquid-select">
+                        <div class="liquid-input liquid-select @error('patient_id') input-error @enderror">
                             <span class="input-icon"><i class="far fa-user"></i></span>
 
-                            <select name="patient_id" required>
+                            <select name="patient_id" id="patient_id" required>
                                 <option value="">Selecciona un paciente</option>
 
                                 @foreach($patients as $patient)
@@ -107,35 +107,51 @@
                                 @endforeach
                             </select>
                         </div>
+                    @error('patient_id')
+                        <div class="field-error">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ $message }}
+                        </div>
+                    @enderror
                     </div>
 
                     <div class="form-group">
-                        <label>Fecha y hora *</label>
+                        <label for="consultation_at">Fecha y hora <span class="required">*</span></label>
 
-                        <div class="liquid-input">
+                        <div class="liquid-input @error('consultation_at') input-error @enderror">
                             <span class="input-icon"><i class="far fa-clock"></i></span>
 
                             <input
                                 type="datetime-local"
                                 name="consultation_at"
+                                id="consultation_at"
                                 value="{{ old('consultation_at', now()->format('Y-m-d\TH:i')) }}"
                                 required
                             >
                         </div>
+                    @error('consultation_at')
+                        <div class="field-error">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ $message }}
+                        </div>
+                    @enderror
                     </div>
 
                     <div class="form-group">
-                        <label>Cita relacionada</label>
+                        <label for="appointment_id">Cita relacionada</label>
 
-                        <div class="liquid-input liquid-select">
+                        <div class="liquid-input liquid-select @error('appointment_id') input-error @enderror">
                             <span class="input-icon"><i class="far fa-calendar-check"></i></span>
 
-                            <select name="appointment_id">
+                            {{-- data-patient-id permite que consultations-create.js muestre
+                                 solo las citas del paciente elegido (appointments.patient_id) --}}
+                            <select name="appointment_id" id="appointment_id">
                                 <option value="">Ninguna</option>
 
                                 @foreach($appointments as $appointment)
                                     <option
                                         value="{{ $appointment->id }}"
+                                        data-patient-id="{{ $appointment->patient_id }}"
                                         {{ old('appointment_id') == $appointment->id ? 'selected' : '' }}
                                     >
                                         {{ $appointment->patient->first_name }}
@@ -148,8 +164,15 @@
                         </div>
 
                         <small class="field-hint">
-                            Opcional. Si seleccionas una cita, se marcará como completada.
+                            Opcional. Solo se muestran las citas pendientes o confirmadas del paciente
+                            elegido; al guardar, la cita se marcará como completada.
                         </small>
+                    @error('appointment_id')
+                        <div class="field-error">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ $message }}
+                        </div>
+                    @enderror
                     </div>
 
                 </div>
@@ -169,28 +192,48 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Motivo</label>
+                        <label for="reason">Motivo</label>
 
-                        <div class="liquid-input">
+                        <div class="liquid-input @error('reason') input-error @enderror">
                             <span class="input-icon"><i class="far fa-comment-dots"></i></span>
 
                             <input
                                 type="text"
                                 name="reason"
+                                id="reason"
                                 value="{{ old('reason') }}"
+                                maxlength="255"
                                 placeholder="Ej. Seguimiento mensual"
                             >
                         </div>
+                    @error('reason')
+                        <div class="field-error">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ $message }}
+                        </div>
+                    @enderror
                     </div>
 
                     <div class="form-group">
-                        <label>Próxima consulta</label>
+                        <label for="next_visit">Próxima consulta</label>
 
-                        <div class="liquid-input">
+                        <div class="liquid-input @error('next_visit') input-error @enderror">
                             <span class="input-icon"><i class="far fa-calendar-plus"></i></span>
 
-                            <input type="date" name="next_visit" value="{{ old('next_visit') }}">
+                            <input
+                                type="date"
+                                name="next_visit"
+                                id="next_visit"
+                                value="{{ old('next_visit') }}"
+                                min="{{ now()->format('Y-m-d') }}"
+                            >
                         </div>
+                    @error('next_visit')
+                        <div class="field-error">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ $message }}
+                        </div>
+                    @enderror
                     </div>
 
                 </div>
@@ -210,18 +253,27 @@
                     </div>
 
                     <div class="form-group">
-                        <div class="liquid-textarea">
+                        <label for="observationsField" class="visually-hidden">Observaciones</label>
+
+                        <div class="liquid-textarea @error('observations') input-error @enderror">
                             <span class="textarea-icon"><i class="far fa-file-alt"></i></span>
 
                             <textarea
                                 name="observations"
                                 rows="5"
+                                maxlength="5000"
                                 placeholder="Describe cómo se encuentra el paciente, adherencia, síntomas, cambios..."
                                 id="observationsField"
                             >{{ old('observations') }}</textarea>
 
-                            <span class="character-counter" id="observationsCount">0</span>
+                            <span class="character-counter"><span id="observationsCount">0</span> / 5000</span>
                         </div>
+                    @error('observations')
+                        <div class="field-error">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ $message }}
+                        </div>
+                    @enderror
                     </div>
 
                 </div>
@@ -241,18 +293,27 @@
                     </div>
 
                     <div class="form-group">
-                        <div class="liquid-textarea">
+                        <label for="recommendationsField" class="visually-hidden">Recomendaciones</label>
+
+                        <div class="liquid-textarea @error('recommendations') input-error @enderror">
                             <span class="textarea-icon"><i class="far fa-lightbulb"></i></span>
 
                             <textarea
                                 name="recommendations"
                                 rows="5"
+                                maxlength="5000"
                                 placeholder="Indicaciones para el paciente..."
                                 id="recommendationsField"
                             >{{ old('recommendations') }}</textarea>
 
-                            <span class="character-counter" id="recommendationsCount">0</span>
+                            <span class="character-counter"><span id="recommendationsCount">0</span> / 5000</span>
                         </div>
+                    @error('recommendations')
+                        <div class="field-error">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ $message }}
+                        </div>
+                    @enderror
                     </div>
 
                 </div>

@@ -26,6 +26,9 @@ class Payment extends Model
     protected function casts(): array
     {
         return [
+            'user_id' => 'integer',
+            'patient_id' => 'integer',
+            'appointment_id' => 'integer',
             'paid_at' => 'datetime',
             'amount' => 'decimal:2',
         ];
@@ -36,9 +39,14 @@ class Payment extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * patients usa borrado lógico; el historial (citas, consultas, pagos,
+     * evaluaciones) debe seguir mostrando al paciente aunque se elimine,
+     * por eso la relación incluye pacientes eliminados.
+     */
     public function patient(): BelongsTo
     {
-        return $this->belongsTo(Patient::class);
+        return $this->belongsTo(Patient::class)->withTrashed();
     }
 
     public function appointment(): BelongsTo

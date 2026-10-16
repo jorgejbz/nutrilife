@@ -6,9 +6,18 @@ use App\Models\Payment;
 use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
+use App\Models\Appointment;
 
 class PaymentController extends Controller
 {
+    /** Valores de payments.payment_method (VARCHAR, por defecto 'Efectivo'). */
+    public const METHODS = ['Efectivo', 'Transferencia', 'Tarjeta', 'Otro'];
+
+    /** Valores de payments.status (VARCHAR, por defecto 'Pagado'). */
+    public const STATUSES = ['Pagado', 'Pendiente', 'Cancelado'];
+
     public function index()
     {
         $payments = Payment::where('user_id', Auth::id())
@@ -51,64 +60,70 @@ class PaymentController extends Controller
             ->orderBy('first_name')
             ->get();
 
-        return view('payments.create', compact('patients'));
+        // Citas para vincular el cobro (payments.appointment_id, opcional):
+        // propias, no canceladas y de pacientes vigentes.
+        $appointments = Appointment::where('user_id', Auth::id())
+            ->where('status', '!=', 'Cancelada')
+            ->whereHas('patient', fn ($query) => $query->whereNull('patients.deleted_at'))
+            ->orderByDesc('appointment_at')
+            ->get();
+
+        return view('payments.create', compact('patients', 'appointments'));
     }
 
 
     public function store(Request $request)
     {
         $validated = $request->validate([
+            // FK a patients: paciente propio y vigente.
             'patient_id' => [
                 'required',
-                'exists:patients,id'
+                'integer',
+                Rule::exists('patients', 'id')
+                    ->where('user_id', Auth::id())
+                    ->whereNull('deleted_at'),
             ],
 
-            'amount' => [
-                'required',
-                'numeric',
-                'min:0.01'
-            ],
-
-            'paid_at' => [
-                'required',
-                'date'
-            ],
-
-            'concept' => [
-                'required',
-                'string',
-                'max:255'
-            ],
-
-            'payment_method' => [
-                'required',
-                'in:Efectivo,Transferencia,Tarjeta,Otro'
-            ],
-
-            'status' => [
-                'required',
-                'in:Pagado,Pendiente,Cancelado'
-            ],
-
-            'reference' => [
+            // FK opcional a appointments (antes el formulario no la ofrecía).
+            'appointment_id' => [
                 'nullable',
-                'string',
-                'max:255'
+                'integer',
+                Rule::exists('appointments', 'id')->where('user_id', Auth::id()),
             ],
 
-            'notes' => [
-                'nullable',
-                'string',
-                'max:2000'
-            ],
+            // payments.amount DECIMAL(10,2)
+            'amount' => ['required', 'numeric', 'decimal:0,2', 'min:0.01', 'max:99999999.99'],
+
+            'paid_at' => ['required', 'date'],
+
+            // payments.concept admite NULL en la BD, pero el sistema ya lo
+            // exigía; se conserva la regla de negocio existente.
+            'concept' => ['required', 'string', 'max:255'],
+
+            'payment_method' => ['required', Rule::in(self::METHODS)],
+            'status' => ['required', Rule::in(self::STATUSES)],
+            'reference' => ['nullable', 'string', 'max:255'],
+            'notes' => ['nullable', 'string', 'max:2000'],
+        ], [
+            'patient_id.exists' => 'Selecciona un paciente válido de tu consultorio.',
+            'appointment_id.exists' => 'La cita seleccionada no existe.',
+            'amount.decimal' => 'El monto admite como máximo 2 decimales.',
+            'amount.max' => 'El monto excede el máximo permitido.',
         ]);
 
-        $patient = Patient::where('id', $validated['patient_id'])
-            ->where('user_id', Auth::id())
-            ->firstOrFail();
+        // La cita, si se eligió, debe ser del mismo paciente.
+        if (! empty($validated['appointment_id'])) {
+            $appointment = Appointment::where('user_id', Auth::id())
+                ->findOrFail($validated['appointment_id']);
+
+            if ($appointment->patient_id !== (int) $validated['patient_id']) {
+                throw ValidationException::withMessages([
+                    'appointment_id' => 'La cita seleccionada pertenece a otro paciente.',
+                ]);
+            }
+        }
 
         $validated['user_id'] = Auth::id();
-        $validated['patient_id'] = $patient->id;
 
         Payment::create($validated);
 

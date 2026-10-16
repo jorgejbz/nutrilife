@@ -105,6 +105,21 @@ class User extends Authenticatable
         return $this->hasOne(Subscription::class)->latestOfMany();
     }
 
+    /**
+     * ¿Tiene información clínica registrada? patients, appointments,
+     * consultations, payments y diet_plans referencian a users SIN borrado
+     * en cascada, así que una cuenta con datos no se puede eliminar sin
+     * perder expedientes (y MySQL lo rechazaría).
+     */
+    public function hasClinicalData(): bool
+    {
+        return $this->patients()->withTrashed()->exists()
+            || $this->appointments()->exists()
+            || $this->consultations()->withTrashed()->exists()
+            || $this->payments()->withTrashed()->exists()
+            || $this->dietPlans()->withTrashed()->exists();
+    }
+
     /* ------------------------------------------------------------------
      | Helpers de rol
      * ------------------------------------------------------------------ */

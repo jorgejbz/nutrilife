@@ -87,5 +87,6 @@
 
 
     @vite(['resources/js/pages/patients-create.js'])
+    @vite(['resources/js/pages/patients-clinical.js'])
 
 @stop

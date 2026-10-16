@@ -6,9 +6,13 @@ use App\Models\Patient;
 use App\Models\Evaluation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class EvaluationController extends Controller
 {
+    /** Límite clínico razonable y dentro de evaluations.bmi DECIMAL(5,2). */
+    private const MAX_BMI = 150;
+
     public function create(Patient $paciente)
     {
         abort_if($paciente->user_id !== Auth::id(), 403);
@@ -22,10 +26,12 @@ class EvaluationController extends Controller
 
     $validated = $request->validate([
         'evaluation_date' => ['required', 'date'],
+        // Todas las medidas son DECIMAL(x,2) en la BD.
 
         'weight' => [
             'required',
             'numeric',
+            'decimal:0,2',
             'min:20',
             'max:400'
         ],
@@ -33,6 +39,7 @@ class EvaluationController extends Controller
         'height' => [
             'required',
             'numeric',
+            'decimal:0,2',
             'min:50',
             'max:250'
         ],
@@ -40,6 +47,7 @@ class EvaluationController extends Controller
         'body_fat' => [
             'nullable',
             'numeric',
+            'decimal:0,2',
             'min:0',
             'max:100'
         ],
@@ -47,6 +55,7 @@ class EvaluationController extends Controller
         'muscle_mass' => [
             'nullable',
             'numeric',
+            'decimal:0,2',
             'min:0',
             'max:300'
         ],
@@ -54,6 +63,7 @@ class EvaluationController extends Controller
         'waist' => [
             'nullable',
             'numeric',
+            'decimal:0,2',
             'min:20',
             'max:300'
         ],
@@ -61,6 +71,7 @@ class EvaluationController extends Controller
         'hip' => [
             'nullable',
             'numeric',
+            'decimal:0,2',
             'min:20',
             'max:300'
         ],
@@ -68,6 +79,7 @@ class EvaluationController extends Controller
         'chest' => [
             'nullable',
             'numeric',
+            'decimal:0,2',
             'min:20',
             'max:300'
         ],
@@ -75,6 +87,7 @@ class EvaluationController extends Controller
         'arm' => [
             'nullable',
             'numeric',
+            'decimal:0,2',
             'min:10',
             'max:100'
         ],
@@ -82,6 +95,7 @@ class EvaluationController extends Controller
         'thigh' => [
             'nullable',
             'numeric',
+            'decimal:0,2',
             'min:10',
             'max:150'
         ],
@@ -102,6 +116,15 @@ class EvaluationController extends Controller
         $validated['weight'] / ($heightMeters * $heightMeters),
         2
     );
+
+    // evaluations.bmi es DECIMAL(5,2) (máx. 999.99). Con los rangos
+    // permitidos (p. ej. 400 kg y 50 cm) el cálculo podía llegar a 1600 y
+    // MySQL rechazaba el INSERT. Un IMC así indica un error de captura.
+    if ($validated['bmi'] > self::MAX_BMI) {
+        throw ValidationException::withMessages([
+            'height' => 'La combinación de peso y estatura da un IMC fuera de rango. Revisa ambos valores.',
+        ]);
+    }
 
     Evaluation::create($validated);
 

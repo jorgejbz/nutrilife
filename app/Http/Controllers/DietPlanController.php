@@ -7,6 +7,7 @@ use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Food;
+use App\Models\DietPlanDish;
 
 class DietPlanController extends Controller
 {
@@ -28,26 +29,19 @@ class DietPlanController extends Controller
     }
 
 
-    public function show(DietPlan $plan)
+    public function show(DietPlan $plan) // o public function show($id)
 {
-    abort_if($plan->user_id !== Auth::id(), 403);
+    // Cargar el plan con sus relaciones
+    $plan->load('meals.items.food');
 
-    $plan->load([
-        'patient',
-        'meals.items.food',
-    ]);
+    // Cargar catálogo de alimentos
+    $foods = Food::orderBy('name')->get();
 
-    $foods = Food::where('active', true)
-        ->orderBy('name')
-        ->get();
+    // ⚠️ AQUÍ FALTABA ESTA LÍNEA: Obtener los platillos de la BD
+    $dishes = DietPlanDish::all();
 
-    return view(
-        'diet-plans.show',
-        compact(
-            'plan',
-            'foods'
-        )
-    );
+    // Asegúrate de enviar 'dishes' en el compact
+    return view('diet-plans.show', compact('plan', 'foods', 'dishes'));
 }
     public function create()
     {
@@ -58,6 +52,31 @@ class DietPlanController extends Controller
 
         return view('diet-plans.create', compact('patients'));
     }
+
+
+   
+
+public function destroy($id)
+{
+    $plan = DietPlan::where('user_id', Auth::id())
+        ->findOrFail($id);
+
+    try {
+        $plan->forceDelete();
+
+        return redirect()
+            ->route('diet-plans.index')
+            ->with('success', 'El plan alimenticio se eliminó definitivamente.');
+    } catch (\Illuminate\Database\QueryException $e) {
+        report($e);
+
+        return redirect()
+            ->route('diet-plans.index')
+            ->with('error', 'No se pudo eliminar el plan porque puede tener registros relacionados.');
+    }
+}
+
+
 
     public function store(Request $request)
 {

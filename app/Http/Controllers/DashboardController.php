@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Patient;
+use App\Models\Subscription;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -23,29 +24,22 @@ class DashboardController extends Controller
         // En la nueva BD la prueba es una fila de `subscriptions` con
         // status = "en_prueba".
 
-        $subscription = Auth::user()?->latestSubscription;
+        // Mismo cálculo que el indicador de la barra superior
+        // (Subscription::panelStatusFor). null = ya contrató un plan.
+        $trial = Subscription::panelStatusFor(Auth::user());
 
-        $isOnTrial = $subscription?->isTrial() ?? false;
-        $trialDaysRemaining = null;
-        $isTrialActive = false;
-
-        if ($isOnTrial && $subscription->current_period_ends_at) {
-            $trialDaysRemaining = (int) now()
-                ->startOfDay()
-                ->diffInDays(
-                    $subscription->current_period_ends_at->copy()->startOfDay(),
-                    false
-                );
-
-            $isTrialActive = $trialDaysRemaining >= 0;
-        }
+        $isOnTrial = $trial !== null;
+        $isTrialActive = ($trial['state'] ?? null) === 'trial';
+        $trialDaysRemaining = $trial['days'] ?? null;
+        $trialEndsAt = $trial['ends_at'] ?? null;
 
         return view('dashboard.index', compact(
             'totalPatients',
             'activePatients',
             'isOnTrial',
             'trialDaysRemaining',
-            'isTrialActive'
+            'isTrialActive',
+            'trialEndsAt'
         ));
     }
 }

@@ -1451,9 +1451,168 @@ body.auth-register {
 /* ERRORES */
 
 .register-page .form-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
     margin-top: 7px;
     color: var(--nl-danger-text);
+    font-size: 11.5px;
+    line-height: 1.4;
+}
+
+.register-page .form-error::before {
+    content: "!";
+    flex-shrink: 0;
+    width: 15px;
+    height: 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(var(--nl-danger-rgb), .18);
     font-size: 10px;
+    font-weight: 700;
+}
+
+/* Campo con error */
+.register-page .input-wrapper.has-error .form-input {
+    border-color: rgba(var(--nl-danger-rgb), .65);
+    background: rgba(var(--nl-danger-rgb), .05);
+}
+
+.register-page .input-wrapper.has-error .input-icon {
+    color: var(--nl-danger-text);
+}
+
+/* Indicadores de obligatorio y textos de ayuda */
+.register-page .required-mark {
+    color: var(--nl-danger-text);
+    font-weight: 700;
+}
+
+.register-page .form-required-note {
+    margin: 0 0 16px;
+    font-size: 11.5px;
+    color: var(--text-muted);
+}
+
+.register-page .form-hint {
+    display: block;
+    margin-top: 6px;
+    font-size: 11px;
+    line-height: 1.45;
+    color: var(--text-muted);
+}
+
+/* Mostrar / ocultar contraseña */
+.register-page .input-wrapper.has-toggle .form-input {
+    padding-right: 48px;
+}
+
+.register-page .password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(-50%);
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background .2s ease, color .2s ease;
+}
+
+.register-page .password-toggle:hover,
+.register-page .password-toggle:focus-visible {
+    background: rgba(var(--nl-overlay-rgb), .07);
+    color: var(--text-primary);
+    outline: none;
+}
+
+/* Indicador de seguridad de la contraseña */
+.register-page .password-strength {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 9px;
+}
+
+.register-page .password-strength-bar {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+}
+
+.register-page .password-strength-bar span {
+    height: 4px;
+    border-radius: 99px;
+    background: rgba(var(--nl-overlay-rgb), .10);
+    transition: background .25s ease;
+}
+
+.register-page .password-strength-label {
+    min-width: 72px;
+    text-align: right;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.register-page .password-strength[data-level="1"] .password-strength-bar span:nth-child(-n+1) { background: var(--nl-danger); }
+.register-page .password-strength[data-level="2"] .password-strength-bar span:nth-child(-n+2) { background: var(--nl-warning); }
+.register-page .password-strength[data-level="3"] .password-strength-bar span:nth-child(-n+3) { background: rgb(var(--nl-accent-rgb)); }
+.register-page .password-strength[data-level="4"] .password-strength-bar span { background: rgb(var(--nl-accent-strong-rgb)); }
+.register-page .password-strength[data-level="1"] .password-strength-label { color: var(--nl-danger-text); }
+.register-page .password-strength[data-level="2"] .password-strength-label { color: var(--nl-warning-text); }
+.register-page .password-strength[data-level="3"] .password-strength-label,
+.register-page .password-strength[data-level="4"] .password-strength-label { color: var(--accent-text); }
+
+.register-page .password-match[data-state="ok"] { color: var(--accent-text); }
+.register-page .password-match[data-state="pending"] { color: var(--nl-warning-text); }
+
+/* Qué ocurre al crear la cuenta */
+.register-page .register-next {
+    margin: 4px 0 20px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid rgba(var(--nl-accent-rgb), .22);
+    background: rgba(var(--nl-accent-rgb), .07);
+    font-size: 12px;
+    line-height: 1.55;
+    color: var(--text-secondary);
+}
+
+.register-page .register-next-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 6px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.register-page .register-next-title i {
+    color: var(--accent-text);
+}
+
+.register-page .register-next ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.register-page .register-next li + li {
+    margin-top: 3px;
+}
+
+.register-page .register-next strong {
+    color: var(--text-primary);
+    font-weight: 600;
 }
 
 /* BOTÓN */

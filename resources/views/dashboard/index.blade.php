@@ -94,12 +94,19 @@
             @if($isTrialActive)
 
                 <strong>
-                    Te quedan {{ $trialDaysRemaining }} días
+                    @if($trialDaysRemaining === 0)
+                        Hoy es el último día de tu prueba
+                    @elseif($trialDaysRemaining === 1)
+                        Te queda 1 día de prueba
+                    @else
+                        Te quedan {{ $trialDaysRemaining }} días de prueba
+                    @endif
                 </strong>
 
                 <p>
-                    Estás usando NutriLife en modo de prueba.
-                    Explora todas las herramientas disponibles.
+                    Estás usando NutriLife con la prueba gratuita de 7 días
+                    (termina el {{ $trialEndsAt->format('d/m/Y') }}).
+                    Explora todas las herramientas y elige un plan cuando quieras.
                 </p>
 
             @else
@@ -109,7 +116,8 @@
                 </strong>
 
                 <p>
-                    Selecciona un plan para continuar usando NutriLife.
+                    Tus pacientes y tu información siguen guardados.
+                    Elige un plan para continuar usando NutriLife.
                 </p>
 
             @endif

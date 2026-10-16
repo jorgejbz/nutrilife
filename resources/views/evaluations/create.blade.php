@@ -40,12 +40,13 @@
 @section('content')
 
     @php
+        // min/max: mismos rangos que valida EvaluationController@store
         $measurements = [
-            'waist' => ['label' => 'Cintura', 'icon' => 'fa-ruler-horizontal'],
-            'hip' => ['label' => 'Cadera', 'icon' => 'fa-ruler'],
-            'chest' => ['label' => 'Pecho', 'icon' => 'fa-expand'],
-            'arm' => ['label' => 'Brazo', 'icon' => 'fa-dumbbell'],
-            'thigh' => ['label' => 'Muslo', 'icon' => 'fa-ruler-combined'],
+            'waist' => ['label' => 'Cintura', 'icon' => 'fa-ruler-horizontal', 'min' => 20, 'max' => 300],
+            'hip' => ['label' => 'Cadera', 'icon' => 'fa-ruler', 'min' => 20, 'max' => 300],
+            'chest' => ['label' => 'Pecho', 'icon' => 'fa-expand', 'min' => 20, 'max' => 300],
+            'arm' => ['label' => 'Brazo', 'icon' => 'fa-dumbbell', 'min' => 10, 'max' => 100],
+            'thigh' => ['label' => 'Muslo', 'icon' => 'fa-ruler-combined', 'min' => 10, 'max' => 150],
         ];
     @endphp
 

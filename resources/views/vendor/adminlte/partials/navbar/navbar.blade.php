@@ -23,6 +23,9 @@
             {{-- Custom right links --}}
             @yield('content_top_nav_right')
 
+            {{-- Tipo de cuenta: prueba o plan contratado (NutriLife) --}}
+            @include('partials.plan-badge')
+
                 {{-- Botón de tema claro/oscuro --}}
     <li class="nav-item d-flex align-items-center">
         @include('partials.theme-toggle', ['compact' => true])

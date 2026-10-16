@@ -181,6 +181,8 @@
 
                                     Peso
 
+                                    <span class="required">*</span>
+
                                     <span class="input-unit-label">
                                         kg
                                     </span>
@@ -200,9 +202,11 @@
                                     <input
                                         type="number"
                                         step="0.01"
-                                        min="0"
+                                        min="20"
+                                        max="400"
                                         id="weight"
                                         name="weight"
+                                        required
                                         value="{{ old('weight') }}"
                                         placeholder="Ej. 82.50"
                                     >
@@ -241,6 +245,8 @@
 
                                     Estatura
 
+                                    <span class="required">*</span>
+
                                     <span class="input-unit-label">
                                         cm
                                     </span>
@@ -260,9 +266,11 @@
                                     <input
                                         type="number"
                                         step="0.01"
-                                        min="0"
+                                        min="50"
+                                        max="250"
                                         id="height"
                                         name="height"
+                                        required
                                         value="{{ old('height') }}"
                                         placeholder="Ej. 178"
                                     >
@@ -321,6 +329,7 @@
                                         type="number"
                                         step="0.01"
                                         min="0"
+                                        max="100"
                                         id="body_fat"
                                         name="body_fat"
                                         value="{{ old('body_fat') }}"
@@ -381,6 +390,7 @@
                                         type="number"
                                         step="0.01"
                                         min="0"
+                                        max="300"
                                         id="muscle_mass"
                                         name="muscle_mass"
                                         value="{{ old('muscle_mass') }}"
@@ -476,7 +486,8 @@
                                     <input
                                         type="number"
                                         step="0.01"
-                                        min="0"
+                                        min="{{ $data['min'] }}"
+                                        max="{{ $data['max'] }}"
                                         id="{{ $name }}"
                                         name="{{ $name }}"
                                         value="{{ old($name) }}"
@@ -563,6 +574,7 @@
                                 name="notes"
                                 id="notes"
                                 rows="5"
+                                maxlength="2000"
                                 placeholder="Ej. El paciente reporta buena adherencia al plan, mejora en energía y entrenamiento..."
                             >{{ old('notes') }}</textarea>
 
@@ -573,7 +585,7 @@
                                     {{ strlen(old('notes', '')) }}
                                 </span>
 
-                                caracteres
+                                / 2000 caracteres
 
                             </div>
 

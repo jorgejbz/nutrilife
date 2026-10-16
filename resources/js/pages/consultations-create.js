@@ -1,9 +1,15 @@
 /**
  * ==========================================================
  * CONSULTATIONS CREATE
- * Contadores de caracteres para observaciones y recomendaciones.
+ * - Contadores de caracteres para observaciones y recomendaciones.
+ * - Relación consultations.appointment_id → appointments.patient_id:
+ *   la lista de "Cita relacionada" solo muestra citas del paciente
+ *   elegido, y elegir una cita selecciona a su paciente. El backend
+ *   (ConsultationController@store) vuelve a validar esta relación.
  * ==========================================================
  */
+
+import { bindPatientAppointmentFilter } from '../patient-appointment-filter';
 
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -23,4 +29,9 @@ document.addEventListener('DOMContentLoaded', function () {
     bindCounter('observationsField', 'observationsCount');
     bindCounter('recommendationsField', 'recommendationsCount');
 
+    /* ---------- Cita ↔ paciente ---------- */
+    bindPatientAppointmentFilter(
+        document.getElementById('patient_id'),
+        document.getElementById('appointment_id')
+    );
 });

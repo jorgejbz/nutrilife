@@ -50,3 +50,8 @@
 
 {{-- Botón claro/oscuro (sincroniza data-theme y las hojas *-light / *-dark) --}}
 @vite(['resources/js/theme.js'])
+
+{{-- Panel y autenticación: evita envíos dobles de formularios (resources/js/forms.js) --}}
+@if ($section !== 'app')
+    @vite(['resources/js/forms.js'])
+@endif

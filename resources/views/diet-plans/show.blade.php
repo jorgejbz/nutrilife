@@ -749,6 +749,19 @@
                                 </div>
 
 
+                                {{-- BOTÓN PLATILLO COMPLETO (NUEVO) --}}
+                                <button
+                                    type="button"
+                                    class="open-dish-button"
+                                    onclick="openDishDrawer({{ $meal->id }})"
+                                    title="Insertar una receta completa"
+                                >
+                                    <i class="fas fa-utensils"></i>
+                                    Platillo
+                                </button>
+
+
+                                {{-- BOTÓN ALIMENTO INDIVIDUAL --}}
                                 <button
                                     type="button"
                                     class="open-food-button"
@@ -790,290 +803,10 @@
                                     </button>
 
                                 </form>
-                        {{-- =====================================================
-     CAMBIAR A ALIMENTO MANUAL
-===================================================== --}}
 
-<div class="custom-food-divider">
-
-    <span>
-        ¿No encuentras el alimento?
-    </span>
-
-    <button
-        type="button"
-        onclick="showCustomFoodForm({{ $meal->id }})"
-    >
-        <i class="fas fa-pen"></i>
-
-        Agregar manualmente
-    </button>
-
-</div>
-
-
-
-{{-- =====================================================
-     FORMULARIO ALIMENTO MANUAL
-===================================================== --}}
-
-<form
-    action="{{ route(
-        'diet-plans.items.custom.store',
-        [$plan, $meal]
-    ) }}"
-    method="POST"
-    class="custom-food-form"
-    id="customFoodForm{{ $meal->id }}"
->
-
-    @csrf
-
-
-    <div class="custom-form-header">
-
-        <button
-            type="button"
-            onclick="hideCustomFoodForm({{ $meal->id }})"
-        >
-            <i class="fas fa-arrow-left"></i>
-        </button>
-
-
-        <div>
-
-            <span>
-                ALIMENTO PERSONALIZADO
-            </span>
-
-            <h4>
-                Agregar a {{ $meal->meal_name }}
-            </h4>
-
-        </div>
-
-    </div>
-
-
-
-    <div class="custom-warning">
-
-        <i class="fas fa-circle-info"></i>
-
-        <span>
-            Este alimento solamente se guardará dentro
-            de este plan y no será añadido al catálogo
-            general de NutriLife.
-        </span>
-
-    </div>
-
-
-
-    {{-- NOMBRE --}}
-
-    <div class="drawer-field">
-
-        <label>
-            Nombre del alimento
-        </label>
-
-        <input
-            type="text"
-            name="custom_name"
-            class="custom-input"
-            placeholder="Ej. Salsa casera de aguacate"
-            maxlength="150"
-            required
-        >
-
-    </div>
-
-
-
-    {{-- CANTIDAD --}}
-
-    <div class="drawer-field">
-
-        <label>
-            Cantidad utilizada
-        </label>
-
-        <div class="custom-unit-row">
-
-            <input
-                type="number"
-                name="grams"
-                class="custom-input"
-                placeholder="150"
-                min="0.01"
-                step="0.01"
-                required
-            >
-
-            <span>
-                g
-            </span>
-
-        </div>
-
-    </div>
-
-
-
-    {{-- DESCRIPCIÓN --}}
-
-    <div class="drawer-field">
-
-        <label>
-            Descripción de la porción
-            <small>(opcional)</small>
-        </label>
-
-        <input
-            type="text"
-            name="custom_portion_description"
-            class="custom-input"
-            placeholder="Ej. 1 plato, 1 taza, 2 piezas..."
-            maxlength="150"
-        >
-
-    </div>
-
-
-
-    {{-- CALORÍAS --}}
-
-    <div class="drawer-field">
-
-        <label>
-            Calorías de esa cantidad
-        </label>
-
-        <div class="custom-unit-row">
-
-            <input
-                type="number"
-                name="custom_kcal"
-                class="custom-input"
-                placeholder="320"
-                min="0"
-                step="0.01"
-                required
-            >
-
-            <span>
-                kcal
-            </span>
-
-        </div>
-
-    </div>
-
-
-
-    {{-- MACROS --}}
-
-    <div class="custom-macro-grid">
-
-
-        <div>
-
-            <label>
-                Proteína
-            </label>
-
-            <div class="custom-unit-row">
-
-                <input
-                    type="number"
-                    name="custom_protein_g"
-                    class="custom-input"
-                    placeholder="25"
-                    min="0"
-                    step="0.01"
-                    required
-                >
-
-                <span>g</span>
-
-            </div>
-
-        </div>
-
-
-
-        <div>
-
-            <label>
-                Carbohidratos
-            </label>
-
-            <div class="custom-unit-row">
-
-                <input
-                    type="number"
-                    name="custom_carbs_g"
-                    class="custom-input"
-                    placeholder="30"
-                    min="0"
-                    step="0.01"
-                    required
-                >
-
-                <span>g</span>
-
-            </div>
-
-        </div>
-
-
-
-        <div>
-
-            <label>
-                Grasas
-            </label>
-
-            <div class="custom-unit-row">
-
-                <input
-                    type="number"
-                    name="custom_lipids_g"
-                    class="custom-input"
-                    placeholder="12"
-                    min="0"
-                    step="0.01"
-                    required
-                >
-
-                <span>g</span>
-
-            </div>
-
-        </div>
-
-
-    </div>
-
-
-
-    <button
-        type="submit"
-        class="drawer-submit"
-    >
-
-        <i class="fas fa-plus"></i>
-
-        Agregar alimento personalizado
-
-    </button>
-
-</form>
                             </div>
 
                         </div>
-
 
 
                         {{-- =====================================
@@ -1340,6 +1073,120 @@
 
 
                     {{-- =================================================
+                         DRAWER AGREGAR PLATILLO (NUEVO)
+                    ================================================== --}}
+
+                    <div
+                        class="food-drawer-overlay"
+                        id="dishDrawerOverlay{{ $meal->id }}"
+                        onclick="closeDishDrawer({{ $meal->id }}, event)"
+                    >
+
+                        <aside
+                            class="food-drawer"
+                            id="dishDrawer{{ $meal->id }}"
+                        >
+
+                            <div class="drawer-header">
+
+                                <div>
+
+                                    <span>
+                                        INSERTAR RECETA COMPLETA
+                                    </span>
+
+                                    <h3>
+                                        Platillos para {{ $meal->meal_name }}
+                                    </h3>
+
+                                </div>
+
+
+                                <button
+                                    type="button"
+                                    onclick="forceCloseDishDrawer({{ $meal->id }})"
+                                >
+
+                                    <i class="fas fa-times"></i>
+
+                                </button>
+
+                            </div>
+
+
+                            <form
+                                action="{{ route(
+                                    'diet-plans.meals.dishes.store',
+                                    [$plan, $meal]
+                                ) }}"
+                                method="POST"
+                                class="drawer-form"
+                            >
+
+                                @csrf
+
+
+                                <div class="drawer-field">
+
+                                    <label>
+                                        Selecciona un Platillo / Receta
+                                    </label>
+
+
+                                    <select
+                                        name="dish_id"
+                                        class="food-select"
+                                        required
+                                    >
+
+                                        <option value="">
+                                            Seleccionar platillo...
+                                        </option>
+
+                                        @foreach($dishes ?? [] as $dish)
+
+                                            <option value="{{ $dish->id }}">
+                                                {{ $dish->name ?? ('Platillo #' . $dish->id) }}
+                                            </option>
+
+                                        @endforeach
+
+                                    </select>
+
+                                </div>
+
+
+                                <div class="custom-warning">
+
+                                    <i class="fas fa-circle-info"></i>
+
+                                    <span>
+                                        Se insertarán todos los ingredientes desglosados de este platillo dentro de {{ $meal->meal_name }}.
+                                    </span>
+
+                                </div>
+
+
+                                <button
+                                    type="submit"
+                                    class="drawer-submit"
+                                >
+
+                                    <i class="fas fa-utensils"></i>
+
+                                    Insertar ingredientes del platillo
+
+                                </button>
+
+                            </form>
+
+                        </aside>
+
+                    </div>
+
+
+
+                    {{-- =================================================
                          DRAWER AGREGAR ALIMENTO
                     ================================================== --}}
 
@@ -1433,168 +1280,160 @@
 
 
                                     <select
-    name="food_id"
-    id="foodSelect{{ $meal->id }}"
-    class="food-select"
-    required
->
+                                        name="food_id"
+                                        id="foodSelect{{ $meal->id }}"
+                                        class="food-select"
+                                        required
+                                    >
 
-    <option value="">
-        Seleccionar alimento...
-    </option>
+                                        <option value="">
+                                            Seleccionar alimento...
+                                        </option>
 
-    @foreach($foods as $food)
+                                        @foreach($foods as $food)
 
-        <option
-            value="{{ $food->id }}"
-            data-name="{{ strtolower($food->name) }}"
-            data-kcal="{{ $food->kcal }}"
-            data-protein="{{ $food->protein_g }}"
-            data-carbs="{{ $food->carbs_g }}"
-            data-fat="{{ $food->lipids_g }}"
-            data-portion="{{ $food->portion_grams }}"
-            data-portion-description="{{ $food->portion_description ?? '1 porción' }}"
-        >
-            {{ $food->name }}
-        </option>
+                                            <option
+                                                value="{{ $food->id }}"
+                                                data-name="{{ strtolower($food->name) }}"
+                                                data-kcal="{{ $food->kcal }}"
+                                                data-protein="{{ $food->protein_g }}"
+                                                data-carbs="{{ $food->carbs_g }}"
+                                                data-fat="{{ $food->lipids_g }}"
+                                                data-portion="{{ $food->portion_grams }}"
+                                                data-portion-description="{{ $food->portion_description ?? '1 porción' }}"
+                                            >
+                                                {{ $food->name }}
+                                            </option>
 
-    @endforeach
+                                        @endforeach
 
-</select>
+                                    </select>
 
                                 </div>
 
 
 
-                               {{-- GRAMOS --}}
+                                {{-- FORMA DE MEDIR --}}
 
-{{-- =====================================================
-     FORMA DE MEDIR
-===================================================== --}}
+                                <div class="drawer-field">
 
-<div class="drawer-field">
-
-    <label>
-        Forma de medir
-    </label>
+                                    <label>
+                                        Forma de medir
+                                    </label>
 
 
-    <div class="measure-selector">
+                                    <div class="measure-selector">
 
-        <button
-            type="button"
-            class="measure-option active"
-            id="measurePortion{{ $meal->id }}"
-            onclick="setMeasureMode({{ $meal->id }}, 'portion')"
-        >
+                                        <button
+                                            type="button"
+                                            class="measure-option active"
+                                            id="measurePortion{{ $meal->id }}"
+                                            onclick="setMeasureMode({{ $meal->id }}, 'portion')"
+                                        >
 
-            <i class="fas fa-egg"></i>
+                                            <i class="fas fa-egg"></i>
 
-            Porciones
+                                            Porciones
 
-        </button>
+                                        </button>
 
 
-        <button
-            type="button"
-            class="measure-option"
-            id="measureGrams{{ $meal->id }}"
-            onclick="setMeasureMode({{ $meal->id }}, 'grams')"
-        >
+                                        <button
+                                            type="button"
+                                            class="measure-option"
+                                            id="measureGrams{{ $meal->id }}"
+                                            onclick="setMeasureMode({{ $meal->id }}, 'grams')"
+                                        >
 
-            <i class="fas fa-weight-scale"></i>
+                                            <i class="fas fa-weight-scale"></i>
 
-            Gramos
+                                            Gramos
 
-        </button>
+                                        </button>
 
-    </div>
+                                    </div>
 
-</div>
+                                </div>
 
 
 
-{{-- =====================================================
-     CANTIDAD VISIBLE
-===================================================== --}}
+                                {{-- CANTIDAD --}}
 
-<div class="drawer-field">
+                                <div class="drawer-field">
 
-    <label>
-        Cantidad
-    </label>
+                                    <label>
+                                        Cantidad
+                                    </label>
 
 
-    <div class="quantity-control">
+                                    <div class="quantity-control">
 
 
-        <button
-            type="button"
-            onclick="changeQuantity({{ $meal->id }}, -1)"
-        >
-            <i class="fas fa-minus"></i>
-        </button>
+                                        <button
+                                            type="button"
+                                            onclick="changeQuantity({{ $meal->id }}, -1)"
+                                        >
+                                            <i class="fas fa-minus"></i>
+                                        </button>
 
 
 
-        <div class="quantity-input-wrapper">
+                                        <div class="quantity-input-wrapper">
 
-            <input
-                type="number"
-                id="quantity{{ $meal->id }}"
-                value="1"
-                min="0.5"
-                step="0.5"
-                oninput="updateFoodPreview({{ $meal->id }})"
-            >
+                                            <input
+                                                type="number"
+                                                id="quantity{{ $meal->id }}"
+                                                value="1"
+                                                min="0.5"
+                                                step="0.5"
+                                                oninput="updateFoodPreview({{ $meal->id }})"
+                                            >
 
-            <span
-                id="quantityUnit{{ $meal->id }}"
-            >
-                porciones
-            </span>
+                                            <span
+                                                id="quantityUnit{{ $meal->id }}"
+                                            >
+                                                porciones
+                                            </span>
 
-        </div>
-
-
-
-        <button
-            type="button"
-            onclick="changeQuantity({{ $meal->id }}, 1)"
-        >
-            <i class="fas fa-plus"></i>
-        </button>
-
-
-    </div>
+                                        </div>
 
 
 
-    <div
-        class="portion-equivalence"
-        id="portionEquivalence{{ $meal->id }}"
-    >
-        Selecciona un alimento.
-    </div>
+                                        <button
+                                            type="button"
+                                            onclick="changeQuantity({{ $meal->id }}, 1)"
+                                        >
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+
+
+                                    </div>
 
 
 
-    {{-- Este es el valor REAL que Laravel recibe --}}
+                                    <div
+                                        class="portion-equivalence"
+                                        id="portionEquivalence{{ $meal->id }}"
+                                    >
+                                        Selecciona un alimento.
+                                    </div>
 
-    <input
-        type="hidden"
-        name="grams"
-        id="grams{{ $meal->id }}"
-        value="100"
-    >
 
-    <input
-        type="hidden"
-        id="measureMode{{ $meal->id }}"
-        value="portion"
-    >
 
-</div>
+                                    <input
+                                        type="hidden"
+                                        name="grams"
+                                        id="grams{{ $meal->id }}"
+                                        value="100"
+                                    >
+
+                                    <input
+                                        type="hidden"
+                                        id="measureMode{{ $meal->id }}"
+                                        value="portion"
+                                    >
+
+                                </div>
 
 
 
@@ -1637,6 +1476,273 @@
                             </form>
 
 
+                            {{-- CAMBIAR A ALIMENTO MANUAL --}}
+
+                            <div class="custom-food-divider">
+
+                                <span>
+                                    ¿No encuentras el alimento?
+                                </span>
+
+                                <button
+                                    type="button"
+                                    onclick="showCustomFoodForm({{ $meal->id }})"
+                                >
+                                    <i class="fas fa-pen"></i>
+
+                                    Agregar manualmente
+                                </button>
+
+                            </div>
+
+
+
+                            {{-- FORMULARIO ALIMENTO MANUAL --}}
+
+                            <form
+                                action="{{ route(
+                                    'diet-plans.items.custom.store',
+                                    [$plan, $meal]
+                                ) }}"
+                                method="POST"
+                                class="custom-food-form"
+                                id="customFoodForm{{ $meal->id }}"
+                            >
+
+                                @csrf
+
+
+                                <div class="custom-form-header">
+
+                                    <button
+                                        type="button"
+                                        onclick="hideCustomFoodForm({{ $meal->id }})"
+                                    >
+                                        <i class="fas fa-arrow-left"></i>
+                                    </button>
+
+
+                                    <div>
+
+                                        <span>
+                                            ALIMENTO PERSONALIZADO
+                                        </span>
+
+                                        <h4>
+                                            Agregar a {{ $meal->meal_name }}
+                                        </h4>
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <div class="custom-warning">
+
+                                    <i class="fas fa-circle-info"></i>
+
+                                    <span>
+                                        Este alimento solamente se guardará dentro
+                                        de este plan y no será añadido al catálogo
+                                        general de NutriLife.
+                                    </span>
+
+                                </div>
+
+
+
+                                <div class="drawer-field">
+
+                                    <label>
+                                        Nombre del alimento
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        name="custom_name"
+                                        class="custom-input"
+                                        placeholder="Ej. Salsa casera de aguacate"
+                                        maxlength="150"
+                                        required
+                                    >
+
+                                </div>
+
+
+
+                                <div class="drawer-field">
+
+                                    <label>
+                                        Cantidad utilizada
+                                    </label>
+
+                                    <div class="custom-unit-row">
+
+                                        <input
+                                            type="number"
+                                            name="grams"
+                                            class="custom-input"
+                                            placeholder="150"
+                                            min="0.01"
+                                            step="0.01"
+                                            required
+                                        >
+
+                                        <span>
+                                            g
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <div class="drawer-field">
+
+                                    <label>
+                                        Descripción de la porción
+                                        <small>(opcional)</small>
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        name="custom_portion_description"
+                                        class="custom-input"
+                                        placeholder="Ej. 1 plato, 1 taza, 2 piezas..."
+                                        maxlength="150"
+                                    >
+
+                                </div>
+
+
+
+                                <div class="drawer-field">
+
+                                    <label>
+                                        Calorías de esa cantidad
+                                    </label>
+
+                                    <div class="custom-unit-row">
+
+                                        <input
+                                            type="number"
+                                            name="custom_kcal"
+                                            class="custom-input"
+                                            placeholder="320"
+                                            min="0"
+                                            step="0.01"
+                                            required
+                                        >
+
+                                        <span>
+                                            kcal
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <div class="custom-macro-grid">
+
+
+                                    <div>
+
+                                        <label>
+                                            Proteína
+                                        </label>
+
+                                        <div class="custom-unit-row">
+
+                                            <input
+                                                type="number"
+                                                name="custom_protein_g"
+                                                class="custom-input"
+                                                placeholder="25"
+                                                min="0"
+                                                step="0.01"
+                                                required
+                                            >
+
+                                            <span>g</span>
+
+                                        </div>
+
+                                    </div>
+
+
+
+                                    <div>
+
+                                        <label>
+                                            Carbohidratos
+                                        </label>
+
+                                        <div class="custom-unit-row">
+
+                                            <input
+                                                type="number"
+                                                name="custom_carbs_g"
+                                                class="custom-input"
+                                                placeholder="30"
+                                                min="0"
+                                                step="0.01"
+                                                required
+                                            >
+
+                                            <span>g</span>
+
+                                        </div>
+
+                                    </div>
+
+
+
+                                    <div>
+
+                                        <label>
+                                            Grasas
+                                        </label>
+
+                                        <div class="custom-unit-row">
+
+                                            <input
+                                                type="number"
+                                                name="custom_lipids_g"
+                                                class="custom-input"
+                                                placeholder="12"
+                                                min="0"
+                                                step="0.01"
+                                                required
+                                            >
+
+                                            <span>g</span>
+
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+
+
+
+                                <button
+                                    type="submit"
+                                    class="drawer-submit"
+                                >
+
+                                    <i class="fas fa-plus"></i>
+
+                                    Agregar alimento personalizado
+
+                                </button>
+
+                            </form>
+
                         </aside>
 
                     </div>
@@ -1666,7 +1772,6 @@
 
 @section('css')
 
-{{-- Paleta y componentes compartidos de NutriLife --}}
 @include('partials.theme-styles', ['section' => 'admin'])
 
 <link
@@ -1681,6 +1786,28 @@
 
 
 <style>
+
+/* ESTILO DEL BOTÓN PLATILLO */
+.open-dish-button {
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 11px;
+    border: 1px solid rgba(220, 233, 108, 0.25);
+    border-radius: 10px;
+    background: rgba(220, 233, 108, 0.08);
+    color: #e2e99a;
+    font-size: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.open-dish-button:hover {
+    background: rgba(220, 233, 108, 0.18);
+    color: #ffffff;
+}
 
 :root {
 
@@ -1698,10 +1825,6 @@
 
 }
 
-
-/* =========================================================
-   GENERAL
-========================================================= */
 
 body {
 
@@ -1751,10 +1874,6 @@ body {
 }
 
 
-/* =========================================================
-   ADMINLTE NAVBAR
-========================================================= */
-
 .main-header.navbar {
 
     background:
@@ -1773,10 +1892,6 @@ body {
 
 }
 
-
-/* =========================================================
-   HEADER
-========================================================= */
 
 .builder-header {
 
@@ -1963,10 +2078,6 @@ body {
 }
 
 
-/* =========================================================
-   ALERT
-========================================================= */
-
 .builder-alert {
 
     display:
@@ -2077,10 +2188,6 @@ body {
 
 }
 
-
-/* =========================================================
-   DAILY SUMMARY
-========================================================= */
 
 .daily-summary {
 
@@ -2334,10 +2441,6 @@ body {
 }
 
 
-/* =========================================================
-   MACROS
-========================================================= */
-
 .macro-progress-grid {
 
     display:
@@ -2518,10 +2621,6 @@ body {
 }
 
 
-/* =========================================================
-   MEALS SECTION
-========================================================= */
-
 .meals-section {
 
     margin-top:
@@ -2603,10 +2702,6 @@ body {
 
 }
 
-
-/* =========================================================
-   BUTTONS
-========================================================= */
 
 .add-meal-button,
 .primary-button {
@@ -2698,10 +2793,6 @@ body {
 
 }
 
-
-/* =========================================================
-   NEW MEAL
-========================================================= */
 
 .new-meal-form {
 
@@ -2813,10 +2904,6 @@ body {
 }
 
 
-/* =========================================================
-   GRID COMIDAS
-========================================================= */
-
 .meals-list {
 
     display:
@@ -2872,10 +2959,6 @@ body {
 
 }
 
-
-/* =========================================================
-   MEAL HEADER
-========================================================= */
 
 .meal-header {
 
@@ -3125,10 +3208,6 @@ body {
 }
 
 
-/* =========================================================
-   EMPTY MEAL
-========================================================= */
-
 .meal-empty {
 
     min-height:
@@ -3234,10 +3313,6 @@ body {
 
 }
 
-
-/* =========================================================
-   FOOD LIST
-========================================================= */
 
 .food-list {
 
@@ -3456,10 +3531,6 @@ body {
 }
 
 
-/* =========================================================
-   MEAL FOOTER
-========================================================= */
-
 .meal-footer {
 
     display:
@@ -3565,10 +3636,6 @@ body {
 }
 
 
-/* =========================================================
-   NO MEALS
-========================================================= */
-
 .no-meals {
 
     padding:
@@ -3672,10 +3739,6 @@ body {
 }
 
 
-/* =========================================================
-   DRAWER OVERLAY
-========================================================= */
-
 .food-drawer-overlay {
 
     position:
@@ -3721,10 +3784,6 @@ body {
 
 }
 
-
-/* =========================================================
-   DRAWER
-========================================================= */
 
 .food-drawer {
 
@@ -4012,120 +4071,6 @@ body {
 }
 
 
-/* =========================================================
-   GRAMS CONTROL
-========================================================= */
-
-.grams-control {
-
-    display:
-        grid;
-
-    grid-template-columns:
-        43px 1fr 43px;
-
-    gap:
-        8px;
-
-}
-
-
-.grams-control > button {
-
-    height:
-        44px;
-
-    border:
-        1px solid rgba(255,255,255,.08);
-
-    border-radius:
-        11px;
-
-    background:
-        rgba(255,255,255,.035);
-
-    color:
-        #b6d4b0;
-
-    cursor:
-        pointer;
-
-}
-
-
-.grams-control > div {
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    border:
-        1px solid rgba(255,255,255,.09);
-
-    border-radius:
-        11px;
-
-    background:
-        rgba(255,255,255,.04);
-
-}
-
-
-.grams-control input {
-
-    width:
-        100%;
-
-    height:
-        42px;
-
-    padding:
-        0 10px;
-
-    border:
-        0;
-
-    outline:
-        0;
-
-    background:
-        transparent;
-
-    color:
-        white;
-
-    font-size:
-        13px;
-
-    font-weight:
-        600;
-
-    text-align:
-        center;
-
-}
-
-
-.grams-control span {
-
-    padding-right:
-        13px;
-
-    color:
-        rgba(214,232,217,.35);
-
-    font-size:
-        9px;
-
-}
-
-
-/* =========================================================
-   PREVIEW
-========================================================= */
-
 .food-preview {
 
     min-height:
@@ -4313,10 +4258,6 @@ body {
 }
 
 
-/* =========================================================
-   DRAWER SUBMIT
-========================================================= */
-
 .drawer-submit {
 
     width:
@@ -4366,460 +4307,6 @@ body {
 }
 
 
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
-@media(max-width: 1100px) {
-
-    .daily-summary {
-
-        grid-template-columns:
-            1fr;
-
-    }
-
-
-    .daily-main {
-
-        padding-right:
-            0;
-
-        padding-bottom:
-            20px;
-
-        border-right:
-            0;
-
-        border-bottom:
-            1px solid rgba(255,255,255,.06);
-
-    }
-
-}
-
-
-@media(max-width: 950px) {
-
-    .meals-list {
-
-        grid-template-columns:
-            1fr;
-
-    }
-
-}
-
-
-@media(max-width: 700px) {
-
-    .builder-header,
-    .meals-heading {
-
-        align-items:
-            flex-start;
-
-        flex-direction:
-            column;
-
-    }
-
-
-    .macro-progress-grid {
-
-        grid-template-columns:
-            1fr;
-
-    }
-
-
-    .new-meal-form form {
-
-        align-items:
-            stretch;
-
-        flex-direction:
-            column;
-
-    }
-
-
-    .meal-form-actions {
-
-        width:
-            100%;
-
-    }
-
-
-    .meal-form-actions button {
-
-        flex:
-            1;
-
-    }
-
-
-    .meal-header {
-
-        align-items:
-            flex-start;
-
-        flex-direction:
-            column;
-
-    }
-
-
-    .meal-header-right {
-
-        width:
-            100%;
-
-    }
-
-
-    .meal-header-kcal {
-
-        margin-right:
-            auto;
-
-        text-align:
-            left;
-
-    }
-
-}
-
-
-@media(max-width: 520px) {
-
-    .daily-summary {
-
-        padding:
-            19px;
-
-    }
-
-
-    .food-row {
-
-        grid-template-columns:
-            1fr 35px;
-
-    }
-
-
-    .food-row-values {
-
-        grid-column:
-            1 / -1;
-
-        grid-row:
-            2;
-
-        padding-left:
-            48px;
-
-        text-align:
-            left;
-
-    }
-
-
-    .meal-footer {
-
-        align-items:
-            flex-start;
-
-        flex-direction:
-            column;
-
-    }
-
-
-    .meal-footer-values {
-
-        text-align:
-            left;
-
-    }
-
-
-    /* =========================================================
-   SELECTOR DE MEDICIÓN
-========================================================= */
-
-.measure-selector {
-
-    display:
-        grid;
-
-    grid-template-columns:
-        1fr 1fr;
-
-    gap:
-        8px;
-
-}
-
-
-.measure-option {
-
-    height:
-        43px;
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    justify-content:
-        center;
-
-    gap:
-        7px;
-
-    border:
-        1px solid rgba(255,255,255,.08);
-
-    border-radius:
-        11px;
-
-    background:
-        rgba(255,255,255,.025);
-
-    color:
-        rgba(220,235,223,.40);
-
-    font-size:
-        9px;
-
-    cursor:
-        pointer;
-
-    transition:
-        .2s ease;
-
-}
-
-
-.measure-option:hover {
-
-    border-color:
-        rgba(169,207,162,.18);
-
-    color:
-        #b9d5b4;
-
-}
-
-
-.measure-option.active {
-
-    border-color:
-        rgba(169,210,161,.22);
-
-    background:
-        rgba(154,198,148,.10);
-
-    color:
-        #c2dfbc;
-
-}
-
-
-
-/* =========================================================
-   CANTIDAD
-========================================================= */
-
-.quantity-control {
-
-    display:
-        grid;
-
-    grid-template-columns:
-        45px 1fr 45px;
-
-    gap:
-        8px;
-
-}
-
-
-.quantity-control > button {
-
-    height:
-        46px;
-
-    border:
-        1px solid rgba(255,255,255,.08);
-
-    border-radius:
-        12px;
-
-    background:
-        rgba(255,255,255,.035);
-
-    color:
-        #b9d8b3;
-
-    font-size:
-        11px;
-
-    cursor:
-        pointer;
-
-    transition:
-        .2s;
-
-}
-
-
-.quantity-control > button:hover {
-
-    background:
-        rgba(156,199,149,.10);
-
-}
-
-
-.quantity-input-wrapper {
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    border:
-        1px solid rgba(255,255,255,.09);
-
-    border-radius:
-        12px;
-
-    background:
-        rgba(255,255,255,.04);
-
-}
-
-
-.quantity-input-wrapper input {
-
-    width:
-        100%;
-
-    height:
-        44px;
-
-    padding:
-        0 8px;
-
-    border:
-        0;
-
-    outline:
-        0;
-
-    background:
-        transparent;
-
-    color:
-        white;
-
-    font-size:
-        14px;
-
-    font-weight:
-        700;
-
-    text-align:
-        center;
-
-}
-
-
-.quantity-input-wrapper span {
-
-    min-width:
-        63px;
-
-    padding-right:
-        13px;
-
-    color:
-        rgba(216,232,219,.34);
-
-    font-size:
-        8px;
-
-    text-align:
-        right;
-
-}
-
-
-
-/* =========================================================
-   EQUIVALENCIA
-========================================================= */
-
-.portion-equivalence {
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    justify-content:
-        space-between;
-
-    gap:
-        10px;
-
-    margin-top:
-        9px;
-
-    padding:
-        8px 10px;
-
-    border-radius:
-        9px;
-
-    background:
-        rgba(255,255,255,.025);
-
-    color:
-        rgba(214,231,217,.35);
-
-    font-size:
-        8px;
-
-}
-
-
-.portion-equivalence strong {
-
-    color:
-        #acd0a5;
-
-    font-size:
-        8px;
-
-    font-weight:
-        600;
-
-}
-}
-
-
-/* =========================================================
-   ALIMENTO PERSONALIZADO
-========================================================= */
-
 .custom-food-divider {
 
     margin-top: 22px;
@@ -4866,8 +4353,6 @@ body {
     margin-right: 5px;
 }
 
-
-/* FORMULARIO */
 
 .custom-food-form {
 
@@ -4938,8 +4423,6 @@ body {
 }
 
 
-/* AVISO */
-
 .custom-warning {
 
     display: flex;
@@ -4976,8 +4459,6 @@ body {
     color: #cbd878;
 }
 
-
-/* INPUT */
 
 .custom-input {
 
@@ -5016,8 +4497,6 @@ body {
 }
 
 
-/* INPUT CON UNIDAD */
-
 .custom-unit-row {
 
     display: flex;
@@ -5053,8 +4532,6 @@ body {
 }
 
 
-/* MACROS */
-
 .custom-macro-grid {
 
     display: grid;
@@ -5080,691 +4557,6 @@ body {
     font-size: 8px;
 }
 
-
-@media(max-width: 520px) {
-
-    .custom-macro-grid {
-
-        grid-template-columns: 1fr;
-    }
-
-}
-
-
-/* ==========================================
-   NUTRILIFE - TONOS MÁS CLAROS
-   CONSTRUCTOR DE PLANES ALIMENTICIOS
-   Solo mejoras visuales
-========================================== */
-
-/* VARIABLES GENERALES */
-:root {
-    --nl-card: rgba(170, 210, 174, .075);
-    --nl-border: rgba(173, 213, 176, .23);
-    --nl-green: #c3e5b9;
-    --nl-green-soft: #aad7ab;
-    --nl-lime: #e9f39a;
-    --nl-text: #f3fbf4;
-    --nl-muted: rgba(225, 242, 228, .72);
-}
-
-/* ==========================================
-   ENCABEZADO
-========================================== */
-
-.builder-breadcrumb {
-    color: #c4e2c5 !important;
-}
-
-.builder-breadcrumb:hover {
-    color: #e9fae6 !important;
-}
-
-.builder-eyebrow,
-.section-eyebrow {
-    color: #b6dcb5;
-}
-
-.builder-header p,
-.meals-heading p {
-    color: rgba(230, 245, 232, .78);
-}
-
-.plan-status {
-    background: rgba(169, 208, 173, .13);
-    border-color: rgba(169, 208, 173, .25);
-    color: #d1e8d0;
-}
-
-.plan-status.active {
-    background: rgba(139, 205, 148, .18);
-    border-color: rgba(166, 224, 173, .35);
-    color: #c7efc9;
-}
-
-/* ==========================================
-   RESUMEN NUTRICIONAL
-========================================== */
-
-.daily-summary {
-    background: linear-gradient(
-        145deg,
-        rgba(175, 213, 177, .12),
-        rgba(175, 213, 177, .045)
-    );
-
-    border-color: rgba(171, 215, 176, .25);
-}
-
-.daily-main {
-    border-right-color: rgba(183, 222, 188, .20);
-}
-
-.summary-label {
-    color: #bbdcbf;
-}
-
-.daily-kcal span,
-.daily-remaining,
-.daily-remaining strong {
-    color: #d4ebd2;
-}
-
-.daily-percentage {
-    background: rgba(170, 219, 163, .20);
-    color: #d8f1d1;
-}
-
-.progress-track {
-    background: rgba(174, 212, 179, .17);
-}
-
-/* TARJETAS DE MACRONUTRIENTES */
-
-.macro-progress-card {
-    background: rgba(166, 206, 170, .10);
-    border-color: rgba(171, 211, 175, .22);
-}
-
-.macro-card-top > span {
-    color: #bedfc1;
-}
-
-.macro-current small,
-.macro-percent {
-    color: rgba(225, 241, 227, .75);
-}
-
-/* ==========================================
-   TARJETAS DE COMIDAS
-========================================== */
-
-.meal-card {
-    background: linear-gradient(
-        145deg,
-        rgba(170, 210, 174, .11),
-        rgba(170, 210, 174, .045)
-    );
-
-    border-color: rgba(172, 212, 176, .25);
-}
-
-.meal-card:hover {
-    border-color: rgba(184, 229, 188, .48);
-}
-
-.meal-header {
-    border-bottom-color: rgba(177, 215, 179, .20);
-}
-
-.meal-icon,
-.food-row-icon,
-.meal-empty-icon,
-.no-meals-icon {
-    background: rgba(167, 215, 170, .18);
-    color: #bfe5b9;
-}
-
-.meal-title span,
-.meal-header-kcal span {
-    color: rgba(224, 243, 226, .72);
-}
-
-/* ==========================================
-   BOTONES PRINCIPALES
-========================================== */
-
-.add-meal-button,
-.primary-button,
-.drawer-submit {
-    background: linear-gradient(
-        135deg,
-        #c3eabc,
-        #e7f39a
-    );
-
-    color: #193720;
-
-    border: 1px solid rgba(223, 247, 201, .4);
-
-    box-shadow: 0 5px 18px rgba(163, 215, 150, .17);
-}
-
-.add-meal-button:hover,
-.primary-button:hover,
-.drawer-submit:hover {
-    background: linear-gradient(
-        135deg,
-        #d5f5ce,
-        #f1fac0
-    );
-
-    color: #112e19;
-
-    box-shadow: 0 9px 25px rgba(170, 221, 155, .27);
-}
-
-/* ==========================================
-   BOTONES SECUNDARIOS
-========================================== */
-
-.secondary-button,
-.open-food-button,
-.measure-option,
-.quantity-control > button,
-.custom-form-header > button {
-    background: rgba(170, 215, 174, .17);
-    border-color: rgba(180, 225, 183, .34);
-    color: #d4f0d0;
-}
-
-.secondary-button:hover,
-.open-food-button:hover,
-.measure-option:hover,
-.quantity-control > button:hover,
-.custom-form-header > button:hover {
-    background: rgba(175, 224, 180, .28);
-    border-color: rgba(196, 237, 195, .55);
-    color: #f0fff0;
-}
-
-/* BOTONES DE SELECCIÓN */
-
-.measure-option.active {
-    background: rgba(187, 232, 174, .28);
-    border-color: #addba5;
-    color: #efffea;
-    box-shadow: 0 0 0 2px rgba(180, 225, 171, .08);
-}
-
-/* AGREGAR MANUALMENTE */
-
-.custom-food-divider {
-    border-top-color: rgba(176, 217, 181, .23);
-}
-
-.custom-food-divider span {
-    color: #c4dfc5;
-}
-
-.custom-food-divider button {
-    color: #d1efc8;
-}
-
-.custom-food-divider button:hover {
-    color: #f0ffe7;
-}
-
-/* ==========================================
-   BOTONES PARA ELIMINAR
-========================================== */
-
-.delete-meal-button,
-.delete-food-button {
-    background: rgba(225, 115, 115, .15);
-    border-color: rgba(235, 146, 146, .30);
-    color: #ffb3b3;
-}
-
-.delete-meal-button:hover,
-.delete-food-button:hover {
-    background: rgba(229, 105, 105, .25);
-    border-color: rgba(245, 148, 148, .55);
-    color: #ffe0e0;
-}
-
-/* ==========================================
-   CAMPOS Y FORMULARIOS
-========================================== */
-
-.new-meal-form {
-    background: rgba(164, 207, 168, .09);
-    border-color: rgba(173, 216, 176, .24);
-}
-
-.meal-form-field label,
-.drawer-field label,
-.custom-macro-grid label {
-    color: #d9eedb;
-}
-
-.meal-form-field input,
-.food-search,
-.food-select,
-.custom-input,
-.quantity-input-wrapper,
-.custom-unit-row {
-    background: rgba(165, 208, 168, .10);
-    border-color: rgba(172, 215, 175, .29);
-    color: #f3fbf3;
-}
-
-.meal-form-field input:focus,
-.food-search:focus,
-.food-select:focus,
-.custom-input:focus,
-.quantity-input-wrapper:focus-within,
-.custom-unit-row:focus-within {
-    border-color: #b4e0b0;
-    box-shadow: 0 0 0 3px rgba(172, 222, 169, .13);
-}
-
-.meal-form-field input::placeholder,
-.food-search::placeholder,
-.custom-input::placeholder {
-    color: rgba(225, 243, 228, .57);
-}
-
-.food-select option {
-    background: #234232;
-    color: #f3fbf3;
-}
-
-/* ==========================================
-   PANEL LATERAL DE ALIMENTOS
-========================================== */
-
-.food-drawer {
-    background:
-        radial-gradient(
-            circle at 20% 5%,
-            rgba(118, 180, 127, .20),
-            transparent 40%
-        ),
-        #173426;
-
-    border-left-color: rgba(185, 222, 188, .25);
-}
-
-.drawer-search > i {
-    color: #b9daba;
-}
-
-.drawer-header span {
-    color: #bce0bb;
-}
-
-.custom-warning {
-    background: rgba(206, 224, 144, .10);
-    border-color: rgba(218, 231, 157, .25);
-    color: #e2efc3;
-}
-
-.custom-unit-row span,
-.quantity-input-wrapper span {
-    color: #c4e1c6;
-}
-
-/* ==========================================
-   LISTA DE ALIMENTOS
-========================================== */
-
-.food-row {
-    border-color: rgba(170, 211, 173, .16);
-}
-
-.food-row-values span {
-    color: #bdd9bd;
-}
-
-.meal-footer {
-    border-color: rgba(175, 216, 179, .20);
-}
-
-/* ==========================================
-   FORMULARIO MANUAL
-========================================== */
-
-.custom-form-header > button {
-    background: rgba(177, 221, 178, .16);
-}
-
-.custom-form-header span {
-    color: #bddfbc;
-}
-
-.custom-food-form .drawer-submit {
-    background: linear-gradient(
-        135deg,
-        #bce6b5,
-        #e5f092
-    );
-}
-
-/* ==========================================
-   ESTADOS VACÍOS
-========================================== */
-
-.no-meals,
-.meal-empty {
-    color: #e4f2e4;
-}
-
-.no-meals p,
-.meal-empty span {
-    color: #bfd9c1;
-}
-
-/* ==========================================
-   AJUSTE RESPONSIVE
-========================================== */
-
-@media (max-width: 768px) {
-    .daily-main {
-        border-right-color: transparent;
-    }
-
-    .add-meal-button,
-    .primary-button,
-    .drawer-submit {
-        font-weight: 700;
-    }
-}
-
-/* =========================================================
-   NUTRILIFE · MISMO LENGUAJE VISUAL QUE PLANES ALIMENTICIOS
-   Estilos de presentación; no modifica lógica ni interacciones.
-========================================================= */
-:root {
-    --nl-bg: #0b1911;
-    --nl-card: #14251a;
-    --nl-border: rgba(167,205,164,.20);
-    --nl-green: #b4d6aa;
-    --nl-green-soft: #a3c99f;
-    --nl-lime: #e2e99a;
-    --nl-text: #f1f7f0;
-    --nl-muted: #bbcfbf;
-}
-body {
-    background: radial-gradient(circle at 10% 5%, rgba(104,157,108,.15), transparent 35%),
-                linear-gradient(135deg,#0c1d13,#10271a 55%,#0a1a12) !important;
-    background-attachment: fixed !important;
-}
-.content-wrapper,.content-header { background: transparent !important; }
-.main-header.navbar { background: #102319 !important; border-bottom: 1px solid rgba(167,205,164,.14) !important; }
-.builder-header { align-items: center; gap: 22px; padding: 10px 0 18px; }
-.builder-breadcrumb { color: #c1d8c3 !important; font-size: 12px; font-weight: 600; margin-bottom: 15px; }
-.builder-breadcrumb:hover { color: #e1efdd !important; }
-.builder-eyebrow,.section-eyebrow { color: #a9d5a7 !important; font-size: 10px; font-weight: 800; letter-spacing: 1.6px; }
-.builder-header h1 { color: #f5faf4 !important; font-weight: 750; letter-spacing: -.5px; }
-.builder-header p,.meals-heading p { color: #c1d2c2 !important; font-size: 12px; line-height: 1.7; }
-.plan-status { color: #d6e1d7 !important; background: #213328 !important; border: 1px solid #415d46 !important; font-size: 11px; font-weight: 700; padding: 10px 14px; }
-.plan-status.active { color: #c2f1c8 !important; background: #224b30 !important; border-color: #468258 !important; }
-.builder-alert { border-radius: 13px; }
-.builder-alert strong { font-size: 13px; }
-.builder-alert span { font-size: 12px; opacity: 1; }
-.builder-alert.success { color: #dbf5de; background: #1c4930; border-color: #417b51; }
-.builder-alert.error { color: #ffe0df; background: #512e2c; border-color: #965b55; }
-.daily-summary,.meal-card,.new-meal-form {
-    background: linear-gradient(145deg,#1a3021,#15291c) !important;
-    border: 1px solid rgba(170,209,165,.19) !important;
-    border-radius: 18px !important;
-    box-shadow: 0 12px 30px rgba(0,0,0,.12) !important;
-}
-.daily-summary { gap: 24px; padding: 26px; }
-.daily-main { border-right: 1px solid rgba(170,209,165,.17) !important; }
-.summary-label,.macro-card-top > span,.meal-title span,.section-eyebrow { color: #afcfb1 !important; font-size: 10px !important; }
-.daily-kcal strong { color: #f5faf4 !important; }
-.daily-kcal span,.daily-remaining,.daily-remaining strong { color: #c5d9c6 !important; font-size: 11px; }
-.daily-remaining strong { color: #d7efce !important; }
-.daily-percentage { background: #34543a !important; color: #e0f4d8 !important; font-size: 12px; }
-.daily-percentage.over { background: #683c32 !important; color: #ffe1d4 !important; }
-.progress-track { background: #364b3b !important; }
-.progress-value { background: linear-gradient(90deg,#8fbd87,#d5e48c) !important; }
-.progress-value.over { background: linear-gradient(90deg,#db8b72,#ebb36f) !important; }
-.macro-progress-card { background: #213a28 !important; border-color: #3b5740 !important; border-radius: 13px; }
-.macro-symbol { width: 32px; height: 32px; font-size: 11px; }
-.macro-symbol.protein { color: #d4f3d4; background: #335c3e; }
-.macro-symbol.carbs { color: #f1efba; background: #5d6037; }
-.macro-symbol.fats { color: #c7ecf3; background: #315661; }
-.macro-current strong { color: #f6faf5; font-size: 20px; }
-.macro-current small,.macro-percent { color: #c1d7c4 !important; font-size: 10px; }
-.meals-heading h2 { color: #f5faf4 !important; font-size: 26px; }
-.add-meal-button,.primary-button,.drawer-submit {
-    background: linear-gradient(135deg,#b5dba8,#dceaa8) !important;
-    color: #183321 !important;
-    border: 1px solid #d8ebbf !important;
-    border-radius: 11px;
-    font-size: 12px !important;
-    font-weight: 800 !important;
-    box-shadow: 0 4px 13px rgba(71,119,75,.14);
-}
-.add-meal-button:hover,.primary-button:hover,.drawer-submit:hover {
-    background: #e1efc9 !important; color: #102719 !important;
-    box-shadow: 0 8px 18px rgba(105,150,105,.22);
-}
-.secondary-button,.open-food-button,.measure-option,.quantity-control > button,.custom-form-header > button {
-    background: #2c4b35 !important;
-    border: 1px solid #648a69 !important;
-    color: #e0f1de !important;
-    font-size: 11px !important;
-    font-weight: 700;
-}
-.secondary-button:hover,.open-food-button:hover,.measure-option:hover,.quantity-control > button:hover,.custom-form-header > button:hover {
-    background: #426d4b !important; color: #fff !important;
-}
-.measure-option.active { background: #c4e1b8 !important; color: #1b3c25 !important; border-color: #e1f2d6 !important; }
-.new-meal-form { padding: 20px; }
-.meal-form-field label,.drawer-field label,.custom-macro-grid label { color: #e1ede0 !important; font-size: 12px; font-weight: 650; }
-.meal-form-field input,.food-search,.food-select,.custom-input,.quantity-input-wrapper,.custom-unit-row {
-    background: #243c2a !important; border: 1px solid #537359 !important;
-    color: #f4faf4 !important; border-radius: 10px;
-}
-.meal-form-field input:focus,.food-search:focus,.food-select:focus,.custom-input:focus,.quantity-input-wrapper:focus-within,.custom-unit-row:focus-within {
-    border-color: #b4dbac !important; box-shadow: 0 0 0 3px rgba(175,216,166,.16) !important; outline: none;
-}
-.meal-form-field input::placeholder,.food-search::placeholder,.custom-input::placeholder { color: #bbd0be !important; opacity: .8; }
-.food-select option { color: #183021 !important; background: #e9f2e7 !important; }
-.meal-card:hover { border-color: #7eae80 !important; }
-.meal-header { background: rgba(119,164,119,.07); border-bottom: 1px solid #3a5942 !important; }
-.meal-icon,.food-row-icon,.meal-empty-icon,.no-meals-icon { background: #35563d !important; color: #daefd5 !important; }
-.meal-title h3,.meal-header-kcal strong,.food-info strong { color: #f5faf3 !important; }
-.meal-header-kcal span { color: #c0d9bf !important; font-size: 10px; }
-.delete-meal-button,.delete-food-button { background: #503434 !important; color: #ffd6d3 !important; border: 1px solid #865455 !important; }
-.delete-meal-button:hover,.delete-food-button:hover { background: #784344 !important; color: #fff !important; }
-.food-row { border-color: rgba(165,204,166,.15) !important; }
-.food-info span,.food-row-values span { color: #c5d9c6 !important; font-size: 11px; }
-.food-row-values strong,.meal-footer-values strong { color: #e8f8e3 !important; }
-.meal-footer { background: #213928 !important; border-top: 1px solid #4b674f !important; }
-.meal-footer span,.meal-footer > div > strong,.meal-footer-values span { color: #c5dec6 !important; }
-.food-drawer-overlay { background: rgba(0,0,0,.65) !important; }
-.food-drawer { background: #162a1d !important; border-left: 1px solid #456448 !important; box-shadow: -18px 0 55px rgba(0,0,0,.28) !important; }
-.drawer-header { background: #203b29 !important; border-bottom: 1px solid #49684f !important; }
-.drawer-header span,.custom-form-header span { color: #b9d7b7 !important; font-size: 10px; }
-.drawer-header h3,.custom-form-header h4 { color: #f5faf2 !important; }
-.drawer-header button { color: #ecf5e9 !important; }
-.drawer-search > i { color: #c3d8c3 !important; }
-.preview-placeholder,.food-preview-portion,.food-preview-macros span,.portion-equivalence { color: #c7dac8 !important; }
-.food-preview,.food-preview-macros > div { background: #233c2b !important; border-color: #49684d !important; }
-.food-preview-name,.food-preview-kcal,.food-preview-macros strong { color: #f0f7ed !important; }
-.measure-selector,.quantity-control { border-color: #4b6e50 !important; }
-.quantity-input-wrapper input { color: #f5faf2 !important; }
-.custom-food-divider { border-color: #4b6b4e !important; }
-.custom-food-divider span { color: #cbdcc9 !important; }
-.custom-food-divider button { color: #d8f2cf !important; font-weight: 700; }
-.custom-food-divider button:hover { color: #fff !important; }
-.custom-food-form { background: #1b3323 !important; border-color: #577a5a !important; }
-.custom-warning { background: #3a432e !important; color: #e6e8c0 !important; border: 1px solid #74774a !important; }
-.custom-unit-row span,.quantity-input-wrapper span { color: #d7e9d7 !important; }
-.no-meals,.meal-empty { color: #eef8ed !important; }
-.no-meals p,.meal-empty span { color: #c4d9c3 !important; }
-.no-meals > span { color: #a9d0a9 !important; }
-@media (max-width: 768px) {
-    .daily-main { border-right: 0 !important; border-bottom: 1px solid #48634c !important; padding-bottom: 20px; }
-    .builder-header { align-items: flex-start; }
-}
-@media (max-width: 520px) {
-    .daily-summary { padding: 17px; }
-    .meal-card { border-radius: 15px !important; }
-    .meal-header { padding: 13px; }
-}
-
-
-/* ============================================================
-   TEMA CLARO NUTRILIFE - solo presentación
-   Se activa con la clase nl-builder-light, sincronizada con
-   el selector de tema existente de la aplicación.
-============================================================ */
-/* OSCURO: restablece el fondo y tarjetas aunque el tema anterior haya sido claro. */
-html.nl-builder-dark body {
-    background: radial-gradient(circle at 10% 5%, rgba(104,157,108,.15), transparent 35%),
-                linear-gradient(135deg,#0c1d13,#10271a 55%,#0a1a12) !important;
-    color: #f1f7f0 !important;
-}
-html.nl-builder-dark .content-wrapper,
-html.nl-builder-dark .content-header { background: transparent !important; }
-html.nl-builder-dark .main-header.navbar { background: #102319 !important; }
-html.nl-builder-dark .daily-summary,
-html.nl-builder-dark .meal-card,
-html.nl-builder-dark .new-meal-form {
-    background: linear-gradient(145deg,#1a3021,#15291c) !important;
-    border-color: rgba(170,209,165,.19) !important;
-}
-html.nl-builder-dark .macro-progress-card { background: #213a28 !important; border-color: #3b5740 !important; }
-html.nl-builder-dark .builder-header h1,
-html.nl-builder-dark .meals-heading h2,
-html.nl-builder-dark .daily-kcal strong,
-html.nl-builder-dark .macro-current strong,
-html.nl-builder-dark .meal-title h3,
-html.nl-builder-dark .food-info strong { color: #f5faf4 !important; }
-
-html.nl-builder-light {
-    --nl-bg: #f5faf5;
-    --nl-card: #ffffff;
-    --nl-border: #dbe9db;
-    --nl-green: #417d4e;
-    --nl-green-soft: #567e57;
-    --nl-lime: #e6f3c5;
-    --nl-text: #1a3524;
-    --nl-muted: #667e6a;
-}
-html.nl-builder-light body,
-html.nl-builder-light body .content-wrapper,
-html.nl-builder-light body .content-header {
-    background: #f5faf5 !important;
-    color: #22382a !important;
-}
-html.nl-builder-light .main-header.navbar { background: #ffffff !important; border-bottom: 1px solid #dbe7da !important; }
-html.nl-builder-light .main-header.navbar .nav-link { color: #3f5c46 !important; }
-html.nl-builder-light .builder-header h1,
-html.nl-builder-light .meals-heading h2,
-html.nl-builder-light .daily-kcal strong,
-html.nl-builder-light .macro-current strong,
-html.nl-builder-light .meal-title h3,
-html.nl-builder-light .meal-header-kcal strong,
-html.nl-builder-light .food-info strong,
-html.nl-builder-light .food-row-values strong,
-html.nl-builder-light .meal-footer-values strong,
-html.nl-builder-light .food-preview-name,
-html.nl-builder-light .food-preview-kcal,
-html.nl-builder-light .food-preview-macros strong { color: #203d2a !important; }
-html.nl-builder-light .builder-breadcrumb,
-html.nl-builder-light .builder-eyebrow,
-html.nl-builder-light .section-eyebrow,
-html.nl-builder-light .builder-header p,
-html.nl-builder-light .meals-heading p,
-html.nl-builder-light .summary-label,
-html.nl-builder-light .macro-card-top > span,
-html.nl-builder-light .meal-title span,
-html.nl-builder-light .daily-kcal span,
-html.nl-builder-light .daily-remaining,
-html.nl-builder-light .macro-current small,
-html.nl-builder-light .macro-percent,
-html.nl-builder-light .food-info span,
-html.nl-builder-light .food-row-values span,
-html.nl-builder-light .meal-footer span,
-html.nl-builder-light .meal-footer > div > strong,
-html.nl-builder-light .meal-footer-values span,
-html.nl-builder-light .meal-header-kcal span,
-html.nl-builder-light .no-meals p,
-html.nl-builder-light .meal-empty span,
-html.nl-builder-light .custom-food-divider span { color: #637b68 !important; }
-html.nl-builder-light .daily-summary,
-html.nl-builder-light .meal-card,
-html.nl-builder-light .new-meal-form { background: #ffffff !important; border: 1px solid #dae8da !important; box-shadow: 0 9px 24px rgba(44,91,53,.07) !important; }
-html.nl-builder-light .macro-progress-card,
-html.nl-builder-light .food-preview,
-html.nl-builder-light .food-preview-macros > div { background: #f5faf5 !important; border: 1px solid #e0ebe0 !important; }
-html.nl-builder-light .meal-header,
-html.nl-builder-light .meal-footer { background: #f1f8f1 !important; border-color: #deebdd !important; }
-html.nl-builder-light .daily-main { border-color: #e0ebe0 !important; }
-html.nl-builder-light .progress-track { background: #e1ebe1 !important; }
-html.nl-builder-light .daily-percentage,
-html.nl-builder-light .plan-status.active { background: #e0f3e2 !important; color: #276b3a !important; border-color: #b8dec0 !important; }
-html.nl-builder-light .plan-status { background: #f1f4f0 !important; color: #647367 !important; border-color: #dee6de !important; }
-html.nl-builder-light .daily-percentage.over { background: #fff0e8 !important; color: #b45941 !important; }
-html.nl-builder-light .meal-icon,
-html.nl-builder-light .food-row-icon,
-html.nl-builder-light .meal-empty-icon,
-html.nl-builder-light .no-meals-icon { background: #e4f3e3 !important; color: #397b47 !important; }
-html.nl-builder-light .macro-symbol.protein { background: #dcf1df !important; color: #367c4b !important; }
-html.nl-builder-light .macro-symbol.carbs { background: #f3f3da !important; color: #85802b !important; }
-html.nl-builder-light .macro-symbol.fats { background: #e0f1f5 !important; color: #347d91 !important; }
-html.nl-builder-light .secondary-button,
-html.nl-builder-light .open-food-button,
-html.nl-builder-light .measure-option,
-html.nl-builder-light .quantity-control > button,
-html.nl-builder-light .custom-form-header > button { background: #e7f4e7 !important; border: 1px solid #bedcc1 !important; color: #316b3d !important; }
-html.nl-builder-light .secondary-button:hover,
-html.nl-builder-light .open-food-button:hover,
-html.nl-builder-light .measure-option:hover,
-html.nl-builder-light .quantity-control > button:hover,
-html.nl-builder-light .custom-form-header > button:hover { background: #d3ebd5 !important; color: #234e2d !important; }
-html.nl-builder-light .measure-option.active { background: #458457 !important; border-color: #458457 !important; color: #fff !important; }
-html.nl-builder-light .meal-form-field label,
-html.nl-builder-light .drawer-field label,
-html.nl-builder-light .custom-macro-grid label { color: #344e39 !important; }
-html.nl-builder-light .meal-form-field input,
-html.nl-builder-light .food-search,
-html.nl-builder-light .food-select,
-html.nl-builder-light .custom-input,
-html.nl-builder-light .quantity-input-wrapper,
-html.nl-builder-light .custom-unit-row { background: #fff !important; color: #203a28 !important; border: 1px solid #ccdfce !important; }
-html.nl-builder-light .quantity-input-wrapper input { color: #203a28 !important; }
-html.nl-builder-light .meal-form-field input::placeholder,
-html.nl-builder-light .food-search::placeholder,
-html.nl-builder-light .custom-input::placeholder { color: #87998a !important; }
-html.nl-builder-light .food-select option { background: #fff !important; color: #203a28 !important; }
-html.nl-builder-light .food-drawer { background: #fff !important; color: #263e2b !important; border-left: 1px solid #d5e5d6 !important; }
-html.nl-builder-light .drawer-header { background: #f1f8f1 !important; border-color: #dde9dc !important; }
-html.nl-builder-light .drawer-header h3,
-html.nl-builder-light .custom-form-header h4 { color: #203a28 !important; }
-html.nl-builder-light .drawer-header span,
-html.nl-builder-light .custom-form-header span,
-html.nl-builder-light .portion-equivalence,
-html.nl-builder-light .quantity-input-wrapper span,
-html.nl-builder-light .custom-unit-row span { color: #58715e !important; }
-html.nl-builder-light .custom-food-form { background: #f7faf7 !important; border-color: #d6e5d6 !important; }
-html.nl-builder-light .custom-warning { background: #fff9e8 !important; color: #735b2b !important; border-color: #efe1b8 !important; }
-html.nl-builder-light .custom-food-divider { border-color: #d6e7d6 !important; }
-html.nl-builder-light .custom-food-divider button { color: #327c46 !important; }
-html.nl-builder-light .builder-alert.success { background: #e5f5e8 !important; color: #2d6a3b !important; border-color: #bddfc5 !important; }
-html.nl-builder-light .builder-alert.error { background: #fff0ec !important; color: #a74236 !important; border-color: #efc4bd !important; }
-html.nl-builder-light .delete-meal-button,
-html.nl-builder-light .delete-food-button { background: #fff0f0 !important; color: #b94f4b !important; border-color: #f1cecd !important; }
-html.nl-builder-light .no-meals,
-html.nl-builder-light .meal-empty { color: #2d4833 !important; }
-
 </style>
 
 @stop
@@ -5779,110 +4571,54 @@ html.nl-builder-light .meal-empty { color: #2d4833 !important; }
 
 <script>
 
-/* Lee el tema global evitando que nuestra propia clase se use como señal. */
-(function () {
-    const root = document.documentElement;
-    const body = document.body;
-    const ownClasses = new Set(['nl-builder-light', 'nl-builder-dark']);
-    const keys = ['nutrilife-theme', 'nutrilife_theme', 'theme', 'color-theme', 'adminlte-theme', 'themeMode', 'theme-mode', 'darkMode'];
+/* =============================================================
+   DRAWER DE PLATILLOS (NUEVO)
+============================================================= */
+function openDishDrawer(mealId) {
+    const overlay = document.getElementById('dishDrawerOverlay' + mealId);
+    if (overlay) {
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
 
-    function fromString(value) {
-        const text = String(value || '').toLowerCase().trim();
-        if (!text) return null;
-        if (text === 'true' || text === '1') return 'dark';
-        if (text === 'false' || text === '0') return 'light';
-        if (/(^|[^a-z])(dark|oscuro|night)([^a-z]|$)/.test(text)) return 'dark';
-        if (/(^|[^a-z])(light|claro|day)([^a-z]|$)/.test(text)) return 'light';
-        return null;
+function forceCloseDishDrawer(mealId) {
+    const overlay = document.getElementById('dishDrawerOverlay' + mealId);
+    if (overlay) {
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
     }
+}
 
-    function getMode() {
-        // Los atributos explícitos del tema tienen prioridad sobre clases antiguas.
-        const elems = [root, body, document.querySelector('.wrapper'), document.querySelector('.content-wrapper')].filter(Boolean);
-        for (const el of elems) {
-            for (const attr of ['data-theme', 'data-bs-theme', 'data-color-mode', 'data-mode', 'data-theme-mode']) {
-                const mode = fromString(el.getAttribute(attr));
-                if (mode) return mode;
-            }
-        }
-        for (const el of elems) {
-            for (const cls of el.classList) {
-                if (ownClasses.has(cls)) continue;
-                const mode = fromString(cls);
-                if (mode) return mode;
-            }
-        }
-        for (const key of keys) {
-            try {
-                const mode = fromString(localStorage.getItem(key));
-                if (mode) return mode;
-            } catch (_) {}
-        }
-        // Sin indicación explícita, respetar preferencia del navegador.
-        return window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+function closeDishDrawer(mealId, event) {
+    const overlay = document.getElementById('dishDrawerOverlay' + mealId);
+    if (overlay && event.target === overlay) {
+        forceCloseDishDrawer(mealId);
     }
-
-    function syncTheme() {
-        const mode = getMode();
-        root.classList.toggle('nl-builder-light', mode === 'light');
-        root.classList.toggle('nl-builder-dark', mode === 'dark');
-    }
-    syncTheme();
-    const observer = new MutationObserver(syncTheme);
-    [root, body, document.querySelector('.wrapper'), document.querySelector('.content-wrapper')]
-        .filter(Boolean).forEach(el => observer.observe(el, {
-            attributes: true,
-            attributeFilter: ['class','data-theme','data-bs-theme','data-color-mode','data-mode','data-theme-mode']
-        }));
-    window.addEventListener('storage', syncTheme);
-    document.addEventListener('click', () => {
-        requestAnimationFrame(syncTheme);
-        setTimeout(syncTheme, 100);
-    });
-    if (window.matchMedia) {
-        const preference = window.matchMedia('(prefers-color-scheme: dark)');
-        if (preference.addEventListener) preference.addEventListener('change', syncTheme);
-    }
-})();
+}
 
 
 document.addEventListener('DOMContentLoaded', function () {
 
     console.log('NutriLife Diet Builder JS cargado correctamente');
 
-    /* =========================================================
-       BUSCADOR DE ALIMENTOS
-    ========================================================= */
-
+    /* BUSCADOR DE ALIMENTOS */
     document.querySelectorAll('.food-search').forEach(function (search) {
 
         search.addEventListener('input', function () {
 
-            const select = document.getElementById(
-                this.dataset.target
-            );
+            const select = document.getElementById(this.dataset.target);
+            if (!select) return;
 
-            if (!select) {
-                return;
-            }
-
-            const text = this.value
-                .toLowerCase()
-                .trim();
+            const text = this.value.toLowerCase().trim();
 
             Array.from(select.options).forEach(function (option) {
-
                 if (!option.value) {
                     option.hidden = false;
                     return;
                 }
-
-                const name = (
-                    option.dataset.name || ''
-                ).toLowerCase();
-
+                const name = (option.dataset.name || '').toLowerCase();
                 option.hidden = !name.includes(text);
-
             });
 
         });
@@ -5890,38 +4626,18 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-    /* =========================================================
-       CAMBIO DE ALIMENTO
-    ========================================================= */
-
+    /* CAMBIO DE ALIMENTO */
     document.querySelectorAll('.food-select').forEach(function (select) {
 
         select.addEventListener('change', function () {
 
-            const mealId = this.id.replace(
-                'foodSelect',
-                ''
-            );
+            const mealId = this.id.replace('foodSelect', '');
+            const modeInput = document.getElementById('measureMode' + mealId);
+            const quantityInput = document.getElementById('quantity' + mealId);
+            const portionButton = document.getElementById('measurePortion' + mealId);
+            const gramsButton = document.getElementById('measureGrams' + mealId);
 
-            const modeInput = document.getElementById(
-                'measureMode' + mealId
-            );
-
-            const quantityInput = document.getElementById(
-                'quantity' + mealId
-            );
-
-            const portionButton = document.getElementById(
-                'measurePortion' + mealId
-            );
-
-            const gramsButton = document.getElementById(
-                'measureGrams' + mealId
-            );
-
-            if (modeInput) {
-                modeInput.value = 'portion';
-            }
+            if (modeInput) modeInput.value = 'portion';
 
             if (quantityInput) {
                 quantityInput.value = 1;
@@ -5929,13 +4645,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 quantityInput.step = 0.5;
             }
 
-            if (portionButton) {
-                portionButton.classList.add('active');
-            }
-
-            if (gramsButton) {
-                gramsButton.classList.remove('active');
-            }
+            if (portionButton) portionButton.classList.add('active');
+            if (gramsButton) gramsButton.classList.remove('active');
 
             updateFoodPreview(mealId);
 
@@ -5944,23 +4655,14 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-    /* =========================================================
-       ESC CIERRA DRAWERS
-    ========================================================= */
-
+    /* ESC CIERRA DRAWERS */
     document.addEventListener('keydown', function (event) {
 
-        if (event.key !== 'Escape') {
-            return;
-        }
+        if (event.key !== 'Escape') return;
 
-        document
-            .querySelectorAll('.food-drawer-overlay.active')
-            .forEach(function (overlay) {
-
-                overlay.classList.remove('active');
-
-            });
+        document.querySelectorAll('.food-drawer-overlay.active').forEach(function (overlay) {
+            overlay.classList.remove('active');
+        });
 
         document.body.style.overflow = '';
 
@@ -5969,686 +4671,198 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-/* =============================================================
-   AGREGAR COMIDA
-============================================================= */
-
 function toggleMealForm() {
-
     const form = document.getElementById('mealForm');
-
-    if (!form) {
-
-        console.error(
-            'NutriLife: no existe #mealForm'
-        );
-
-        return;
-    }
-
-    form.classList.toggle('active');
-
+    if (form) form.classList.toggle('active');
 }
 
 
-/* =============================================================
-   DRAWER DE ALIMENTOS
-============================================================= */
-
 function openFoodDrawer(mealId) {
-
-    const overlay = document.getElementById(
-        'drawerOverlay' + mealId
-    );
-
-    if (!overlay) {
-
-        console.error(
-            'NutriLife: no existe drawerOverlay' + mealId
-        );
-
-        return;
+    const overlay = document.getElementById('drawerOverlay' + mealId);
+    if (overlay) {
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        updateFoodPreview(mealId);
     }
-
-    overlay.classList.add('active');
-
-    document.body.style.overflow = 'hidden';
-
-    updateFoodPreview(mealId);
-
 }
 
 
 function forceCloseFoodDrawer(mealId) {
-
-    const overlay = document.getElementById(
-        'drawerOverlay' + mealId
-    );
-
-    if (!overlay) {
-        return;
+    const overlay = document.getElementById('drawerOverlay' + mealId);
+    if (overlay) {
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
     }
-
-    overlay.classList.remove('active');
-
-    document.body.style.overflow = '';
-
 }
 
 
 function closeFoodDrawer(mealId, event) {
-
-    const overlay = document.getElementById(
-        'drawerOverlay' + mealId
-    );
-
-    if (!overlay) {
-        return;
-    }
-
-    if (event.target === overlay) {
-
+    const overlay = document.getElementById('drawerOverlay' + mealId);
+    if (overlay && event.target === overlay) {
         forceCloseFoodDrawer(mealId);
-
     }
-
 }
 
-
-/* =============================================================
-   MODO PORCIONES / GRAMOS
-============================================================= */
 
 function setMeasureMode(mealId, mode) {
 
-    const modeInput = document.getElementById(
-        'measureMode' + mealId
-    );
+    const modeInput = document.getElementById('measureMode' + mealId);
+    const quantityInput = document.getElementById('quantity' + mealId);
+    const portionButton = document.getElementById('measurePortion' + mealId);
+    const gramsButton = document.getElementById('measureGrams' + mealId);
+    const select = document.getElementById('foodSelect' + mealId);
 
-    const quantityInput = document.getElementById(
-        'quantity' + mealId
-    );
-
-    const portionButton = document.getElementById(
-        'measurePortion' + mealId
-    );
-
-    const gramsButton = document.getElementById(
-        'measureGrams' + mealId
-    );
-
-    const select = document.getElementById(
-        'foodSelect' + mealId
-    );
-
-
-    if (
-        !modeInput ||
-        !quantityInput ||
-        !portionButton ||
-        !gramsButton
-    ) {
-
-        console.error(
-            'NutriLife: controles incompletos para comida',
-            mealId
-        );
-
-        return;
-    }
-
+    if (!modeInput || !quantityInput || !portionButton || !gramsButton) return;
 
     modeInput.value = mode;
 
-
-    portionButton.classList.toggle(
-        'active',
-        mode === 'portion'
-    );
-
-    gramsButton.classList.toggle(
-        'active',
-        mode === 'grams'
-    );
-
+    portionButton.classList.toggle('active', mode === 'portion');
+    gramsButton.classList.toggle('active', mode === 'grams');
 
     if (mode === 'portion') {
-
         quantityInput.value = 1;
-
         quantityInput.min = 0.5;
-
         quantityInput.step = 0.5;
-
     } else {
-
         let grams = 100;
-
-        if (
-            select &&
-            select.selectedIndex >= 0
-        ) {
-
-            const option =
-                select.options[
-                    select.selectedIndex
-                ];
-
-            if (
-                option &&
-                option.value &&
-                option.dataset.portion
-            ) {
-
-                grams =
-                    parseFloat(
-                        option.dataset.portion
-                    ) || 100;
-
+        if (select && select.selectedIndex >= 0) {
+            const option = select.options[select.selectedIndex];
+            if (option && option.value && option.dataset.portion) {
+                grams = parseFloat(option.dataset.portion) || 100;
             }
-
         }
-
         quantityInput.value = grams;
-
         quantityInput.min = 1;
-
         quantityInput.step = 1;
-
     }
 
-
     updateFoodPreview(mealId);
-
 }
 
-
-/* =============================================================
-   BOTONES + Y -
-============================================================= */
 
 function changeQuantity(mealId, direction) {
 
-    const quantityInput = document.getElementById(
-        'quantity' + mealId
-    );
+    const quantityInput = document.getElementById('quantity' + mealId);
+    const modeInput = document.getElementById('measureMode' + mealId);
 
-    const modeInput = document.getElementById(
-        'measureMode' + mealId
-    );
+    if (!quantityInput || !modeInput) return;
 
-
-    if (!quantityInput || !modeInput) {
-        return;
-    }
-
-
-    let value =
-        parseFloat(quantityInput.value) || 0;
-
-
-    const step =
-        modeInput.value === 'portion'
-            ? 0.5
-            : 10;
-
+    let value = parseFloat(quantityInput.value) || 0;
+    const step = modeInput.value === 'portion' ? 0.5 : 10;
 
     value += direction * step;
 
-
     if (modeInput.value === 'portion') {
-
-        value = Math.max(
-            0.5,
-            value
-        );
-
+        value = Math.max(0.5, value);
     } else {
-
-        value = Math.max(
-            1,
-            value
-        );
-
+        value = Math.max(1, value);
     }
 
-
     quantityInput.value = value;
-
-
     updateFoodPreview(mealId);
-
 }
 
-
-/* =============================================================
-   PREVIEW NUTRICIONAL
-============================================================= */
 
 function updateFoodPreview(mealId) {
 
-    const select = document.getElementById(
-        'foodSelect' + mealId
-    );
+    const select = document.getElementById('foodSelect' + mealId);
+    const quantityInput = document.getElementById('quantity' + mealId);
+    const gramsInput = document.getElementById('grams' + mealId);
+    const modeInput = document.getElementById('measureMode' + mealId);
+    const quantityUnit = document.getElementById('quantityUnit' + mealId);
+    const equivalence = document.getElementById('portionEquivalence' + mealId);
+    const preview = document.getElementById('foodPreview' + mealId);
 
-    const quantityInput = document.getElementById(
-        'quantity' + mealId
-    );
+    if (!select || !quantityInput || !gramsInput || !modeInput || !preview) return;
 
-    const gramsInput = document.getElementById(
-        'grams' + mealId
-    );
-
-    const modeInput = document.getElementById(
-        'measureMode' + mealId
-    );
-
-    const quantityUnit = document.getElementById(
-        'quantityUnit' + mealId
-    );
-
-    const equivalence = document.getElementById(
-        'portionEquivalence' + mealId
-    );
-
-    const preview = document.getElementById(
-        'foodPreview' + mealId
-    );
-
-
-    if (
-        !select ||
-        !quantityInput ||
-        !gramsInput ||
-        !modeInput ||
-        !preview
-    ) {
-
-        return;
-
-    }
-
-
-    const option =
-        select.options[
-            select.selectedIndex
-        ];
-
+    const option = select.options[select.selectedIndex];
 
     if (!option || !option.value) {
-
         preview.innerHTML =
             '<div class="preview-placeholder">' +
                 '<i class="fas fa-apple-whole"></i>' +
-                '<span>' +
-                    'Selecciona un alimento para ver sus valores nutricionales.' +
-                '</span>' +
+                '<span>Selecciona un alimento para ver sus valores nutricionales.</span>' +
             '</div>';
-
-
-        if (equivalence) {
-
-            equivalence.textContent =
-                'Selecciona un alimento.';
-
-        }
-
+        if (equivalence) equivalence.textContent = 'Selecciona un alimento.';
         return;
-
     }
 
-
-    const portionGrams =
-        parseFloat(
-            option.dataset.portion
-        ) || 100;
-
-
-    const portionDescription =
-        option.dataset.portionDescription ||
-        '1 porción';
-
-
-    const quantity =
-        parseFloat(
-            quantityInput.value
-        ) || 0;
-
-
-    const mode =
-        modeInput.value;
-
+    const portionGrams = parseFloat(option.dataset.portion) || 100;
+    const portionDescription = option.dataset.portionDescription || '1 porción';
+    const quantity = parseFloat(quantityInput.value) || 0;
+    const mode = modeInput.value;
 
     let grams = 0;
-
     let visibleDescription = '';
 
-
-    /* =========================================================
-       PORCIONES
-    ========================================================= */
-
     if (mode === 'portion') {
-
-        grams =
-            quantity * portionGrams;
-
-
+        grams = quantity * portionGrams;
         if (quantityUnit) {
-
-            const description =
-                portionDescription
-                    .toLowerCase();
-
-
-            if (description.includes('pieza')) {
-
-                quantityUnit.textContent =
-                    quantity === 1
-                        ? 'pieza'
-                        : 'piezas';
-
-            } else {
-
-                quantityUnit.textContent =
-                    quantity === 1
-                        ? 'porción'
-                        : 'porciones';
-
-            }
-
+            const description = portionDescription.toLowerCase();
+            quantityUnit.textContent = description.includes('pieza') ? (quantity === 1 ? 'pieza' : 'piezas') : (quantity === 1 ? 'porción' : 'porciones');
         }
-
-
-        visibleDescription =
-            quantity +
-            ' × ' +
-            portionDescription;
-
-
+        visibleDescription = quantity + ' × ' + portionDescription;
         if (equivalence) {
-
-            equivalence.innerHTML =
-                '<span>' +
-                    visibleDescription +
-                '</span>' +
-
-                '<strong>' +
-                    '≈ ' +
-                    grams.toFixed(0) +
-                    ' g' +
-                '</strong>';
-
+            equivalence.innerHTML = '<span>' + visibleDescription + '</span><strong>≈ ' + grams.toFixed(0) + ' g</strong>';
         }
-
-    }
-
-
-    /* =========================================================
-       GRAMOS
-    ========================================================= */
-
-    else {
-
+    } else {
         grams = quantity;
-
-
-        if (quantityUnit) {
-
-            quantityUnit.textContent =
-                'g';
-
-        }
-
-
-        const equivalentPortions =
-            portionGrams > 0
-                ? grams / portionGrams
-                : 0;
-
-
-        visibleDescription =
-            grams.toFixed(0) + ' g';
-
-
+        if (quantityUnit) quantityUnit.textContent = 'g';
+        const equivalentPortions = portionGrams > 0 ? grams / portionGrams : 0;
+        visibleDescription = grams.toFixed(0) + ' g';
         if (equivalence) {
-
-            equivalence.innerHTML =
-                '<span>' +
-                    grams.toFixed(0) +
-                    ' g' +
-                '</span>' +
-
-                '<strong>' +
-                    '≈ ' +
-                    equivalentPortions.toFixed(2) +
-                    ' porciones' +
-                '</strong>';
-
+            equivalence.innerHTML = '<span>' + grams.toFixed(0) + ' g</span><strong>≈ ' + equivalentPortions.toFixed(2) + ' porciones</strong>';
         }
-
     }
 
+    gramsInput.value = grams.toFixed(2);
 
-    /* =========================================================
-       INPUT QUE RECIBE LARAVEL
-    ========================================================= */
-
-    gramsInput.value =
-        grams.toFixed(2);
-
-
-    /* =========================================================
-       MACROS
-    ========================================================= */
-
-    const factor =
-        portionGrams > 0
-            ? grams / portionGrams
-            : 0;
-
-
-    const kcal =
-        (
-            parseFloat(
-                option.dataset.kcal
-            ) || 0
-        ) * factor;
-
-
-    const protein =
-        (
-            parseFloat(
-                option.dataset.protein
-            ) || 0
-        ) * factor;
-
-
-    const carbs =
-        (
-            parseFloat(
-                option.dataset.carbs
-            ) || 0
-        ) * factor;
-
-
-    const fat =
-        (
-            parseFloat(
-                option.dataset.fat
-            ) || 0
-        ) * factor;
-
-
-    /* =========================================================
-       MOSTRAR PREVIEW
-    ========================================================= */
+    const factor = portionGrams > 0 ? grams / portionGrams : 0;
+    const kcal = (parseFloat(option.dataset.kcal) || 0) * factor;
+    const protein = (parseFloat(option.dataset.protein) || 0) * factor;
+    const carbs = (parseFloat(option.dataset.carbs) || 0) * factor;
+    const fat = (parseFloat(option.dataset.fat) || 0) * factor;
 
     preview.innerHTML =
-        '<div class="food-preview-name">' +
-            option.text.trim() +
-        '</div>' +
-
-        '<div class="food-preview-portion">' +
-            visibleDescription +
-            ' · ' +
-            grams.toFixed(0) +
-            ' g' +
-        '</div>' +
-
-        '<div class="food-preview-kcal">' +
-            kcal.toFixed(0) +
-            ' <small>kcal</small>' +
-        '</div>' +
-
+        '<div class="food-preview-name">' + option.text.trim() + '</div>' +
+        '<div class="food-preview-portion">' + visibleDescription + ' · ' + grams.toFixed(0) + ' g</div>' +
+        '<div class="food-preview-kcal">' + kcal.toFixed(0) + ' <small>kcal</small></div>' +
         '<div class="food-preview-macros">' +
-
-            '<div>' +
-                '<span>PROTEÍNA</span>' +
-                '<strong>' +
-                    protein.toFixed(1) +
-                    'g' +
-                '</strong>' +
-            '</div>' +
-
-            '<div>' +
-                '<span>CARBOHIDRATOS</span>' +
-                '<strong>' +
-                    carbs.toFixed(1) +
-                    'g' +
-                '</strong>' +
-            '</div>' +
-
-            '<div>' +
-                '<span>GRASAS</span>' +
-                '<strong>' +
-                    fat.toFixed(1) +
-                    'g' +
-                '</strong>' +
-            '</div>' +
-
+            '<div><span>PROTEÍNA</span><strong>' + protein.toFixed(1) + 'g</strong></div>' +
+            '<div><span>CARBOHIDRATOS</span><strong>' + carbs.toFixed(1) + 'g</strong></div>' +
+            '<div><span>GRASAS</span><strong>' + fat.toFixed(1) + 'g</strong></div>' +
         '</div>';
-
 }
-/* =============================================================
-   ALIMENTO PERSONALIZADO
-============================================================= */
+
 
 function showCustomFoodForm(mealId) {
+    const customForm = document.getElementById('customFoodForm' + mealId);
+    if (!customForm) return;
 
-    const customForm =
-        document.getElementById(
-            'customFoodForm' + mealId
-        );
-
-    if (!customForm) {
-        return;
-    }
-
-
-    /*
-     * Ocultamos el formulario normal del catálogo
-     * dentro del mismo drawer.
-     */
-
-    const drawer =
-        customForm.closest(
-            '.food-drawer'
-        );
-
-
+    const drawer = customForm.closest('.food-drawer');
     if (drawer) {
-
-        const catalogForm =
-            drawer.querySelector(
-                '.drawer-form'
-            );
-
-        const divider =
-            drawer.querySelector(
-                '.custom-food-divider'
-            );
-
-
-        if (catalogForm) {
-
-            catalogForm.style.display =
-                'none';
-
-        }
-
-
-        if (divider) {
-
-            divider.style.display =
-                'none';
-
-        }
-
+        const catalogForm = drawer.querySelector('.drawer-form');
+        const divider = drawer.querySelector('.custom-food-divider');
+        if (catalogForm) catalogForm.style.display = 'none';
+        if (divider) divider.style.display = 'none';
     }
-
-
-    customForm.classList.add(
-        'active'
-    );
-
+    customForm.classList.add('active');
 }
-
 
 
 function hideCustomFoodForm(mealId) {
+    const customForm = document.getElementById('customFoodForm' + mealId);
+    if (!customForm) return;
 
-    const customForm =
-        document.getElementById(
-            'customFoodForm' + mealId
-        );
-
-    if (!customForm) {
-        return;
-    }
-
-
-    const drawer =
-        customForm.closest(
-            '.food-drawer'
-        );
-
-
-    customForm.classList.remove(
-        'active'
-    );
-
+    const drawer = customForm.closest('.food-drawer');
+    customForm.classList.remove('active');
 
     if (drawer) {
-
-        const catalogForm =
-            drawer.querySelector(
-                '.drawer-form'
-            );
-
-        const divider =
-            drawer.querySelector(
-                '.custom-food-divider'
-            );
-
-
-        if (catalogForm) {
-
-            catalogForm.style.display =
-                '';
-
-        }
-
-
-        if (divider) {
-
-            divider.style.display =
-                '';
-
-        }
-
+        const catalogForm = drawer.querySelector('.drawer-form');
+        const divider = drawer.querySelector('.custom-food-divider');
+        if (catalogForm) catalogForm.style.display = '';
+        if (divider) divider.style.display = '';
     }
-
 }
 </script>
 

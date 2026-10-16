@@ -60,3 +60,18 @@
 [data-theme="dark"] .nl-logo--on-light {
     display: none !important;
 }
+
+/* Mismo velo que en claro, en bosque: mejora el contraste del título
+   sobre las hojas de la fotografía oscura. */
+:root:not([data-theme="light"]) .hero-section::before,
+[data-theme="dark"] .hero-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(90deg,
+        rgba(var(--nl-forest-deep-rgb), .70) 0%,
+        rgba(var(--nl-forest-deep-rgb), .40) 40%,
+        rgba(var(--nl-forest-deep-rgb), 0) 62%);
+}

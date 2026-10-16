@@ -106,13 +106,14 @@
 
                         <div class="nutri-form-group">
 
-                            <label>
+                            <label for="patient_id">
                                 <i class="far fa-user"></i>
                                 Paciente
                                 <span>*</span>
                             </label>
 
                             <select
+                                id="patient_id"
                                 name="patient_id"
                                 class="nutri-input @error('patient_id') input-error @enderror"
                                 required
@@ -156,7 +157,7 @@
 
                         <div class="nutri-form-group">
 
-                            <label>
+                            <label for="amount">
                                 <i class="fas fa-dollar-sign"></i>
                                 Monto
                                 <span>*</span>
@@ -172,8 +173,10 @@
                                 <input
                                     type="number"
                                     step="0.01"
+                                    max="99999999.99"
                                     min="0.01"
-                                    name="amount"
+                                    id="amount"
+                                name="amount"
                                     value="{{ old('amount') }}"
                                     class="nutri-input amount-input @error('amount') input-error @enderror"
                                     placeholder="600.00"
@@ -204,7 +207,7 @@
 
                         <div class="nutri-form-group">
 
-                            <label>
+                            <label for="paid_at">
                                 <i class="far fa-calendar-alt"></i>
                                 Fecha y hora
                                 <span>*</span>
@@ -212,6 +215,7 @@
 
                             <input
                                 type="datetime-local"
+                                id="paid_at"
                                 name="paid_at"
                                 value="{{ old('paid_at', now()->format('Y-m-d\TH:i')) }}"
                                 class="nutri-input @error('paid_at') input-error @enderror"
@@ -235,7 +239,7 @@
 
                         <div class="nutri-form-group">
 
-                            <label>
+                            <label for="concept">
                                 <i class="fas fa-receipt"></i>
                                 Concepto
                                 <span>*</span>
@@ -243,7 +247,9 @@
 
                             <input
                                 type="text"
+                                id="concept"
                                 name="concept"
+                                maxlength="255"
                                 value="{{ old('concept') }}"
                                 class="nutri-input @error('concept') input-error @enderror"
                                 placeholder="Ej. Consulta nutricional"
@@ -267,13 +273,14 @@
 
                         <div class="nutri-form-group">
 
-                            <label>
+                            <label for="payment_method">
                                 <i class="far fa-credit-card"></i>
                                 Método de pago
                                 <span>*</span>
                             </label>
 
                             <select
+                                id="payment_method"
                                 name="payment_method"
                                 class="nutri-input @error('payment_method') input-error @enderror"
                                 required
@@ -320,13 +327,14 @@
 
                         <div class="nutri-form-group">
 
-                            <label>
+                            <label for="status">
                                 <i class="fas fa-circle-check"></i>
                                 Estado
                                 <span>*</span>
                             </label>
 
                             <select
+                                id="status"
                                 name="status"
                                 class="nutri-input @error('status') input-error @enderror"
                                 required
@@ -361,27 +369,89 @@
 
 
 
+                    {{-- CITA RELACIONADA (payments.appointment_id, opcional) --}}
+                    <div class="col-md-12">
+
+                        <div class="nutri-form-group">
+
+                            <label for="appointment_id">
+                                <i class="far fa-calendar-check"></i>
+                                Cita relacionada
+                            </label>
+
+                            {{-- data-patient-id: payments-create.js muestra solo
+                                 las citas del paciente elegido --}}
+                            <select
+                                id="appointment_id"
+                                name="appointment_id"
+                                class="nutri-input @error('appointment_id') input-error @enderror"
+                            >
+
+                                <option value="">
+                                    Ninguna
+                                </option>
+
+                                @foreach($appointments as $appointment)
+
+                                    <option
+                                        value="{{ $appointment->id }}"
+                                        data-patient-id="{{ $appointment->patient_id }}"
+                                        {{ old('appointment_id') == $appointment->id ? 'selected' : '' }}
+                                    >
+                                        {{ $appointment->appointment_at->format('d/m/Y H:i') }}
+                                        — {{ $appointment->reason ?: 'Sin motivo' }}
+                                        ({{ $appointment->status }})
+                                    </option>
+
+                                @endforeach
+
+                            </select>
+
+                            <small class="input-help">
+                                Opcional. Vincula el cobro con una cita del paciente.
+                            </small>
+
+                            @error('appointment_id')
+                                <span class="error-message">
+                                    {{ $message }}
+                                </span>
+                            @enderror
+
+                        </div>
+
+                    </div>
+
+
+
                     {{-- REFERENCIA --}}
                     <div class="col-md-12">
 
                         <div class="nutri-form-group">
 
-                            <label>
+                            <label for="reference">
                                 <i class="fas fa-hashtag"></i>
                                 Referencia
                             </label>
 
                             <input
                                 type="text"
+                                id="reference"
                                 name="reference"
                                 value="{{ old('reference') }}"
-                                class="nutri-input"
+                                maxlength="255"
+                                class="nutri-input @error('reference') input-error @enderror"
                                 placeholder="Ej. SPEI, folio, número de operación..."
                             >
 
                             <small class="input-help">
                                 Opcional. Útil para transferencias o pagos con tarjeta.
                             </small>
+
+                            @error('reference')
+                                <span class="error-message">
+                                    {{ $message }}
+                                </span>
+                            @enderror
 
                         </div>
 
@@ -394,17 +464,25 @@
 
                         <div class="nutri-form-group mb-0">
 
-                            <label>
+                            <label for="notes">
                                 <i class="far fa-note-sticky"></i>
                                 Notas
                             </label>
 
                             <textarea
+                                id="notes"
                                 name="notes"
                                 rows="4"
-                                class="nutri-input nutri-textarea"
+                                maxlength="2000"
+                                class="nutri-input nutri-textarea @error('notes') input-error @enderror"
                                 placeholder="Agrega alguna observación relacionada con el pago..."
                             >{{ old('notes') }}</textarea>
+
+                            @error('notes')
+                                <span class="error-message">
+                                    {{ $message }}
+                                </span>
+                            @enderror
 
                         </div>
 
@@ -469,5 +547,6 @@
      ========================================================= --}}
 @section('js')
 
+    @vite(['resources/js/pages/payments-create.js'])
 
 @stop

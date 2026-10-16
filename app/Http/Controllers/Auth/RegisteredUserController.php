@@ -39,10 +39,34 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        // users.email es UNIQUE y la regla 'lowercase' rechazaba correos con
+        // mayúsculas; se normaliza antes de validar.
+        $request->merge([
+            'name' => trim((string) $request->input('name')),
+            'email' => mb_strtolower(trim((string) $request->input('email'))),
+        ]);
+
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ], [
+            // La app usa APP_LOCALE=en; estos mensajes evitan que el registro
+            // muestre errores en inglés (mismas reglas, solo el texto).
+            'name.required' => 'Escribe tu nombre completo.',
+            'name.max' => 'El nombre no puede superar 255 caracteres.',
+            'email.required' => 'Escribe tu correo electrónico.',
+            'email.email' => 'Escribe un correo válido, por ejemplo nombre@dominio.com.',
+            'email.max' => 'El correo no puede superar 255 caracteres.',
+            'email.unique' => 'Ya existe una cuenta con este correo. Inicia sesión o usa otro correo.',
+            'email.lowercase' => 'Escribe el correo en minúsculas.',
+            'password.required' => 'Escribe una contraseña.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
+            'password.min' => 'La contraseña debe tener al menos :min caracteres.',
+        ], [
+            'name' => 'nombre',
+            'email' => 'correo electrónico',
+            'password' => 'contraseña',
         ]);
 
         $user = DB::transaction(function () use ($request) {

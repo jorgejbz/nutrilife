@@ -822,9 +822,12 @@ return [
     // ],
 
     [
-        'text' => 'Configuración',
-        'url'  => 'profile',    // antes /configuracion (404); ahora el perfil existente
-        'icon' => 'fas fa-fw fa-cog',
+        // Perfil del nutriólogo: datos de la cuenta, plan contratado,
+        // suscripción, uso del plan y cobros (ProfileController@edit).
+        'text' => 'Mi perfil',
+        'url'  => 'profile',
+        'icon' => 'fas fa-fw fa-user-circle',
+        'active' => ['profile', 'profile/*'],
     ],
 
 ],

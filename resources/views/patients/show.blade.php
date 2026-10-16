@@ -80,6 +80,12 @@
 
 
         {{-- =================================================
+             HISTORIAL CLÍNICO (patologías y alergias)
+             ================================================= --}}
+        @include('patients.partials.show-clinical')
+
+
+        {{-- =================================================
              ÚLTIMA EVALUACIÓN
              ================================================= --}}
         @include('patients.partials.show-latest-evaluation')
