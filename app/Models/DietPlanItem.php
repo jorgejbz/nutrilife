@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
 
+<<<<<<< HEAD
 /**
  * Alimento dentro de una comida (tabla `diet_plan_items`).
  *
@@ -24,6 +25,22 @@ class DietPlanItem extends Model
     protected $fillable = [
         'diet_plan_meal_id',
         'food_id',
+=======
+class DietPlanItem extends Model
+{
+    protected $fillable = [
+        'diet_plan_meal_id',
+        'food_id',
+
+        // Alimento personalizado
+        'custom_name',
+        'custom_kcal',
+        'custom_protein_g',
+        'custom_carbs_g',
+        'custom_lipids_g',
+        'custom_portion_description',
+
+>>>>>>> 56f1ba86bc25aa2407be1779b09730fe5ce1b82e
         'equivalents',
         'grams',
     ];
@@ -35,12 +52,20 @@ class DietPlanItem extends Model
             'food_id' => 'integer',
             'equivalents' => 'decimal:2',
             'grams' => 'decimal:2',
+
+            'custom_kcal' => 'decimal:2',
+            'custom_protein_g' => 'decimal:2',
+            'custom_carbs_g' => 'decimal:2',
+            'custom_lipids_g' => 'decimal:2',
         ];
     }
 
     public function meal(): BelongsTo
     {
-        return $this->belongsTo(DietPlanMeal::class, 'diet_plan_meal_id');
+        return $this->belongsTo(
+            DietPlanMeal::class,
+            'diet_plan_meal_id'
+        );
     }
 
     public function food(): BelongsTo
@@ -48,6 +73,7 @@ class DietPlanItem extends Model
         return $this->belongsTo(Food::class);
     }
 
+<<<<<<< HEAD
     /**
      * Equivalentes de un alimento para cierta cantidad de gramos.
      * null si el alimento no tiene una porción válida.
@@ -111,3 +137,16 @@ class DietPlanItem extends Model
         return $total;
     }
 }
+=======
+    /*
+    |--------------------------------------------------------------------------
+    | SABER SI ES PERSONALIZADO
+    |--------------------------------------------------------------------------
+    */
+
+    public function isCustom(): bool
+    {
+        return is_null($this->food_id);
+    }
+}
+>>>>>>> 56f1ba86bc25aa2407be1779b09730fe5ce1b82e

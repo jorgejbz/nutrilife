@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+<<<<<<< HEAD
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -14,6 +15,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Food extends Model
 {
+=======
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Food extends Model
+{
+
+>>>>>>> 56f1ba86bc25aa2407be1779b09730fe5ce1b82e
     protected $table = 'foods';
     protected $fillable = [
         'food_group_id',
@@ -53,19 +61,25 @@ class Food extends Model
     }
 
     public function dietPlanItems(): HasMany
+<<<<<<< HEAD
     {
         return $this->hasMany(DietPlanItem::class);
     }
 
     /** Pivote food_allergens (llave compuesta, sin timestamps). */
     public function allergens(): BelongsToMany
+=======
+>>>>>>> 56f1ba86bc25aa2407be1779b09730fe5ce1b82e
     {
-        return $this->belongsToMany(Allergen::class, 'food_allergens');
+        return $this->hasMany(DietPlanItem::class);
     }
+<<<<<<< HEAD
 
     /** Restricciones directas del alimento por patología. */
     public function pathologyRestrictions(): HasMany
     {
         return $this->hasMany(FoodPathologyRestriction::class);
     }
+=======
+>>>>>>> 56f1ba86bc25aa2407be1779b09730fe5ce1b82e
 }

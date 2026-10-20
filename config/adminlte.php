@@ -796,6 +796,7 @@ return [
         'icon' => 'fas fa-fw fa-chart-line',
     ],
 
+<<<<<<< HEAD
     // Planes alimenticios: solo Pro, Consultorio y prueba gratuita
     // ('can' usa el Gate "diet-plans" de AppServiceProvider). Ocultarlo es
     // solo visual: las rutas también lo bloquean (middleware feature).
@@ -822,6 +823,17 @@ return [
         'classes' => 'nl-nav-wrap',
     ],
 
+=======
+        [
+    'header' => 'NUTRICIÓN',
+],
+
+    [
+    'text' => 'Planes alimenticios',
+    'route' => 'diet-plans.index',
+    'icon' => 'fas fa-utensils',
+    ],
+>>>>>>> 56f1ba86bc25aa2407be1779b09730fe5ce1b82e
     ['header' => 'ADMINISTRACIÓN'],
 
     [

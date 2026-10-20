@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
+<<<<<<< HEAD
 /**
  * Plan alimenticio de un paciente (tabla `diet_plans`).
  *
@@ -18,6 +19,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * Disponible solo en los planes Pro, Consultorio y en la prueba gratuita
  * (config/nutrilife.php → features.diet_plans, App\Policies\DietPlanPolicy).
  */
+=======
+>>>>>>> 56f1ba86bc25aa2407be1779b09730fe5ce1b82e
 class DietPlan extends Model
 {
     use SoftDeletes;
@@ -31,8 +34,11 @@ class DietPlan extends Model
         'patient_id',
         'user_id',
         'name',
+<<<<<<< HEAD
         'goal',          // objetivo general (actualización 3.1)
         'instructions',  // indicaciones del nutriólogo (actualización 3.1)
+=======
+>>>>>>> 56f1ba86bc25aa2407be1779b09730fe5ce1b82e
         'target_kcal',
         'target_protein_g',
         'target_lipids_g',
@@ -45,11 +51,18 @@ class DietPlan extends Model
     protected function casts(): array
     {
         return [
+<<<<<<< HEAD
             'patient_id' => 'integer',
             'user_id' => 'integer',
             'starts_at' => 'date',
             'ends_at' => 'date',
             'active' => 'boolean',
+=======
+            'starts_at' => 'date',
+            'ends_at' => 'date',
+            'active' => 'boolean',
+
+>>>>>>> 56f1ba86bc25aa2407be1779b09730fe5ce1b82e
             'target_kcal' => 'decimal:2',
             'target_protein_g' => 'decimal:2',
             'target_lipids_g' => 'decimal:2',
@@ -75,6 +88,7 @@ class DietPlan extends Model
     public function meals(): HasMany
     {
         return $this->hasMany(DietPlanMeal::class)
+<<<<<<< HEAD
             ->orderBy('meal_order')
             ->orderBy('id');
     }
@@ -140,5 +154,8 @@ class DietPlan extends Model
     public function statusLabel(): string
     {
         return $this->active ? 'Activo' : 'Finalizado';
+=======
+            ->orderBy('meal_order');
+>>>>>>> 56f1ba86bc25aa2407be1779b09730fe5ce1b82e
     }
 }
