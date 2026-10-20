@@ -112,6 +112,7 @@
                                         id="pathology_{{ $pathology->id }}_date"
                                         name="pathologies[{{ $pathology->id }}][diagnosed_at]"
                                         value="{{ $item['diagnosed_at'] ?? '' }}"
+                                        min="1900-01-01"
                                         max="{{ now()->format('Y-m-d') }}"
                                         @disabled(! $checked)
                                     >

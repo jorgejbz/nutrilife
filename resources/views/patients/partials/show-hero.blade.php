@@ -47,27 +47,7 @@
 
                 <div class="hero-badges">
 
-                    @if($paciente->active)
-
-                        <span class="status-badge active">
-
-                            <span></span>
-
-                            Paciente activo
-
-                        </span>
-
-                    @else
-
-                        <span class="status-badge inactive">
-
-                            <span></span>
-
-                            Paciente inactivo
-
-                        </span>
-
-                    @endif
+                    @include('partials.patient-status', ['active' => $paciente->active, 'variant' => 'badge', 'long' => true])
 
 
                     @if($paciente->sex)

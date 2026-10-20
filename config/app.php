@@ -65,7 +65,9 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    // Hora de México: "hoy", la agenda, el vencimiento de la prueba y la
+    // activación de cuentas se calculan con esta zona (APP_TIMEZONE).
+    'timezone' => env('APP_TIMEZONE', 'America/Mexico_City'),
 
     /*
     |--------------------------------------------------------------------------

@@ -52,72 +52,74 @@
         ->implode(' ');
 @endphp
 
-<li class="nav-item dropdown user-menu">
+{{-- =========================================================
+     MENÚ DE USUARIO (NutriLife)
+     - Cabecera con nombre, correo y tipo de cuenta.
+     - "Cerrar sesión" es un <form method="POST"> con @csrf y un
+       botón real (antes era un enlace con onclick a un form oculto):
+       funciona con teclado y sin depender de JavaScript.
+     ========================================================= --}}
+@php
+    $umInitials = collect(preg_split('/\s+/', trim(preg_replace('/^(Dra?\.|Lic\.|Mtra?\.)\s*/u', '', $umName))))
+        ->filter()->take(2)->map(fn ($part) => mb_strtoupper(mb_substr($part, 0, 1)))->implode('');
+    $umAccount = \App\Models\Subscription::accountTypeFor($umUser);
+@endphp
 
-    {{-- User menu toggler --}}
-    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
-       aria-expanded="false">
-        @if($umImage)
-            <img src="{{ $umImage }}"
-                 class="user-image rounded-circle shadow"
-                 alt="{{ $umName }}">
-        @endif
-        <span @if($umImage) class="d-none d-md-inline" @endif>
-            {{ $umName }}
-        </span>
+<li class="nav-item dropdown user-menu nl-user-menu">
+
+    {{-- Botón del menú --}}
+    <a href="#" class="nav-link dropdown-toggle nl-user-toggle" data-bs-toggle="dropdown"
+       aria-expanded="false" aria-label="Menú de {{ $umName }}">
+        <span class="nl-user-avatar" aria-hidden="true">{{ $umInitials ?: 'NL' }}</span>
+        <span class="nl-user-name">{{ $umName }}</span>
     </a>
 
-    {{-- User menu dropdown --}}
-    <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+    <ul class="dropdown-menu dropdown-menu-end nl-user-dropdown">
 
-        {{-- User menu header --}}
-        @if(!View::hasSection('usermenu_header') && config('adminlte.usermenu_header'))
-            <li class="user-header {{ $umHeaderClass }}"
-                @if(! $umImage) style="min-height:auto" @endif>
-                @if($umImage)
-                    <img src="{{ $umImage }}"
-                         class="rounded-circle shadow"
-                         alt="{{ $umName }}">
+        <li class="nl-user-dropdown__header">
+            <span class="nl-user-avatar nl-user-avatar--lg" aria-hidden="true">{{ $umInitials ?: 'NL' }}</span>
+            <div>
+                <strong>{{ $umName }}</strong>
+                <small>{{ $umUser->email ?? '' }}</small>
+                @if($umAccount)
+                    <span class="nl-user-dropdown__plan">{{ $umAccount['label'] }}</span>
                 @endif
-                <p class="@if(! $umImage) mt-0 @endif">
-                    {{ $umName }}
-                    @if($umDesc)
-                        <small>{{ $umDesc }}</small>
-                    @endif
-                </p>
-            </li>
-        @else
-            @yield('usermenu_header')
-        @endif
+            </div>
+        </li>
 
-        {{-- Configured user menu links --}}
+        {{-- Enlaces configurados en adminlte.menu (navbar-user) --}}
         @each('adminlte::partials.navbar.dropdown-item', $adminlte->menu("navbar-user"), 'item')
 
-        {{-- User menu body --}}
-        @hasSection('usermenu_body')
-            <li class="user-body">
-                @yield('usermenu_body')
+        @if(Route::has('profile.edit'))
+            <li>
+                <a class="dropdown-item nl-user-dropdown__link" href="{{ route('profile.edit') }}">
+                    <i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>
+                    Mi perfil
+                </a>
             </li>
         @endif
 
-        {{-- User menu footer --}}
-        <li class="user-footer">
-            @if($profile_url)
-                <a href="{{ $profile_url }}" class="btn btn-outline-secondary">
-                    <i class="bi bi-person me-1"></i>
-                    {{ __('adminlte::menu.profile') }}
+        @if(Route::has('subscription.plans') && $umUser?->isNutritionist())
+            <li>
+                <a class="dropdown-item nl-user-dropdown__link" href="{{ route('subscription.plans') }}">
+                    <i class="fas fa-box-open fa-fw" aria-hidden="true"></i>
+                    Paquetes
                 </a>
-            @endif
-            <a class="btn btn-outline-danger float-end @if(!$profile_url) w-100 @endif"
-               href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                <i class="bi bi-power me-1"></i>
-                {{ __('adminlte::adminlte.log_out') }}
-            </a>
-            <form id="logout-form" action="{{ $logout_url }}" method="POST" style="display: none;">
+            </li>
+        @endif
+
+        <li><hr class="dropdown-divider"></li>
+
+        <li class="nl-user-dropdown__footer">
+            <form action="{{ $logout_url }}" method="POST" data-no-submit-guard>
                 @if(config('adminlte.logout_method'))
                     {{ method_field(config('adminlte.logout_method')) }}
                 @endif
-                {{ csrf_field() }}
+                @csrf
+                <button type="submit" class="nl-logout-button" data-logout>
+                    <i class="fas fa-sign-out-alt fa-fw" aria-hidden="true"></i>
+                    <span>Cerrar sesión</span>
+                </button>
             </form>
         </li>
 

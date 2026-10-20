@@ -47,7 +47,17 @@ class AppointmentController extends Controller
                 ->where('active', true)
                 ->whereNull('deleted_at'),
         ],
-        'appointment_at' => ['required', 'date'],
+        // Una cita Pendiente o Confirmada no puede quedar en el pasado;
+        // las Completadas o Canceladas sí (registro de historial).
+        'appointment_at' => [
+            'required',
+            'date',
+            'after_or_equal:2000-01-01',
+            Rule::when(
+                in_array($request->input('status'), ['Pendiente', 'Confirmada'], true),
+                ['after_or_equal:'.now()->startOfDay()->format('Y-m-d H:i:s')]
+            ),
+        ],
         'reason' => ['nullable', 'string', 'max:255'],
         'status' => ['required', Rule::in(self::STATUSES)],
         // El formulario limita (y cuenta) 1000 caracteres; antes el backend
@@ -56,6 +66,8 @@ class AppointmentController extends Controller
     ], [
         'patient_id.exists' => 'Selecciona un paciente activo de tu consultorio.',
         'status.in' => 'Selecciona un estado válido.',
+        'appointment_at.date' => 'Escribe una fecha y hora válidas.',
+        'appointment_at.after_or_equal' => 'Una cita pendiente o confirmada no puede tener fecha pasada.',
     ]);
 
     $patient = \App\Models\Patient::where('id', $validated['patient_id'])

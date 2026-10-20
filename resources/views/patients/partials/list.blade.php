@@ -58,7 +58,8 @@
 
             @foreach($patients as $patient)
 
-                <div class="patient-glass-card"
+                <div class="patient-glass-card {{ $patient->active ? '' : 'is-inactive' }}"
+                     data-status="{{ $patient->active ? 'activos' : 'inactivos' }}"
                      data-patient="
                         {{ strtolower(
                             $patient->first_name . ' ' .
@@ -85,27 +86,7 @@
 
                         <div class="patient-status">
 
-                            @if($patient->active)
-
-                                <span class="status-active">
-
-                                    <span class="status-dot"></span>
-
-                                    Activo
-
-                                </span>
-
-                            @else
-
-                                <span class="status-inactive">
-
-                                    <span class="status-dot"></span>
-
-                                    Inactivo
-
-                                </span>
-
-                            @endif
+                            @include('partials.patient-status', ['active' => $patient->active])
 
                         </div>
 

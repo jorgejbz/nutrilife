@@ -32,6 +32,10 @@ export default defineConfig({
                 'resources/js/pages/consultations-create.js',
                 'resources/js/pages/payments-create.js',
 
+                // Planes alimenticios (Pro, Consultorio y prueba)
+                'resources/js/pages/diet-plans.js',
+                'resources/js/pages/foods-index.js',
+
                 // Evaluaciones
                 'resources/js/pages/evaluations-create.js',
 

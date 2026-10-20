@@ -21,11 +21,15 @@ class RegistrationTest extends TestCase
         $response = $this->post('/register', [
             'name' => 'Test User',
             'email' => 'test@example.com',
+            'professional_license' => '12345678',
+            'degree_number' => 'LN-2020-001',
             'password' => 'password',
             'password_confirmation' => 'password',
         ]);
 
-        $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        // NutriLife: la cuenta queda pendiente de activación y se muestra la
+        // pantalla de gracias (ya no se entra directo al dashboard).
+        $this->assertGuest();
+        $response->assertRedirect(route('register.thanks', absolute: false));
     }
 }

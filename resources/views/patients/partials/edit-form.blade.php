@@ -187,6 +187,7 @@
                                         type="date"
                                         id="birth_date"
                                         name="birth_date"
+                                        min="1900-01-01"
                                         max="{{ now()->format('Y-m-d') }}"
                                         value="{{ old(
                                             'birth_date',

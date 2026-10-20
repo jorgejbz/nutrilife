@@ -5,7 +5,7 @@
 
 @php
     $userName = Auth::user()->name ?? 'Usuario';
-    $currentDate = now()->translatedFormat('d \d\e F, Y');
+    $currentDate = ucfirst(now()->locale('es')->translatedFormat('l d \d\e F, Y'));
 @endphp
 
 <div class="dashboard-header">
@@ -26,9 +26,11 @@
             </p>
         </div>
 
+        {{-- Antes decía "Sistema operativo" sin revisar nada; ahora muestra
+             la hora a la que se calcularon los datos. --}}
         <div class="dashboard-header__status">
-            <span class="dashboard-status-dot"></span>
-            <span>Sistema operativo</span>
+            <i class="far fa-clock" aria-hidden="true"></i>
+            <span>Datos al {{ now()->format('H:i') }}</span>
         </div>
 
     </div>

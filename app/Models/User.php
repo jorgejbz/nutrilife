@@ -22,10 +22,18 @@ use Illuminate\Notifications\Notifiable;
  *    (6 dígitos, único, NOT NULL). El código se genera solo al crear el
  *    usuario si no se proporciona uno.
  */
-#[Fillable(['name', 'email', 'password', 'role_id', 'access_code'])]
+// account_status, activates_at, activated_at y professional_verified_at NO
+// son asignables en masa: solo el servidor los cambia (AccountActivation),
+// así una petición manipulada no puede activar ni verificar una cuenta.
+#[Fillable(['name', 'email', 'password', 'role_id', 'access_code', 'professional_license', 'degree_number'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
+    /** users.account_status */
+    public const ACCOUNT_PENDING = 'pendiente';
+
+    public const ACCOUNT_ACTIVE = 'activa';
+
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
@@ -55,6 +63,9 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'activates_at' => 'datetime',
+            'activated_at' => 'datetime',
+            'professional_verified_at' => 'datetime',
         ];
     }
 
@@ -121,6 +132,25 @@ class User extends Authenticatable
     }
 
     /* ------------------------------------------------------------------
+     | Funciones por plan
+     * ------------------------------------------------------------------ */
+
+    /**
+     * ¿Puede usar la función $feature (p. ej. 'diet_plans')?
+     * Solo nutriólogos y según su suscripción más reciente
+     * (ver Subscription::grantsFeature). Se calcula en cada petición, así
+     * que un cambio de plan o de estado se refleja de inmediato.
+     */
+    public function hasFeature(string $feature): bool
+    {
+        if (! $this->isNutritionist()) {
+            return false;
+        }
+
+        return (bool) $this->latestSubscription?->grantsFeature($feature);
+    }
+
+    /* ------------------------------------------------------------------
      | Helpers de rol
      * ------------------------------------------------------------------ */
 
@@ -132,5 +162,25 @@ class User extends Authenticatable
     public function isNutritionist(): bool
     {
         return (int) $this->role_id === Role::NUTRITIONIST;
+    }
+
+    /* ------------------------------------------------------------------
+     | Estado de la cuenta y verificación profesional (son cosas distintas)
+     * ------------------------------------------------------------------ */
+
+    /** Cuenta registrada que todavía no se habilita (ver AccountActivation). */
+    public function isPendingActivation(): bool
+    {
+        return $this->account_status === self::ACCOUNT_PENDING;
+    }
+
+    /**
+     * ¿Alguien verificó de verdad la cédula/título? Hoy siempre es false
+     * salvo que se llene professional_verified_at: el tiempo de espera de
+     * la activación NO cuenta como verificación.
+     */
+    public function isProfessionallyVerified(): bool
+    {
+        return $this->professional_verified_at !== null;
     }
 }

@@ -128,11 +128,10 @@
 
             {{-- =========================================================
                  Registro de nutriólogo
-                 Solo se piden los datos que existen en la tabla `users`
-                 (BD definitiva): name, email y password. El servidor asigna
-                 role_id = 1 (nutriólogo) y genera access_code (6 dígitos únicos).
-                 Teléfono, cédula, especialidad, foto, horarios, etc. no tienen
-                 columna en la BD, por eso no se solicitan.
+                 Datos de la tabla `users`: name, email, password,
+                 professional_license (cédula) y degree_number (título).
+                 El servidor asigna role_id = 1 (nutriólogo), genera
+                 access_code y deja la cuenta pendiente de activación.
                  ========================================================= --}}
             <form
                 method="POST"
@@ -203,6 +202,71 @@
                             {{ $message }}
                         </div>
                     @enderror
+                </div>
+
+                {{-- DATOS PROFESIONALES (users.professional_license / degree_number)
+                     Solo se valida el formato; no se consultan con la SEP. --}}
+                <div class="register-pro-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="professional_license">
+                            Cédula profesional <span class="required-mark" aria-hidden="true">*</span>
+                        </label>
+                        <div class="input-wrapper @error('professional_license') has-error @enderror">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M6 16c.6-1.4 1.8-2 3-2s2.4.6 3 2M14 10h4M14 13h3"/></svg>
+                            <input
+                                id="professional_license"
+                                class="form-input"
+                                type="text"
+                                name="professional_license"
+                                value="{{ old('professional_license') }}"
+                                required
+                                inputmode="numeric"
+                                pattern="\d{7,8}"
+                                minlength="7"
+                                maxlength="8"
+                                autocomplete="off"
+                                placeholder="Ej. 12345678"
+                                aria-describedby="professional_license_hint @error('professional_license') professional_license_error @enderror"
+                                @error('professional_license') aria-invalid="true" @enderror
+                            >
+                        </div>
+                        <small class="form-hint" id="professional_license_hint">7 u 8 dígitos, sin guiones.</small>
+                        @error('professional_license')
+                            <div class="form-error" id="professional_license_error" role="alert">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="degree_number">
+                            Número de título <span class="required-mark" aria-hidden="true">*</span>
+                        </label>
+                        <div class="input-wrapper @error('degree_number') has-error @enderror">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M22 9 12 4 2 9l10 5 10-5Z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/></svg>
+                            <input
+                                id="degree_number"
+                                class="form-input"
+                                type="text"
+                                name="degree_number"
+                                value="{{ old('degree_number') }}"
+                                required
+                                minlength="3"
+                                maxlength="50"
+                                autocomplete="off"
+                                autocapitalize="characters"
+                                placeholder="Ej. LN-2019-04582"
+                                aria-describedby="degree_number_hint @error('degree_number') degree_number_error @enderror"
+                                @error('degree_number') aria-invalid="true" @enderror
+                            >
+                        </div>
+                        <small class="form-hint" id="degree_number_hint">Como aparece en tu título profesional.</small>
+                        @error('degree_number')
+                            <div class="form-error" id="degree_number_error" role="alert">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
                 </div>
 
                 {{-- CONTRASEÑA (users.password, se guarda cifrada) --}}
@@ -281,7 +345,8 @@
                         Al crear tu cuenta
                     </p>
                     <ul>
-                        <li>Entrarás directamente a tu panel para registrar pacientes y citas.</li>
+                        <li>Prepararemos tu cuenta; en unos minutos podrás iniciar sesión.</li>
+                        <li>Tu prueba gratuita de {{ config('nutrilife.trial_days') }} días empieza la primera vez que entres.</li>
                         <li>Recibirás un <strong>código de acceso de 6 dígitos</strong> para que tus pacientes entren a la app móvil.</li>
                         <li>Podrás completar y editar tus datos después desde <strong>Mi perfil</strong>.</li>
                     </ul>

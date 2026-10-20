@@ -5,22 +5,37 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-/** Alimento / equivalente (tabla `foods`). */
+/**
+ * Catálogo de alimentos (tabla `foods`, fuente por defecto INCAP-SMAE).
+ * kcal y macros son por porción (portion_grams). Es un catálogo global:
+ * no pertenece a ningún nutriólogo.
+ */
 class Food extends Model
 {
-    /** "food" es incontable para el pluralizador; se fija el nombre real. */
     protected $table = 'foods';
-
     protected $fillable = [
-        'food_group_id', 'name', 'portion_grams', 'portion_description',
-        'kcal', 'protein_g', 'lipids_g', 'carbs_g', 'fiber_g', 'sodium_mg',
-        'glycemic_index', 'source', 'active',
+        'food_group_id',
+        'name',
+        'portion_grams',
+        'portion_description',
+        'kcal',
+        'protein_g',
+        'lipids_g',
+        'carbs_g',
+        'fiber_g',
+        'sodium_mg',
+        'glycemic_index',
+        'source',
+        'active',
     ];
 
     protected function casts(): array
     {
         return [
+            'food_group_id' => 'integer',
+            'glycemic_index' => 'integer',
             'portion_grams' => 'decimal:2',
             'kcal' => 'decimal:2',
             'protein_g' => 'decimal:2',
@@ -28,18 +43,29 @@ class Food extends Model
             'carbs_g' => 'decimal:2',
             'fiber_g' => 'decimal:2',
             'sodium_mg' => 'decimal:2',
-            'glycemic_index' => 'integer',
             'active' => 'boolean',
         ];
     }
 
-    public function group(): BelongsTo
+    public function foodGroup(): BelongsTo
     {
-        return $this->belongsTo(FoodGroup::class, 'food_group_id');
+        return $this->belongsTo(FoodGroup::class);
     }
 
+    public function dietPlanItems(): HasMany
+    {
+        return $this->hasMany(DietPlanItem::class);
+    }
+
+    /** Pivote food_allergens (llave compuesta, sin timestamps). */
     public function allergens(): BelongsToMany
     {
         return $this->belongsToMany(Allergen::class, 'food_allergens');
+    }
+
+    /** Restricciones directas del alimento por patología. */
+    public function pathologyRestrictions(): HasMany
+    {
+        return $this->hasMany(FoodPathologyRestriction::class);
     }
 }

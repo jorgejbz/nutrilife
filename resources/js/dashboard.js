@@ -1,9 +1,14 @@
 /**
  * ==========================================================
  * NUTRILIFE — DASHBOARD CHARTS
- * Lee los datos inyectados por la vista en `window.dashboardData`
- * (ver resources/views/dashboard/index.blade.php, sección @section('js'))
- * y construye las 4 gráficas con Chart.js.
+ * Lee los datos reales que calcula App\Services\DashboardStats y la
+ * vista deja en `window.dashboardData`:
+ *   patients     { labels, total, new }  → pacientes acumulados por mes
+ *   status       { active, inactive }    → dona activos / inactivos
+ *   appointments { labels, data, today } → citas de la semana actual
+ *   income       { labels, data }        → ingresos cobrados por mes
+ * Si una gráfica no tiene datos, la vista no dibuja su <canvas> y
+ * muestra un mensaje en su lugar.
  *
  * Los colores salen del tema activo (resources/js/chart-theme.js) y
  * las gráficas se reconstruyen al cambiar entre claro y oscuro.
@@ -57,13 +62,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 data: {
                     labels: data.patients.labels,
                     datasets: [{
-                        data: data.patients.data,
+                        label: 'Pacientes registrados',
+                        data: data.patients.total,
                         borderColor: c.primary,
                         backgroundColor: gradient,
                         fill: true,
                         borderWidth: 2,
                         tension: .42,
-                        pointRadius: 0,
+                        pointRadius: 3,
                         pointHoverRadius: 5,
                         pointHoverBackgroundColor: c.primary,
                         pointHoverBorderColor: c.pointBorder,
@@ -76,7 +82,18 @@ document.addEventListener('DOMContentLoaded', function () {
                     interaction: { intersect: false, mode: 'index' },
                     plugins: {
                         legend: { display: false },
-                        tooltip: { ...tooltipBase, padding: 10, displayColors: false },
+                        tooltip: {
+                            ...tooltipBase,
+                            padding: 10,
+                            displayColors: false,
+                            callbacks: {
+                                label: (context) => `${context.raw} pacientes`,
+                                afterLabel: (context) => {
+                                    const added = data.patients.new[context.dataIndex] || 0;
+                                    return added ? `+${added} nuevos en el mes` : 'Sin altas en el mes';
+                                },
+                            },
+                        },
                     },
                     scales: {
                         x: {
@@ -100,14 +117,15 @@ document.addEventListener('DOMContentLoaded', function () {
         ----------------------------------------------------- */
         const statusCanvas = document.getElementById('patientStatusChart');
 
-        if (statusCanvas && data.patientStatus) {
+        if (statusCanvas && data.status) {
             charts.push(new Chart(statusCanvas, {
                 type: 'doughnut',
                 data: {
                     labels: ['Activos', 'Inactivos'],
                     datasets: [{
-                        data: [data.patientStatus.active, data.patientStatus.inactive],
-                        backgroundColor: [c.primary, c.secondary],
+                        data: [data.status.active, data.status.inactive],
+                        // Inactivos en gris neutro (mismo criterio que /pacientes)
+                        backgroundColor: [c.primary, c.label],
                         borderColor: [c.grid, c.grid],
                         borderWidth: 1,
                         hoverOffset: 4,
@@ -137,7 +155,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     labels: data.appointments.labels,
                     datasets: [{
                         data: data.appointments.data,
-                        backgroundColor: c.primaryAlpha(.55),
+                        // La barra de hoy se resalta
+                        backgroundColor: data.appointments.data.map((_, i) => (i === data.appointments.today ? c.primary : c.primaryAlpha(.45))),
                         hoverBackgroundColor: c.primary,
                         borderRadius: 8,
                         borderSkipped: false,
@@ -149,13 +168,17 @@ document.addEventListener('DOMContentLoaded', function () {
                     maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
-                        tooltip: { ...tooltipBase, displayColors: false },
+                        tooltip: {
+                            ...tooltipBase,
+                            displayColors: false,
+                            callbacks: { label: (context) => `${context.raw} ${context.raw === 1 ? 'cita' : 'citas'}` },
+                        },
                     },
                     scales: {
                         x: {
                             border: hiddenAxisLine,
                             grid: { display: false },
-                            ticks: { color: c.label, font: { size: 8 } },
+                            ticks: { color: c.label, font: { size: 9 } },
                         },
                         y: {
                             beginAtZero: true,
@@ -191,8 +214,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         fill: true,
                         borderWidth: 2,
                         tension: .42,
-                        pointRadius: 0,
-                        pointHoverRadius: 4,
+                        pointRadius: 3,
+                        pointHoverRadius: 5,
                     }],
                 },
                 options: {
@@ -221,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             ticks: {
                                 color: c.label,
                                 font: { size: 8 },
-                                callback: (value) => '$' + value,
+                                callback: (value) => '$' + Number(value).toLocaleString('es-MX'),
                             },
                         },
                     },

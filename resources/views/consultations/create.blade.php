@@ -126,6 +126,7 @@
                                 name="consultation_at"
                                 id="consultation_at"
                                 value="{{ old('consultation_at', now()->format('Y-m-d\TH:i')) }}"
+                                max="{{ now()->format('Y-m-d') }}T23:59"
                                 required
                             >
                         </div>

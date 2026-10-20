@@ -94,7 +94,7 @@ class PaymentController extends Controller
             // payments.amount DECIMAL(10,2)
             'amount' => ['required', 'numeric', 'decimal:0,2', 'min:0.01', 'max:99999999.99'],
 
-            'paid_at' => ['required', 'date'],
+            'paid_at' => ['required', 'date', 'after_or_equal:2000-01-01', 'before_or_equal:'.now()->endOfDay()->format('Y-m-d H:i:s')],
 
             // payments.concept admite NULL en la BD, pero el sistema ya lo
             // exigía; se conserva la regla de negocio existente.
@@ -109,6 +109,9 @@ class PaymentController extends Controller
             'appointment_id.exists' => 'La cita seleccionada no existe.',
             'amount.decimal' => 'El monto admite como máximo 2 decimales.',
             'amount.max' => 'El monto excede el máximo permitido.',
+            'paid_at.date' => 'Escribe una fecha y hora válidas.',
+            'paid_at.before_or_equal' => 'La fecha del pago no puede ser futura.',
+            'paid_at.after_or_equal' => 'Revisa la fecha del pago.',
         ]);
 
         // La cita, si se eligió, debe ser del mismo paciente.

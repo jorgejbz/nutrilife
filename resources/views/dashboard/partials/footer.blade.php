@@ -23,17 +23,8 @@
 
     </div>
 
-
-    <div class="dashboard-footer__status">
-
-        <span class="dashboard-status-dot"></span>
-
-        <div>
-            <strong>Sistema funcionando correctamente</strong>
-            <span>Todos los servicios disponibles</span>
-        </div>
-
-    </div>
+    {{-- Antes decía "Sistema funcionando correctamente" sin comprobar
+         nada; se retiró para no mostrar un estado que no se verifica. --}}
 
 
     <div class="dashboard-footer__version">

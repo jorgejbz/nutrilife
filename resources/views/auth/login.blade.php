@@ -280,6 +280,18 @@
 
 
 
+                {{-- AVISOS (p. ej. "Cerraste sesión correctamente") --}}
+                @if (session('status'))
+                    <div class="success-message" role="status">
+                        <div class="success-icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div>
+                            <strong>{{ session('status') }}</strong>
+                        </div>
+                    </div>
+                @endif
+
                 {{-- ERRORES --}}
                 @if ($errors->any())
 

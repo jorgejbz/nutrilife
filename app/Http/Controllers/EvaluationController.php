@@ -25,7 +25,8 @@ class EvaluationController extends Controller
     abort_if($paciente->user_id !== Auth::id(), 403);
 
     $validated = $request->validate([
-        'evaluation_date' => ['required', 'date'],
+        // No se registran evaluaciones con fecha futura.
+        'evaluation_date' => ['required', 'date', 'after_or_equal:2000-01-01', 'before_or_equal:today'],
         // Todas las medidas son DECIMAL(x,2) en la BD.
 
         'weight' => [
@@ -105,6 +106,11 @@ class EvaluationController extends Controller
             'string',
             'max:2000'
         ],
+    ], [
+        'evaluation_date.required' => 'Indica la fecha de la evaluación.',
+        'evaluation_date.date' => 'Escribe una fecha válida.',
+        'evaluation_date.before_or_equal' => 'La fecha de la evaluación no puede ser futura.',
+        'evaluation_date.after_or_equal' => 'Revisa la fecha de la evaluación.',
     ]);
 
     $validated['patient_id'] = $paciente->id;

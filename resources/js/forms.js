@@ -10,6 +10,8 @@
  *
  * Un formulario puede excluirse con data-no-submit-guard y un botón
  * puede definir su texto con data-loading-text="…".
+ *
+ * data-confirm="…" en un <form> pide confirmación antes de enviarlo.
  * ==========================================================
  */
 
@@ -19,6 +21,13 @@
         const form = event.target;
 
         if (!(form instanceof HTMLFormElement) || event.defaultPrevented) {
+            return;
+        }
+
+        /* Confirmación antes de acciones destructivas o importantes:
+           <form data-confirm="¿Eliminar…?">. Si se cancela, no se envía. */
+        if (form.dataset.confirm && !window.confirm(form.dataset.confirm)) {
+            event.preventDefault();
             return;
         }
 
@@ -52,6 +61,33 @@
                 button.innerHTML = button.dataset.originalHtml;
             }
         });
+    });
+
+
+    /* ------------------------------------------------------
+     | Campos de fecha y hora: abrir el calendario con un clic
+     | en cualquier parte del campo (antes solo funcionaba el
+     | icono, que además era invisible en modo claro).
+     | Se puede seguir escribiendo la fecha con el teclado.
+     * ------------------------------------------------------ */
+    const PICKER_TYPES = ['date', 'datetime-local', 'time', 'month', 'week'];
+
+    document.addEventListener('click', function (event) {
+        const input = event.target;
+
+        if (!(input instanceof HTMLInputElement)
+            || !PICKER_TYPES.includes(input.type)
+            || input.disabled
+            || input.readOnly
+            || typeof input.showPicker !== 'function') {
+            return;
+        }
+
+        try {
+            input.showPicker();
+        } catch (error) {
+            /* Algunos navegadores lo bloquean (p. ej. dentro de iframes): queda el comportamiento nativo. */
+        }
     });
 
 })();

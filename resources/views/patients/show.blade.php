@@ -86,6 +86,14 @@
 
 
         {{-- =================================================
+             PLANES ALIMENTICIOS (solo Pro, Consultorio y prueba)
+             ================================================= --}}
+        @can('diet-plans')
+            @include('patients.partials.show-diet-plans')
+        @endcan
+
+
+        {{-- =================================================
              ÚLTIMA EVALUACIÓN
              ================================================= --}}
         @include('patients.partials.show-latest-evaluation')

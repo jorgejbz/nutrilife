@@ -8,6 +8,7 @@ use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -36,7 +37,7 @@ class PatientController extends Controller
         $validated = $request->validate([
             'first_name' => ['required', 'string', 'max:100'],
             'last_name' => ['required', 'string', 'max:100'],
-            'birth_date' => ['nullable', 'date', 'before_or_equal:today'],
+            'birth_date' => ['nullable', 'date', 'after_or_equal:1900-01-01', 'before_or_equal:today'],
             'sex' => ['nullable', 'in:Masculino,Femenino,Otro'],
             'phone' => ['nullable', 'string', 'max:20'],
             'email' => $this->emailRules(),
@@ -132,6 +133,17 @@ if ($firstEvaluation && $currentEvaluation) {
     // La gráfica necesita mínimo dos mediciones
     $showWeightChart = $chartEvaluations->count() >= 2;
 
+    // Planes alimenticios del paciente: solo si el plan contratado incluye
+    // la función (Pro, Consultorio o prueba). Esencial no los consulta.
+    $dietPlans = Gate::allows('diet-plans')
+        ? $paciente->dietPlans()
+            ->where('user_id', Auth::id())
+            ->with('meals.items.food')
+            ->orderByDesc('active')
+            ->orderByDesc('starts_at')
+            ->get()
+        : collect();
+
     return view('patients.show', compact(
     'paciente',
     'evaluations',
@@ -142,7 +154,8 @@ if ($firstEvaluation && $currentEvaluation) {
     'firstEvaluation',
     'currentEvaluation',
     'weightChange',
-    'fatChange'
+    'fatChange',
+    'dietPlans'
 ));
 }
     public function edit(Patient $paciente)
@@ -166,7 +179,7 @@ if ($firstEvaluation && $currentEvaluation) {
         $validated = $request->validate([
             'first_name' => ['required', 'string', 'max:100'],
             'last_name' => ['required', 'string', 'max:100'],
-            'birth_date' => ['nullable', 'date', 'before_or_equal:today'],
+            'birth_date' => ['nullable', 'date', 'after_or_equal:1900-01-01', 'before_or_equal:today'],
             'sex' => ['nullable', 'in:Masculino,Femenino,Otro'],
             'phone' => ['nullable', 'string', 'max:20'],
             'email' => $this->emailRules($paciente),
@@ -222,6 +235,9 @@ if ($firstEvaluation && $currentEvaluation) {
     private function messages(): array
     {
         return [
+            'birth_date.date' => 'Escribe una fecha de nacimiento válida.',
+            'birth_date.before_or_equal' => 'La fecha de nacimiento no puede ser futura.',
+            'birth_date.after_or_equal' => 'Revisa la fecha de nacimiento: debe ser posterior a 1900.',
             'pathologies.*.diagnosed_at.date' => 'Escribe una fecha de diagnóstico válida.',
             'pathologies.*.diagnosed_at.before_or_equal' => 'La fecha de diagnóstico no puede ser futura.',
             'pathologies.*.notes.max' => 'Las notas de la patología no pueden superar 1000 caracteres.',
@@ -255,7 +271,7 @@ if ($firstEvaluation && $currentEvaluation) {
         return [
             'pathologies' => ['nullable', 'array'],
             'pathologies.*.selected' => ['nullable', 'boolean'],
-            'pathologies.*.diagnosed_at' => ['nullable', 'date', 'before_or_equal:today'],
+            'pathologies.*.diagnosed_at' => ['nullable', 'date', 'after_or_equal:1900-01-01', 'before_or_equal:today'],
             'pathologies.*.notes' => ['nullable', 'string', 'max:1000'],
             'allergens' => ['nullable', 'array'],
             'allergens.*.selected' => ['nullable', 'boolean'],

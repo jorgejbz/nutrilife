@@ -218,6 +218,7 @@
                                 id="paid_at"
                                 name="paid_at"
                                 value="{{ old('paid_at', now()->format('Y-m-d\TH:i')) }}"
+                                max="{{ now()->format('Y-m-d') }}T23:59"
                                 class="nutri-input @error('paid_at') input-error @enderror"
                                 required
                             >

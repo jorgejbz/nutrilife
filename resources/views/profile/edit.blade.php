@@ -246,8 +246,13 @@
                 @endif
 
                 @if (in_array($type, ['trial', 'expired', 'cancelled'], true))
-                    <a href="{{ route('landing') }}#planes" class="nl-btn-primary">
+                    <a href="{{ route('subscription.plans') }}" class="nl-btn-primary">
                         {{ $type === 'trial' ? 'Conocer los planes' : 'Elegir un plan' }}
+                        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                    </a>
+                @elseif ($type === 'active')
+                    <a href="{{ route('subscription.plans') }}" class="nl-btn-ghost">
+                        Cambiar de paquete
                         <i class="fas fa-arrow-right" aria-hidden="true"></i>
                     </a>
                 @endif

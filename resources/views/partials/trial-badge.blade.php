@@ -13,7 +13,7 @@
 @if ($nlTrial)
     <li class="nav-item d-flex align-items-center">
         <a
-            href="{{ route('landing') }}#planes"
+            href="{{ route('subscription.plans') }}"
             class="nl-trial-badge {{ $nlTrial['state'] === 'expired' ? 'is-expired' : '' }} {{ $nlTrial['state'] === 'trial' && $nlTrial['days'] <= 2 ? 'is-ending' : '' }}"
             title="{{ $nlTrial['state'] === 'trial' ? 'Tu prueba termina el '.$nlTrial['ends_at']->format('d/m/Y').'. Ver planes' : 'Ver planes' }}"
         >

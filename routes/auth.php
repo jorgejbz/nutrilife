@@ -17,6 +17,14 @@ Route::middleware('guest')->group(function () {
 
     Route::post('register', [RegisteredUserController::class, 'store']);
 
+    // Después de registrarse (la cuenta queda pendiente de activación)
+    Route::get('registro/gracias', [RegisteredUserController::class, 'thanks'])
+        ->name('register.thanks');
+
+    // Cuenta todavía no habilitada (al intentar iniciar sesión antes de tiempo)
+    Route::get('cuenta/en-preparacion', [AuthenticatedSessionController::class, 'pending'])
+        ->name('account.pending');
+
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
 

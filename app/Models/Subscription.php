@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -27,7 +28,7 @@ class Subscription extends Model
         self::STATUS_CANCELLED => 'Cancelada',
     ];
 
-    /** Duración de la prueba gratuita (mismo valor que el proyecto anterior). */
+    /** Valor por defecto si falta config('nutrilife.trial_days'). */
     public const TRIAL_DAYS = 7;
 
     protected $fillable = [
@@ -88,27 +89,89 @@ class Subscription extends Model
             return null;
         }
 
-        $today = now()->startOfDay();
+        // created_at guarda la fecha y hora reales del inicio; las columnas
+        // DATE (starts_at / current_period_ends_at) son solo informativas.
+        $startedAt = now();
 
         return static::create([
             'user_id' => $user->id,
             'subscription_plan_id' => $plan->id,
             'status' => self::STATUS_TRIAL,
-            'starts_at' => $today,
-            'current_period_ends_at' => $today->copy()->addDays(self::TRIAL_DAYS),
+            'starts_at' => $startedAt->toDateString(),
+            'current_period_ends_at' => $startedAt->copy()->addDays(self::trialDays())->toDateString(),
         ]);
     }
 
+    /** Duración de la prueba (config/nutrilife.php → trial_days). */
+    public static function trialDays(): int
+    {
+        return max((int) config('nutrilife.trial_days', self::TRIAL_DAYS), 0);
+    }
+
     /**
-     * Días que le quedan a la prueba (0 = hoy es el último día,
+     * Momento exacto en que vence la prueba: inicio real (created_at) +
+     * trial_days. Si la fila no tiene created_at (insertada a mano), se usa
+     * el inicio del día de starts_at. Nunca después del final del día
+     * current_period_ends_at.
+     */
+    public function trialEndsAt(): Carbon
+    {
+        $start = $this->created_at
+            ? $this->created_at->copy()
+            : Carbon::parse($this->starts_at)->startOfDay();
+
+        $end = $start->addDays(self::trialDays());
+
+        // Si alguien acortó la prueba a mano (current_period_ends_at), manda
+        // la fecha más temprana.
+        if ($this->current_period_ends_at) {
+            $limit = $this->current_period_ends_at->copy()->endOfDay();
+
+            if ($limit->lt($end)) {
+                return $limit;
+            }
+        }
+
+        return $end;
+    }
+
+    /** ¿La prueba ya venció? (solo aplica a status en_prueba) */
+    public function trialHasExpired(): bool
+    {
+        return $this->isTrial() && ! now()->lt($this->trialEndsAt());
+    }
+
+    /**
+     * Días completos que le quedan a la prueba (0 = vence en menos de 24 h,
      * negativo = ya venció).
      */
     public function trialDaysRemaining(): int
     {
-        return (int) now()->startOfDay()->diffInDays(
-            $this->current_period_ends_at->copy()->startOfDay(),
-            false
-        );
+        if ($this->trialHasExpired()) {
+            return -1;
+        }
+
+        return (int) floor(now()->diffInSeconds($this->trialEndsAt(), true) / 86400);
+    }
+
+    /**
+     * ¿El periodo pagado sigue vigente? (activa, o cancelada que todavía
+     * no llega al final del periodo que ya pagó)
+     */
+    public function hasPaidAccess(): bool
+    {
+        return in_array($this->status, [self::STATUS_ACTIVE, self::STATUS_CANCELLED], true)
+            && $this->current_period_ends_at !== null
+            && ! $this->current_period_ends_at->copy()->endOfDay()->isPast();
+    }
+
+    /**
+     * ¿Puede usar el panel? Prueba vigente o periodo pagado vigente.
+     * Si no, el middleware lo manda a la pantalla de contratación.
+     */
+    public function grantsPanelAccess(): bool
+    {
+        return $this->isTrial() ? ! $this->trialHasExpired() : $this->hasPaidAccess();
     }
 
     /**
@@ -133,7 +196,7 @@ class Subscription extends Model
             return [
                 'state' => $days >= 0 ? 'trial' : 'expired',
                 'days' => max($days, 0),
-                'ends_at' => $subscription->current_period_ends_at,
+                'ends_at' => $subscription->trialEndsAt(),
             ];
         }
 
@@ -147,6 +210,48 @@ class Subscription extends Model
         }
 
         return null;
+    }
+
+    /**
+     * ¿Esta suscripción da acceso a la función $feature
+     * (config/nutrilife.php → features)?
+     *
+     * Se distingue el PLAN (Esencial, Pro, Consultorio) del ESTADO:
+     *  - en_prueba  → solo si la función incluye la prueba ('trial' => true)
+     *                 y la prueba no ha vencido.
+     *  - activa     → si el plan está en 'plans' y el periodo pagado sigue
+     *                 vigente (current_period_ends_at >= hoy).
+     *  - cancelada  → igual que activa: conserva el acceso hasta que termine
+     *                 el periodo que ya pagó.
+     *  - vencida    → nunca.
+     */
+    public function grantsFeature(string $feature): bool
+    {
+        $config = config('nutrilife.features.'.$feature);
+
+        if (! is_array($config)) {
+            return false;
+        }
+
+        if ($this->isTrial()) {
+            return (bool) ($config['trial'] ?? false) && ! $this->trialHasExpired();
+        }
+
+        if (! $this->hasPaidAccess()) {
+            return false;
+        }
+
+        return in_array($this->plan?->name, (array) ($config['plans'] ?? []), true);
+    }
+
+    /**
+     * Planes que incluyen la función (para mostrarlo en pantallas de aviso).
+     *
+     * @return list<string>
+     */
+    public static function plansWithFeature(string $feature): array
+    {
+        return array_values((array) config('nutrilife.features.'.$feature.'.plans', []));
     }
 
     public function statusLabel(): string
@@ -180,11 +285,11 @@ class Subscription extends Model
         $plan = $subscription->plan?->name;
         $trialState = self::panelStatusFor($user)['state'] ?? null;
 
-        if ($subscription->status === self::STATUS_ACTIVE) {
+        if ($subscription->status === self::STATUS_ACTIVE && $subscription->hasPaidAccess()) {
             return ['type' => 'active', 'label' => 'Plan '.$plan, 'plan' => $plan];
         }
 
-        if ($subscription->status === self::STATUS_CANCELLED) {
+        if ($subscription->status === self::STATUS_CANCELLED && $subscription->hasPaidAccess()) {
             return ['type' => 'cancelled', 'label' => 'Plan cancelado', 'plan' => $plan];
         }
 

@@ -4,7 +4,8 @@
  *
  * - Validación en el navegador con mensajes en español, con las
  *   mismas reglas que RegisteredUserController@store
- *   (name ≤ 255, email válido ≤ 255, contraseña ≥ 8, confirmación).
+ *   (name ≤ 255, email válido ≤ 255, cédula de 7–8 dígitos, número de
+ *   título, contraseña ≥ 8, confirmación).
  *   El servidor vuelve a validar todo; esto solo da respuesta rápida.
  * - Mostrar / ocultar contraseña.
  * - Indicador de seguridad de la contraseña (informativo).
@@ -26,6 +27,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const fields = {
         name: document.getElementById('name'),
         email: document.getElementById('email'),
+        professional_license: document.getElementById('professional_license'),
+        degree_number: document.getElementById('degree_number'),
         password: document.getElementById('password'),
         password_confirmation: document.getElementById('password_confirmation'),
     };
@@ -47,6 +50,22 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (!EMAIL_PATTERN.test(value.trim())) return 'Escribe un correo válido, por ejemplo nombre@dominio.com.';
                 if (value.trim().length > 255) return 'El correo no puede superar 255 caracteres.';
                 return '';
+
+            case 'professional_license': {
+                const digits = value.replace(/\s+/g, '');
+                if (!digits) return 'Escribe tu número de cédula profesional.';
+                if (!/^\d{7,8}$/.test(digits)) return 'La cédula profesional debe tener 7 u 8 dígitos, sin letras ni guiones.';
+                return '';
+            }
+
+            case 'degree_number': {
+                const degree = value.trim().toUpperCase();
+                if (!degree) return 'Escribe el número de tu título profesional.';
+                if (degree.length < 3) return 'El número de título debe tener al menos 3 caracteres.';
+                if (degree.length > 50) return 'El número de título no puede superar 50 caracteres.';
+                if (!/^[A-Z0-9][A-Z0-9\-\/ ]*$/.test(degree)) return 'El número de título solo admite letras, números, guiones, diagonales y espacios.';
+                return '';
+            }
 
             case 'password':
                 if (!value) return 'Escribe una contraseña.';
@@ -121,6 +140,14 @@ document.addEventListener('DOMContentLoaded', function () {
         if (firstInvalid) {
             event.preventDefault();
             firstInvalid.focus();
+        }
+    });
+
+    /* Cédula: solo dígitos mientras se escribe */
+    fields.professional_license?.addEventListener('input', function () {
+        const clean = this.value.replace(/\D+/g, '').slice(0, 8);
+        if (clean !== this.value) {
+            this.value = clean;
         }
     });
 

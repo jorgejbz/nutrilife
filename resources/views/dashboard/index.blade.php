@@ -19,55 +19,15 @@
      ========================================================= --}}
 @section('content')
 
-    @php
-        /*
-        |--------------------------------------------------------------------------
-        | Valores predeterminados
-        |--------------------------------------------------------------------------
-        | Se mantienen temporalmente aquí para no alterar la lógica actual
-        | del dashboard. Más adelante podemos mover esta lógica al
-        | DashboardController.
-        */
+    {{-- Todos los indicadores vienen de DashboardController
+         (App\Services\DashboardStats): no hay valores fijos en la vista. --}}
 
-        $totalPatients = $totalPatients ?? 0;
-        $activePatients = $activePatients ?? 0;
-
-        $inactivePatients = max($totalPatients - $activePatients, 0);
-
-        $activePercentage = $totalPatients > 0
-            ? round(($activePatients / $totalPatients) * 100)
-            : 0;
-
-        $todayAppointmentsCount = $todayAppointmentsCount ?? 0;
-        $monthAppointments = $monthAppointments ?? 0;
-        $monthIncome = $monthIncome ?? 0;
-        $completedAppointments = $completedAppointments ?? 0;
-
-        /*
-        |--------------------------------------------------------------------------
-        | Datos de gráficas
-        |--------------------------------------------------------------------------
-        */
-
-        $patientChartLabels = $patientChartLabels ?? ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
-        $patientChartData = $patientChartData ?? [0, 0, 0, 0, 0, $totalPatients];
-
-        $appointmentChartLabels = $appointmentChartLabels ?? ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-        $appointmentChartData = $appointmentChartData ?? [0, 0, 0, 0, 0, 0, $todayAppointmentsCount];
-
-        $incomeChartLabels = $incomeChartLabels ?? ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
-        $incomeChartData = $incomeChartData ?? [0, 0, 0, 0, 0, $monthIncome];
-
-        /*
-        |--------------------------------------------------------------------------
-        | Crecimiento
-        |--------------------------------------------------------------------------
-        */
-
-        $patientGrowth = $patientGrowth ?? 0;
-        $appointmentGrowth = $appointmentGrowth ?? 0;
-        $incomeGrowth = $incomeGrowth ?? 0;
-    @endphp
+    @if(session('success'))
+        <div class="consultation-alert" role="status">
+            <i class="fas fa-check-circle"></i>
+            {{ session('success') }}
+        </div>
+    @endif
 
 
     {{-- =================================================
@@ -104,8 +64,8 @@
                 </strong>
 
                 <p>
-                    Estás usando NutriLife con la prueba gratuita de 7 días
-                    (termina el {{ $trialEndsAt->format('d/m/Y') }}).
+                    Estás usando NutriLife con la prueba gratuita de {{ config('nutrilife.trial_days') }} días
+                    (termina el {{ $trialEndsAt->format('d/m/Y \a \l\a\s H:i') }}).
                     Explora todas las herramientas y elige un plan cuando quieras.
                 </p>
 
@@ -125,7 +85,7 @@
         </div>
 
         <a
-            href="{{ route('landing') }}#planes"
+            href="{{ route('subscription.plans') }}"
             class="trial-alert-button"
         >
             Ver planes
@@ -207,24 +167,7 @@
     {{-- Solo pasamos los datos del servidor a JS; toda la lógica
          de las gráficas vive en resources/js/dashboard.js --}}
     <script>
-        window.dashboardData = {
-            patients: {
-                labels: @json($patientChartLabels),
-                data: @json($patientChartData),
-            },
-            patientStatus: {
-                active: {{ $activePatients }},
-                inactive: {{ $inactivePatients }},
-            },
-            appointments: {
-                labels: @json($appointmentChartLabels),
-                data: @json($appointmentChartData),
-            },
-            income: {
-                labels: @json($incomeChartLabels),
-                data: @json($incomeChartData),
-            },
-        };
+        window.dashboardData = @json($charts);
     </script>
 
     @vite(['resources/js/dashboard.js'])

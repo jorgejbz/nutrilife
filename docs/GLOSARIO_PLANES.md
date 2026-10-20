@@ -12,8 +12,9 @@
 | Usuario de demostración | esencial@nutrilife.test | pro@nutrilife.test | consultorio@nutrilife.test |
 | Código de acceso (app pacientes) | 724901 | 724902 | 724903 |
 
-Contraseña de los tres usuarios de demostración: `NutriLife2026!`
-(script: `database/sql/demo_usuarios_por_plan.sql`).
+Contraseña de los usuarios de demostración: `NutriLife2026!`
+(script: `database/sql/demo_usuarios_por_plan.sql` o, con todos los datos de
+prueba, `php artisan db:seed --class=DemoDataSeeder`).
 
 ### Qué incluye cada plan
 
@@ -26,8 +27,8 @@ Contraseña de los tres usuarios de demostración: `NutriLife2026!`
 | Seguimiento de progreso (gráficas) | ✓ | ✓ | ✓ | Disponible |
 | Control de pagos de pacientes | ✓ | ✓ | ✓ | Disponible |
 | Código de acceso para la app de pacientes | ✓ | ✓ | ✓ | Disponible (la app móvil, próximamente) |
-| Planes alimenticios | — | ✓ | ✓ | Próximamente (las tablas `diet_plans*` ya existen en la BD; falta la pantalla) |
-| Cálculo de calorías y macros | — | ✓ | ✓ | Próximamente (catálogo `foods` con kcal y macros ya existe en la BD) |
+| Planes alimenticios | — (sí durante la prueba) | ✓ | ✓ | Disponible: `/planes-alimenticios` (ver `docs/PLANES_ALIMENTICIOS.md`) |
+| Cálculo de calorías y macros | — (sí durante la prueba) | ✓ | ✓ | Disponible dentro de Planes alimenticios (totales del día contra objetivos, desde el catálogo `foods`) |
 | Exportación profesional a PDF | — | ✓ | ✓ | Próximamente |
 | Reportes avanzados | — | ✓ | ✓ | Próximamente |
 | Varios profesionales en una cuenta | — | — | ✓ | **No soportado por la BD actual** (no hay tabla de clínicas/equipos) |
@@ -45,9 +46,15 @@ Contraseña de los tres usuarios de demostración: `NutriLife2026!`
   por cuenta no tendría sentido.
 
 `max_patients` es la **única diferencia entre planes que guarda la BD**
-(además de precio y periodo). El resto de las diferencias están descritas en
-la landing, pero el sistema todavía no restringe funciones por plan: hoy un
-usuario Esencial ve lo mismo que uno Consultorio.
+(además de precio y periodo). Las funciones por plan se definen en
+`config/nutrilife.php` → `features` y el sistema ya las aplica:
+
+| Función | Quién entra | Dónde se revisa |
+|---|---|---|
+| Planes alimenticios | Pro y Consultorio con suscripción `activa` (o `cancelada` hasta que termine el periodo pagado) y la prueba gratuita vigente | Menú (`can`), rutas (`feature:diet_plans`), `DietPlanPolicy` y cada consulta filtrada por `user_id` |
+
+Esencial, la prueba vencida, una suscripción vencida y el administrador no
+entran: ven la pantalla "Disponible en Pro y Consultorio" (HTTP 403).
 
 ---
 
@@ -70,8 +77,16 @@ es la más reciente.
 | `vencida` | Terminó la prueba o un periodo pagado sin renovarse | "Prueba terminada · Elegir plan" si nunca pagó |
 | `cancelada` | El nutriólogo canceló (`cancelled_at` guarda la fecha) | — |
 
-**Prueba gratuita:** suscripción `en_prueba` que se crea al registrarse, ligada
-al plan activo más barato, con `current_period_ends_at` = registro + 7 días.
+**Prueba gratuita:** suscripción `en_prueba` que se crea cuando la cuenta se
+activa (no al registrarse), ligada al plan activo más barato. Vence exactamente
+`NUTRILIFE_TRIAL_DAYS` días (7 por defecto) después de su `created_at`. Al
+vencer, el panel se bloquea y se muestra la pantalla de contratación
+(`/contratar`).
+
+**Contratación simulada:** elegir un paquete en `/contratar` crea una
+suscripción `activa` por un periodo (mes o año según `billing_period`) y un
+cobro en `subscription_payments` con método `Simulado` y referencia `SIM-…`.
+No se cobra nada; se puede apagar con `NUTRILIFE_SIMULATED_PAYMENTS=false`.
 
 **Periodo actual** (`starts_at` → `current_period_ends_at`): fechas que cubre el
 último pago. En un plan mensual se recorre un mes con cada cobro.

@@ -2,44 +2,34 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Patient;
 use App\Models\Subscription;
+use App\Services\DashboardStats;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $totalPatients = Patient::where('user_id', Auth::id())
-            ->count();
+        $user = Auth::user();
 
-        $activePatients = Patient::where('user_id', Auth::id())
-            ->where('active', true)
-            ->count();
+        // Indicadores reales del nutriólogo (ver App\Services\DashboardStats).
+        // ?meses=6|12 cambia el periodo de las gráficas mensuales.
+        $stats = new DashboardStats($user, $request->integer('meses', 6));
+        $data = $stats->all(withDietPlans: Gate::allows('diet-plans'));
 
-        // ==========================================
-        // PRUEBA GRATUITA DE 7 DÍAS
-        // ==========================================
-        // Antes se leía de users.subscription_status / users.trial_ends_at.
-        // En la nueva BD la prueba es una fila de `subscriptions` con
-        // status = "en_prueba".
-
-        // Mismo cálculo que el indicador de la barra superior
+        // Prueba gratuita: mismo cálculo que el indicador de la barra superior
         // (Subscription::panelStatusFor). null = ya contrató un plan.
-        $trial = Subscription::panelStatusFor(Auth::user());
+        $trial = Subscription::panelStatusFor($user);
 
-        $isOnTrial = $trial !== null;
-        $isTrialActive = ($trial['state'] ?? null) === 'trial';
-        $trialDaysRemaining = $trial['days'] ?? null;
-        $trialEndsAt = $trial['ends_at'] ?? null;
-
-        return view('dashboard.index', compact(
-            'totalPatients',
-            'activePatients',
-            'isOnTrial',
-            'trialDaysRemaining',
-            'isTrialActive',
-            'trialEndsAt'
-        ));
+        return view('dashboard.index', $data + [
+            'months' => $stats->months(),
+            'periods' => DashboardStats::PERIODS,
+            'isOnTrial' => $trial !== null,
+            'isTrialActive' => ($trial['state'] ?? null) === 'trial',
+            'trialDaysRemaining' => $trial['days'] ?? null,
+            'trialEndsAt' => $trial['ends_at'] ?? null,
+        ]);
     }
 }

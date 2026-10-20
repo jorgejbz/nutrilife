@@ -146,6 +146,8 @@
                                         id="evaluation_date"
                                         name="evaluation_date"
                                         value="{{ old('evaluation_date', now()->format('Y-m-d')) }}"
+                                        min="2000-01-01"
+                                        max="{{ now()->format('Y-m-d') }}"
                                         required
                                     >
 

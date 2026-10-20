@@ -21,11 +21,19 @@ class DatabaseSeeder extends Seeder
         // Catálogos de patologías y alérgenos (historial clínico de pacientes)
         $this->call(ClinicalCatalogSeeder::class);
 
+        // Catálogo de alimentos (después de los alérgenos para ligarlos).
+        // Seguro de ejecutar varias veces: php artisan db:seed --class=FoodSeeder
+        $this->call(FoodSeeder::class);
+
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Solo si no existe: así `php artisan db:seed` se puede repetir sin
+        // fallar por el correo único.
+        if (! User::where('email', 'test@example.com')->exists()) {
+            User::factory()->create([
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+            ]);
+        }
     }
 }

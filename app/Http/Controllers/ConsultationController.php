@@ -89,12 +89,16 @@ class ConsultationController extends Controller
                     ->whereIn('status', ['Pendiente', 'Confirmada']),
             ],
 
-            'consultation_at' => ['required', 'date'],
+            // Una consulta se registra cuando ya ocurrió (hoy como máximo).
+            'consultation_at' => ['required', 'date', 'after_or_equal:2000-01-01', 'before_or_equal:'.now()->endOfDay()->format('Y-m-d H:i:s')],
             'reason' => ['nullable', 'string', 'max:255'],
             'observations' => ['nullable', 'string', 'max:5000'],
             'recommendations' => ['nullable', 'string', 'max:5000'],
             'next_visit' => ['nullable', 'date', 'after_or_equal:today'],
         ], [
+            'consultation_at.before_or_equal' => 'La consulta no puede tener fecha futura.',
+            'consultation_at.after_or_equal' => 'Revisa la fecha de la consulta.',
+            'consultation_at.date' => 'Escribe una fecha y hora válidas.',
             'patient_id.exists' => 'Selecciona un paciente válido de tu consultorio.',
             'appointment_id.exists' => 'La cita seleccionada no existe o ya fue completada/cancelada.',
             'next_visit.after_or_equal' => 'La próxima consulta no puede ser una fecha pasada.',
