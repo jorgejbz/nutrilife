@@ -16,10 +16,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\DietPlanController;
-<<<<<<< HEAD
 use App\Http\Controllers\FoodCatalogController;
-=======
->>>>>>> 56f1ba86bc25aa2407be1779b09730fe5ce1b82e
 use App\Http\Controllers\DietPlanMealController;
 use App\Http\Controllers\DietPlanItemController;
 
@@ -179,21 +176,4 @@ Route::middleware(['auth', EnsureAccountIsActive::class, EnsureTrialSubscription
         });
 });
 
-/*
-    |----------------------------------------------------------------
-    | Planes alimenticios
-    |----------------------------------------------------------------
-    */
-
-            Route::get('/planes-alimenticios', [DietPlanController::class, 'index'])->name('diet-plans.index');
-            Route::get('/planes-alimenticios/crear', [DietPlanController::class, 'create'])->name('diet-plans.create');
-            Route::post('/planes-alimenticios',[DietPlanController::class, 'store'])->name('diet-plans.store');
-            Route::get('/planes-alimenticios/{plan}',[DietPlanController::class, 'show'])->name('diet-plans.show');
-            Route::post('/planes-alimenticios/{plan}/comidas',[DietPlanMealController::class, 'store'])->name('diet-plans.meals.store');
-            Route::delete('/planes-alimenticios/{plan}/comidas/{meal}',[DietPlanMealController::class, 'destroy'])->name('diet-plans.meals.destroy');
-            Route::post('/planes-alimenticios/{plan}/comidas/{meal}/alimentos',[DietPlanItemController::class, 'store'])->name('diet-plans.items.store');
-            Route::delete('/planes-alimenticios/{plan}/comidas/{meal}/alimentos/{item}',[DietPlanItemController::class, 'destroy'])->name('diet-plans.items.destroy');
-            Route::post('/planes-alimenticios/{plan}/comidas/{meal}/alimentos-personalizados',[DietPlanItemController::class, 'storeCustom'])->name('diet-plans.items.custom.store');
-            Route::delete('/diet-plans/{diet_plan}', [DietPlanController::class,'destroy'])->name('diet-plans.destroy');
-            Route::post('diet-plans/{plan}/meals/{meal}/dishes', [DietPlanMealController::class, 'storeDish'])->name('diet-plans.meals.dishes.store');
-            require __DIR__.'/auth.php';
+require __DIR__.'/auth.php';

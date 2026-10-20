@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-<<<<<<< HEAD
 /**
  * Tiempo de comida de un plan (tabla `diet_plan_meals`): Desayuno,
  * Colación, Comida… meal_order es TINYINT UNSIGNED (1–255).
@@ -26,28 +25,18 @@ class DietPlanMeal extends Model
     /** meal_order es TINYINT UNSIGNED. */
     public const MAX_ORDER = 255;
 
-=======
-class DietPlanMeal extends Model
-{
->>>>>>> 56f1ba86bc25aa2407be1779b09730fe5ce1b82e
     protected $fillable = [
         'diet_plan_id',
         'meal_name',
         'meal_order',
-<<<<<<< HEAD
         'meal_time',   // TIME, opcional (actualización 3.1)
         'notes',       // indicación de la comida, opcional (actualización 3.1)
-=======
->>>>>>> 56f1ba86bc25aa2407be1779b09730fe5ce1b82e
     ];
 
     protected function casts(): array
     {
         return [
-<<<<<<< HEAD
             'diet_plan_id' => 'integer',
-=======
->>>>>>> 56f1ba86bc25aa2407be1779b09730fe5ce1b82e
             'meal_order' => 'integer',
         ];
     }
