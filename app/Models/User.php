@@ -103,6 +103,12 @@ class User extends Authenticatable
         return $this->hasMany(DietPlan::class);
     }
 
+    /** Platillos propios (los del sistema tienen user_id NULL). */
+    public function dietPlanDishes(): HasMany
+    {
+        return $this->hasMany(DietPlanDish::class);
+    }
+
     public function subscriptions(): HasMany
     {
         return $this->hasMany(Subscription::class);

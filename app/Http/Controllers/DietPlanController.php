@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DietPlan;
+use App\Models\DietPlanDish;
 use App\Models\DietPlanMeal;
 use App\Models\Food;
 use App\Models\Patient;
@@ -121,7 +122,7 @@ class DietPlanController extends Controller
     {
         Gate::authorize('view', $plan);
 
-        $plan->load(['patient.allergens', 'patient.pathologies', 'meals.items.food.foodGroup']);
+        $plan->load(['patient.allergens', 'patient.pathologies', 'meals.items.food.foodGroup', 'meals.items.dish']);
 
         // Contexto clínico del paciente (solo se muestra; no se calcula nada)
         $latestEvaluation = $plan->patient?->evaluations()
@@ -137,14 +138,26 @@ class DietPlanController extends Controller
 
         $usedFoods = $plan->meals->flatMap->items->pluck('food')->filter();
 
+        // Platillos del sistema y propios (actualización 3.2). Primero los que
+        // tienen ingredientes; los vacíos se muestran pero no se pueden elegir.
+        $dishes = DietPlanDish::visibleTo(Auth::id())
+            ->with('items.food')
+            ->orderBy('name')
+            ->get()
+            ->sortBy(fn (DietPlanDish $dish) => $dish->items->isEmpty())
+            ->values();
+
+        $dishFoods = $dishes->flatMap->items->pluck('food')->filter();
+
         return view('diet-plans.show', [
             'plan' => $plan,
             'foods' => $foods,
             'foodGroups' => $foods->pluck('foodGroup')->filter()->unique('id')->sortBy('name')->values(),
             'warnings' => DietPlanFoodWarnings::forPatient(
                 $plan->patient,
-                $foods->concat($usedFoods)->unique('id')
+                $foods->concat($usedFoods)->concat($dishFoods)->unique('id')
             ),
+            'dishes' => $dishes,
             'mealSuggestions' => DietPlanMeal::SUGGESTED_NAMES,
             'latestEvaluation' => $latestEvaluation,
             'lastConsultation' => $lastConsultation,
@@ -238,8 +251,10 @@ class DietPlanController extends Controller
             foreach ($plan->meals as $meal) {
                 $newMeal = $copy->meals()->create($meal->only(['meal_name', 'meal_order', 'meal_time', 'notes']));
 
+                // replicate(): copia todas las columnas del renglón (catálogo,
+                // personalizado y platillo de origen); save() lo liga a la comida nueva.
                 foreach ($meal->items as $item) {
-                    $newMeal->items()->create($item->only(['food_id', 'equivalents', 'grams']));
+                    $newMeal->items()->save($item->replicate());
                 }
             }
 

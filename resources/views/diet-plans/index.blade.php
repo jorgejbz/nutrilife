@@ -2,41 +2,67 @@
 
 @section('title', 'Planes alimenticios | NutriLife')
 
-
 {{-- =========================================================
      CONTENT HEADER
      ========================================================= --}}
 @section('content_header')
+<div class="consultations-header">
+    <div>
+        <span class="consultation-eyebrow">
+            <i class="fas fa-leaf me-1"></i>
+            NUTRILIFE
+        </span>
 
-    <div class="consultations-header">
-        <div>
-            <span class="consultation-eyebrow">
-                <i class="fas fa-leaf mr-1"></i>
-                NUTRILIFE
-            </span>
+        <h1>Planes alimenticios</h1>
 
-            <h1>Planes alimenticios</h1>
-
-            <p>Diseña los planes de tus pacientes y compara cada día contra sus objetivos.</p>
-        </div>
-
-        <a href="{{ route('diet-plans.create', $patientId ? ['paciente' => $patientId] : []) }}"
-           class="btn-consultation-primary">
-            <i class="fas fa-plus"></i>
-            Nuevo plan
-        </a>
+        <p>
+            Diseña, administra y consulta los planes
+            nutricionales de tus pacientes.
+        </p>
     </div>
 
+    <a href="{{ route('diet-plans.create', $patientId ? ['paciente' => $patientId] : []) }}"
+       class="btn-consultation-primary">
+        <i class="fas fa-plus"></i>
+        Nuevo plan
+    </a>
+</div>
 @stop
-
 
 {{-- =========================================================
      CONTENT
      ========================================================= --}}
 @section('content')
+<div class="consultations-page dp">
 
-<div class="consultations-page diet-page">
+    {{-- BANNER DE BIENVENIDA --}}
+    <section class="dp-welcome-banner" aria-label="Bienvenida al módulo de planes alimenticios">
+        <div class="dp-welcome-icon" aria-hidden="true">
+            <i class="fas fa-utensils"></i>
+        </div>
 
+        <div class="dp-welcome-copy">
+            <span class="dp-welcome-eyebrow">NUTRICIÓN PERSONALIZADA</span>
+
+            <h2>
+                Alimenta sus metas,
+                <strong>transforma su bienestar.</strong>
+            </h2>
+
+            <p>
+                Diseña y organiza planes alimenticios personalizados
+                para acompañar el progreso de cada paciente.
+            </p>
+        </div>
+
+        <div class="dp-welcome-art" aria-hidden="true">
+            <i class="fas fa-leaf dp-art-leaf dp-art-leaf-one"></i>
+            <i class="fas fa-seedling dp-art-seedling"></i>
+            <i class="fas fa-leaf dp-art-leaf dp-art-leaf-two"></i>
+        </div>
+    </section>
+
+    {{-- MENSAJES --}}
     @if(session('success'))
         <div class="consultation-alert" role="status">
             <i class="fas fa-check-circle"></i>
@@ -44,20 +70,27 @@
         </div>
     @endif
 
-    {{-- MÉTRICAS --}}
+    @if(session('error'))
+        <div class="consultation-alert" role="alert">
+            <i class="fas fa-exclamation-circle"></i>
+            {{ session('error') }}
+        </div>
+    @endif
+
+    {{-- MÉTRICAS (todos los planes del nutriólogo, sin filtros) --}}
     <div class="consultation-stats">
         <div class="consultation-stat">
             <div class="consultation-stat-icon">
                 <i class="fas fa-clipboard-list"></i>
             </div>
             <div>
-                <span>Planes registrados</span>
+                <span>Total de planes</span>
                 <h3>{{ $totalPlans }}</h3>
             </div>
         </div>
 
         <div class="consultation-stat">
-            <div class="consultation-stat-icon">
+            <div class="consultation-stat-icon today">
                 <i class="fas fa-seedling"></i>
             </div>
             <div>
@@ -67,37 +100,37 @@
         </div>
 
         <div class="consultation-stat">
-            <div class="consultation-stat-icon">
-                <i class="fas fa-user-check"></i>
+            <div class="consultation-stat-icon patients">
+                <i class="fas fa-check-circle"></i>
             </div>
             <div>
-                <span>Pacientes con plan activo</span>
-                <h3>{{ $patientsWithPlan }}</h3>
+                <span>Planes finalizados</span>
+                <h3>{{ $totalPlans - $activePlans }}</h3>
             </div>
         </div>
     </div>
 
-    {{-- LISTA --}}
+    {{-- HISTORIAL DE PLANES --}}
     <div class="consultations-card">
 
-        <div class="consultations-card-header diet-list-header">
+        <div class="consultations-card-header dp-list-header">
             <div>
-                <span>NUTRICIÓN</span>
-                <h4>Planes de tus pacientes</h4>
+                <span>PLANES NUTRICIONALES</span>
+                <h4>Planes alimenticios registrados</h4>
             </div>
 
             @if($totalPlans > 0)
-                {{-- Filtros (GET): paciente y estado --}}
-                <form method="GET" action="{{ route('diet-plans.index') }}" class="diet-filters" data-auto-submit>
-                    <div class="diet-filter-search">
+                {{-- Filtros (GET): búsqueda, paciente y estado --}}
+                <form method="GET" action="{{ route('diet-plans.index') }}" class="dp-filters" data-auto-submit>
+                    <div class="dp-filter-field">
                         <i class="fas fa-search" aria-hidden="true"></i>
                         <label class="visually-hidden" for="filterSearch">Buscar plan</label>
-                        <input type="search" name="q" id="filterSearch" value="{{ $search }}" placeholder="Buscar plan u objetivo…" maxlength="100">
+                        <input type="search" name="q" id="filterSearch" value="{{ $search }}" placeholder="Buscar plan, objetivo o paciente…" maxlength="100">
                     </div>
 
-                    <label class="visually-hidden" for="filterPatient">Paciente</label>
-                    <div class="diet-filter-select">
+                    <div class="dp-filter-field">
                         <i class="far fa-user" aria-hidden="true"></i>
+                        <label class="visually-hidden" for="filterPatient">Paciente</label>
                         <select name="paciente" id="filterPatient">
                             <option value="">Todos los pacientes</option>
                             @foreach($patients as $patient)
@@ -108,26 +141,32 @@
                         </select>
                     </div>
 
-                    <div class="diet-filter-chips" role="group" aria-label="Estado del plan">
+                    <div class="dp-filter-chips" role="group" aria-label="Estado del plan">
                         @foreach(['' => 'Todos', 'activos' => 'Activos', 'finalizados' => 'Finalizados'] as $value => $label)
-                            <label class="diet-chip {{ ($status ?? '') === $value ? 'is-selected' : '' }}">
+                            <label class="{{ ($status ?? '') === $value ? 'is-selected' : '' }}">
                                 <input type="radio" name="estado" value="{{ $value }}" @checked(($status ?? '') === $value)>
                                 {{ $label }}
                             </label>
                         @endforeach
                     </div>
 
-                    <noscript><button type="submit" class="diet-btn diet-btn--ghost">Filtrar</button></noscript>
+                    <noscript><button type="submit" class="dp-btn">Filtrar</button></noscript>
                 </form>
+            @else
+                <i class="fas fa-utensils"></i>
             @endif
         </div>
 
         @if($totalPlans === 0)
 
+            {{-- SIN PLANES --}}
             <div class="empty-consultations">
                 <i class="fas fa-utensils"></i>
-                <h5>Aún no tienes planes alimenticios</h5>
-                <p>Crea el primero: eliges al paciente, defines sus objetivos y armas sus comidas con el catálogo de alimentos.</p>
+                <h5>Sin planes alimenticios</h5>
+                <p>
+                    Cuando diseñes un plan nutricional para alguno
+                    de tus pacientes, aparecerá registrado aquí.
+                </p>
                 <a href="{{ route('diet-plans.create') }}">Crear primer plan</a>
             </div>
 
@@ -142,126 +181,120 @@
 
         @else
 
+            {{-- LISTA DE PLANES --}}
             <div class="consultations-list">
                 @foreach($plans as $plan)
                     @php
-                        $totals = $plan->totals();
-                        $progress = $plan->progress();
+                        $planKcal = $plan->totals()['kcal'];
+                        $planTarget = (float) $plan->target_kcal;
+                        $planPct = $planTarget > 0 ? $planKcal / $planTarget * 100 : 0;
                         $mealCount = $plan->meals->count();
-                        $patientName = $plan->patient
-                            ? $plan->patient->first_name.' '.$plan->patient->last_name
-                            : 'Paciente eliminado';
                     @endphp
 
-                    <article class="consultation-item diet-plan-row {{ $plan->active ? '' : 'is-finished' }}">
+                    <div class="consultation-item dp-plan-item">
 
+                        {{-- FECHA --}}
                         <div class="consultation-date" aria-hidden="true">
                             <strong>{{ $plan->starts_at->format('d') }}</strong>
                             <span>{{ mb_strtoupper($plan->starts_at->locale('es')->translatedFormat('M')) }}</span>
                         </div>
 
+                        {{-- INFORMACIÓN --}}
                         <div class="consultation-info">
-                            <div class="diet-row-title">
+                            <div class="dp-patient-heading">
                                 <h5>
-                                    <a href="{{ route('diet-plans.show', $plan) }}">{{ $plan->name }}</a>
+                                    @if($plan->patient)
+                                        {{ $plan->patient->first_name }} {{ $plan->patient->last_name }}
+                                    @else
+                                        Paciente eliminado
+                                    @endif
                                 </h5>
-                                <span class="diet-status {{ $plan->active ? 'is-active' : 'is-finished' }}">
+
+                                <span class="dp-plan-status {{ $plan->active ? 'is-active' : 'is-finished' }}">
+                                    <i class="fas fa-circle"></i>
                                     {{ $plan->statusLabel() }}
                                 </span>
                             </div>
 
+                            <p>{{ $plan->name }}</p>
+
                             @if($plan->goal)
-                                <p class="diet-row-goal"><i class="fas fa-bullseye" aria-hidden="true"></i> {{ $plan->goal }}</p>
+                                <p class="dp-plan-goal"><i class="fas fa-bullseye" aria-hidden="true"></i> {{ $plan->goal }}</p>
                             @endif
 
-                            <p>
-                                <i class="far fa-user" aria-hidden="true"></i>
-                                {{ $patientName }}
-                                @if($plan->patient?->trashed())
-                                    <span class="diet-muted">(dado de baja)</span>
-                                @endif
-                            </p>
-
-                            <div class="diet-target-chips">
-                                <span><i class="fas fa-fire" aria-hidden="true"></i>{{ number_format((float) $plan->target_kcal, 0) }} kcal</span>
-                                <span>P {{ number_format((float) $plan->target_protein_g, 0) }} g</span>
-                                <span>C {{ number_format((float) $plan->target_carbs_g, 0) }} g</span>
-                                <span>G {{ number_format((float) $plan->target_lipids_g, 0) }} g</span>
+                            {{-- OBJETIVOS DIARIOS --}}
+                            <div class="dp-plan-macros">
+                                <span><i class="fas fa-fire"></i> {{ number_format($planTarget, 0) }} kcal</span>
+                                <span><i class="fas fa-dumbbell"></i> {{ number_format((float) $plan->target_protein_g, 0) }} g proteína</span>
+                                <span><i class="fas fa-bread-slice"></i> {{ number_format((float) $plan->target_carbs_g, 0) }} g carbohidratos</span>
+                                <span><i class="fas fa-tint"></i> {{ number_format((float) $plan->target_lipids_g, 0) }} g grasas</span>
                             </div>
 
-                            <div class="diet-row-progress" title="Calorías armadas en las comidas contra el objetivo">
-                                <div class="diet-bar diet-bar--sm {{ $progress['kcal'] > 105 ? 'is-over' : '' }}">
-                                    <span style="width: {{ min($progress['kcal'], 100) }}%"></span>
+                            {{-- AVANCE: kcal ya armadas en las comidas vs. objetivo --}}
+                            <div class="dp-plan-progress" title="Calorías armadas en las comidas contra el objetivo">
+                                <div class="dp-progress-track is-small" aria-hidden="true">
+                                    <div class="dp-progress-value {{ $planPct > 105 ? 'is-over' : '' }}" style="width: {{ min($planPct, 100) }}%"></div>
                                 </div>
-                                <small>
-                                    {{ number_format($totals['kcal'], 0) }} de {{ number_format((float) $plan->target_kcal, 0) }} kcal
+                                <span>
+                                    {{ number_format($planKcal, 0) }} de {{ number_format($planTarget, 0) }} kcal
                                     · {{ $mealCount }} {{ $mealCount === 1 ? 'comida' : 'comidas' }}
-                                </small>
+                                </span>
                             </div>
 
+                            {{-- FECHAS --}}
                             <div class="consultation-meta">
                                 <span>
                                     <i class="far fa-calendar"></i>
-                                    Desde {{ $plan->starts_at->format('d/m/Y') }}
+                                    Inicio: {{ $plan->starts_at->format('d/m/Y') }}
                                 </span>
                                 <span>
                                     <i class="far fa-calendar-check"></i>
-                                    {{ $plan->ends_at ? 'Hasta '.$plan->ends_at->format('d/m/Y') : 'Sin fecha de fin' }}
+                                    Fin: {{ $plan->ends_at ? $plan->ends_at->format('d/m/Y') : 'Actualidad' }}
                                 </span>
                             </div>
                         </div>
 
-                        <div class="diet-row-actions">
-                            <a href="{{ route('diet-plans.show', $plan) }}" class="diet-btn diet-btn--soft">
-                                <i class="fas fa-utensils" aria-hidden="true"></i>
-                                Armar plan
+                        {{-- ACCIONES --}}
+                        <div class="dp-plan-actions">
+                            <a href="{{ route('diet-plans.show', $plan) }}" class="dp-plan-view">
+                                <i class="fas fa-eye"></i>
+                                Ver / editar plan
                             </a>
 
-                            <a href="{{ route('diet-plans.edit', $plan) }}"
-                               class="diet-icon-btn"
-                               title="Editar datos del plan"
-                               aria-label="Editar {{ $plan->name }}">
-                                <i class="far fa-edit" aria-hidden="true"></i>
-                            </a>
-
-                            <form method="POST"
-                                  action="{{ route('diet-plans.destroy', $plan) }}"
-                                  data-confirm="¿Eliminar el plan «{{ $plan->name }}» de {{ $patientName }}?">
+                            {{-- diet_plans tiene deleted_at: se archiva (soft delete) --}}
+                            <form action="{{ route('diet-plans.destroy', $plan) }}"
+                                  method="POST"
+                                  data-confirm="¿Eliminar el plan «{{ $plan->name }}»? Dejará de aparecer en tu lista."
+                                  data-confirm-title="Eliminar plan alimenticio"
+                                  data-confirm-accept="Eliminar plan"
+                                  data-confirm-variant="danger"
+                                  data-confirm-icon="fa-trash-alt">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit"
-                                        class="diet-icon-btn diet-icon-btn--danger"
-                                        title="Eliminar plan"
-                                        aria-label="Eliminar {{ $plan->name }}"
-                                        data-loading-text="">
-                                    <i class="far fa-trash-alt" aria-hidden="true"></i>
+
+                                <button type="submit" class="dp-plan-delete" data-loading-text="Eliminando…">
+                                    <i class="fas fa-trash-alt"></i>
+                                    Eliminar plan
                                 </button>
                             </form>
                         </div>
 
-                    </article>
+                    </div>
                 @endforeach
             </div>
 
         @endif
     </div>
-
 </div>
-
 @stop
 
-
 {{-- =========================================================
-     ESTILOS
+     ESTILOS / SCRIPTS
      ========================================================= --}}
 @section('css')
-    @include('partials.theme-styles', ['section' => 'admin'])
+    @include('diet-plans.partials.styles')
 @stop
 
-
-{{-- =========================================================
-     SCRIPTS
-     ========================================================= --}}
 @section('js')
     @vite(['resources/js/pages/diet-plans.js'])
 @stop

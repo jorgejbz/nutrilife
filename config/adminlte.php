@@ -822,6 +822,15 @@ return [
         'classes' => 'nl-nav-wrap',
     ],
 
+    [
+        'text' => 'Catálogo de platillos',
+        'url'  => 'platillos',
+        'icon' => 'fas fa-fw fa-bowl-food',
+        'can' => 'diet-plans',
+        'active' => ['platillos', 'platillos/*'],
+        'classes' => 'nl-nav-wrap',
+    ],
+
     ['header' => 'ADMINISTRACIÓN'],
 
     [

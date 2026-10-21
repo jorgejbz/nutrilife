@@ -3,15 +3,27 @@
  * NUTRILIFE — PLANES ALIMENTICIOS
  * index / create / edit / show (resources/views/diet-plans)
  *
- *  - (La confirmación de borrado, data-confirm, vive en forms.js.)
+ * Comportamiento migrado de la versión nutrilife_planesAlim
+ * (antes era JS en línea con onclick):
+ *  - Constructor: formulario "Agregar comida" desplegable.
+ *  - Drawers laterales: "Alimento" (catálogo, con buscador,
+ *    porciones/gramos, cantidad y vista previa del aporte) con
+ *    paso a "Agregar manualmente"; "Platillo" (tarjetas con
+ *    buscador). Esc, la X o clic fuera los cierran.
+ *
+ * Más lo que ya tenía la versión final:
  *  - Filtros del listado que se aplican al cambiar.
  *  - Formulario: kcal que aportan los macros y texto del switch.
- *  - Constructor: diálogo para agregar alimentos del catálogo
- *    (búsqueda, grupos, vista previa del aporte) y edición
- *    rápida de gramos.
+ *  - Editar comida y cambiar gramos (formularios desplegables).
+ *  - Drawer "Duplicar / asignar".
+ *  - Si la validación del servidor falla, el drawer se reabre en
+ *    la misma comida con lo capturado.
+ *
+ * (La confirmación de borrado, data-confirm, y el bloqueo de
+ * envíos dobles viven en forms.js.)
  *
  * Todo cálculo que se guarda lo hace el servidor; aquí solo hay
- * ayudas visuales.
+ * ayudas visuales y el cálculo de gramos a partir de porciones.
  * ==========================================================
  */
 
@@ -21,6 +33,7 @@
 
     const numberFormat = new Intl.NumberFormat('es-MX', { maximumFractionDigits: 0 });
     const decimalFormat = new Intl.NumberFormat('es-MX', { maximumFractionDigits: 1 });
+    const qtyFormat = new Intl.NumberFormat('es-MX', { maximumFractionDigits: 2 });
 
     const normalize = (text) => (text || '')
         .toString()
@@ -29,11 +42,19 @@
         .toLowerCase()
         .trim();
 
+    const escapeHtml = (text) => (text || '').toString()
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+
+    const isTouch = () => window.matchMedia('(pointer: coarse)').matches;
+
     /* ------------------------------------------------------
      | Listado: filtros automáticos
      * ------------------------------------------------------ */
-    document.querySelectorAll('form[data-auto-submit]').forEach((form) => {
-        // El buscador se envía con Enter; selects y botones al cambiar.
+    document.querySelectorAll('form.dp-filters[data-auto-submit]').forEach((form) => {
+        // El buscador se envía con Enter; selects y estados al cambiar.
         form.addEventListener('change', (event) => {
             if (event.target.type !== 'search') {
                 form.submit();
@@ -57,6 +78,10 @@
         const checkText = document.getElementById('macroCheckText');
 
         const updateMacroCheck = () => {
+            if (!check || !checkText) {
+                return;
+            }
+
             const kcalFromMacros = {};
             let total = 0;
 
@@ -73,22 +98,20 @@
 
             check.hidden = false;
 
-            Object.entries(kcalFromMacros).forEach(([key, kcal]) => {
-                const bar = check.querySelector(`[data-split="${key}"]`);
-                bar.style.width = `${(kcal / total) * 100}%`;
-            });
-
             const pct = (key) => Math.round((kcalFromMacros[key] / total) * 100);
             const target = parseFloat(kcalInput?.value) || 0;
             let message = `Los macros aportan ${numberFormat.format(total)} kcal `
                 + `(proteína ${pct('protein')}%, carbohidratos ${pct('carbs')}%, grasas ${pct('lipids')}%).`;
 
+            check.classList.remove('is-off');
+
             if (target > 0) {
                 const diff = total - target;
-                check.classList.toggle('is-off', Math.abs(diff) > target * 0.05);
-                message += Math.abs(diff) <= target * 0.05
-                    ? ' Coinciden con las calorías objetivo.'
-                    : ` Difieren ${numberFormat.format(Math.abs(diff))} kcal de las calorías objetivo.`;
+                const off = Math.abs(diff) > target * 0.05;
+                check.classList.toggle('is-off', off);
+                message += off
+                    ? ` Difieren ${numberFormat.format(Math.abs(diff))} kcal de las calorías objetivo.`
+                    : ' Coinciden con las calorías objetivo.';
             }
 
             checkText.textContent = message;
@@ -100,7 +123,7 @@
 
         updateMacroCheck();
 
-        // Fin no puede ser antes del inicio
+        // La fecha de fin no puede ser anterior al inicio
         const startsAt = planForm.querySelector('#starts_at');
         const endsAt = planForm.querySelector('#ends_at');
 
@@ -120,334 +143,540 @@
     }
 
     /* ------------------------------------------------------
-     | Constructor: edición rápida de gramos
+     | Constructor
      * ------------------------------------------------------ */
-    document.querySelectorAll('.diet-grams-form').forEach((form) => {
-        const input = form.querySelector('input[name="grams"]');
+    const builder = document.getElementById('dietBuilder');
 
-        const sync = () => {
-            form.classList.toggle('is-dirty', input.value !== input.dataset.original);
-        };
-
-        input.addEventListener('input', sync);
-        input.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-                input.value = input.dataset.original;
-                sync();
-            }
-        });
-    });
-
-    /* ------------------------------------------------------
-     | Diálogos genéricos (p. ej. "Duplicar / asignar")
-     |   <button data-open-dialog="idDelDialog">
-     |   <button data-close-dialog> dentro del <dialog>
-     * ------------------------------------------------------ */
-    // Mientras hay un diálogo abierto la página de atrás no se desplaza
-    // (antes la rueda del ratón movía el plan detrás del diálogo).
-    const lockPage = () => document.documentElement.classList.add('nl-dialog-open');
-    const unlockPage = () => {
-        if (!document.querySelector('dialog.diet-dialog[open]')) {
-            document.documentElement.classList.remove('nl-dialog-open');
-        }
-    };
-
-    document.querySelectorAll('dialog.diet-dialog').forEach((target) => {
-        target.addEventListener('close', unlockPage);
-    });
-
-    const showDialog = (target) => {
-        lockPage();
-        if (typeof target.showModal === 'function') {
-            target.showModal();
-        } else {
-            target.setAttribute('open', '');
-        }
-    };
-
-    document.querySelectorAll('[data-open-dialog]').forEach((button) => {
-        button.addEventListener('click', () => {
-            const target = document.getElementById(button.dataset.openDialog);
-            if (target) {
-                showDialog(target);
-            }
-        });
-    });
-
-    document.querySelectorAll('dialog.diet-dialog:not(#foodDialog)').forEach((target) => {
-        target.querySelectorAll('[data-close-dialog]').forEach((button) => {
-            button.addEventListener('click', () => (typeof target.close === 'function' ? target.close() : target.removeAttribute('open')));
-        });
-
-        target.addEventListener('click', (event) => {
-            if (event.target === target && typeof target.close === 'function') {
-                target.close();
-            }
-        });
-
-        if (target.hasAttribute('data-reopen')) {
-            showDialog(target);
-        }
-    });
-
-    /* ------------------------------------------------------
-     | Constructor: editar nombre / horario / indicación de una comida
-     * ------------------------------------------------------ */
-    document.querySelectorAll('[data-toggle-meal-edit]').forEach((button) => {
-        button.addEventListener('click', () => {
-            const form = document.getElementById(button.dataset.toggleMealEdit);
-            if (!form) {
-                return;
-            }
-
-            form.hidden = !form.hidden;
-            document.querySelectorAll(`[data-toggle-meal-edit="${form.id}"][aria-expanded]`).forEach((toggle) => {
-                toggle.setAttribute('aria-expanded', String(!form.hidden));
-            });
-
-            if (!form.hidden) {
-                form.querySelector('input[name="meal_name"]')?.focus();
-            }
-        });
-    });
-
-    /* ------------------------------------------------------
-     | Constructor: diálogo "Agregar alimento"
-     * ------------------------------------------------------ */
-    const dialog = document.getElementById('foodDialog');
-
-    if (!dialog) {
+    if (!builder) {
         return;
     }
 
-    const dialogForm = document.getElementById('foodDialogForm');
-    const mealLabel = dialog.querySelector('[data-meal-label]');
-    const mealField = document.getElementById('dialogMeal');
-    const search = document.getElementById('foodSearch');
-    const options = Array.from(dialog.querySelectorAll('[data-food-option]'));
-    const noResults = document.getElementById('foodNoResults');
-    const gramsInput = document.getElementById('dialogGrams');
-    const preview = document.getElementById('foodPreview');
-    const groupChips = Array.from(dialog.querySelectorAll('.diet-chip[data-group]'));
-    const groupSelect = document.getElementById('foodGroupSelect');
-    const resultCount = document.getElementById('foodResultCount');
-    const clearButtons = [document.getElementById('foodClearFilters'), ...dialog.querySelectorAll('[data-clear-food-filters]')].filter(Boolean);
-    const optionList = document.getElementById('foodOptions');
+    /* ---------- Agregar comida (formulario desplegable) ---------- */
+    const mealForm = document.getElementById('mealForm');
 
-    let catalog = [];
+    document.querySelectorAll('[data-dp-toggle-meal-form]').forEach((button) => {
+        button.addEventListener('click', () => {
+            if (!mealForm) {
+                return;
+            }
 
-    try {
-        catalog = JSON.parse(document.getElementById('foodCatalogData')?.textContent || '[]');
-    } catch (error) {
-        catalog = [];
+            mealForm.hidden = !mealForm.hidden;
+            document.querySelectorAll('[data-dp-toggle-meal-form][aria-expanded]').forEach((toggle) => {
+                toggle.setAttribute('aria-expanded', String(!mealForm.hidden));
+            });
+
+            if (!mealForm.hidden) {
+                mealForm.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                mealForm.querySelector('input[name="meal_name"]')?.focus();
+            }
+        });
+    });
+
+    /* ---------- Editar comida / cambiar gramos ---------- */
+    document.querySelectorAll('[data-dp-toggle]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const target = document.getElementById(button.dataset.dpToggle);
+
+            if (!target) {
+                return;
+            }
+
+            target.hidden = !target.hidden;
+            document.querySelectorAll(`[data-dp-toggle="${target.id}"][aria-expanded]`).forEach((toggle) => {
+                toggle.setAttribute('aria-expanded', String(!target.hidden));
+            });
+
+            if (!target.hidden) {
+                const input = target.querySelector('input:not([type="hidden"])');
+                input?.focus();
+                input?.select?.();
+            }
+        });
+    });
+
+    /* ---------- Drawers ---------- */
+    const drawers = Array.from(document.querySelectorAll('[data-dp-drawer]'));
+
+    const lockPage = () => document.body.classList.add('dp-drawer-lock');
+    const unlockPage = () => {
+        if (!document.querySelector('.dp-drawer-overlay.is-open')) {
+            document.body.classList.remove('dp-drawer-lock');
+        }
+    };
+
+    let lastTrigger = null;
+
+    const openDrawer = (overlay) => {
+        drawers.forEach((other) => other !== overlay && closeDrawer(other, { restoreFocus: false }));
+        overlay.classList.add('is-open');
+        overlay.setAttribute('aria-hidden', 'false');
+        lockPage();
+    };
+
+    function closeDrawer(overlay, { restoreFocus = true } = {}) {
+        if (!overlay.classList.contains('is-open')) {
+            return;
+        }
+
+        overlay.classList.remove('is-open');
+        overlay.setAttribute('aria-hidden', 'true');
+        unlockPage();
+
+        if (restoreFocus && lastTrigger) {
+            lastTrigger.focus();
+        }
     }
 
-    const foodsById = new Map(catalog.map((food) => [String(food.id), food]));
-    let activeGroup = '';
-    let gramsTouched = false;
-
-    const selectedFood = () => {
-        const checked = dialog.querySelector('input[name="food_id"]:checked');
-        return checked ? foodsById.get(checked.value) : null;
-    };
-
-    const applyFilters = () => {
-        const term = normalize(search.value);
-        let visible = 0;
-
-        options.forEach((option) => {
-            const matches = (!term || option.dataset.name.includes(term))
-                && (!activeGroup || option.dataset.group === activeGroup);
-
-            option.hidden = !matches;
-            visible += matches ? 1 : 0;
+    drawers.forEach((overlay) => {
+        overlay.querySelectorAll('[data-dp-close]').forEach((button) => {
+            button.addEventListener('click', () => closeDrawer(overlay));
         });
 
-        noResults.hidden = visible > 0;
-
-        if (resultCount) {
-            const label = visible === 1 ? 'alimento' : 'alimentos';
-            resultCount.textContent = (term || activeGroup)
-                ? `${visible} de ${options.length} ${options.length === 1 ? 'alimento' : 'alimentos'}`
-                : `${visible} ${label}`;
-        }
-
-        const filtered = Boolean(term || activeGroup);
-        clearButtons.forEach((button) => {
-            if (button.id === 'foodClearFilters') {
-                button.hidden = !filtered;
+        // Clic fuera del panel
+        overlay.addEventListener('click', (event) => {
+            if (event.target === overlay) {
+                closeDrawer(overlay);
             }
         });
-    };
+    });
 
-    const setGroup = (value, { scroll = true } = {}) => {
-        activeGroup = value;
-        groupChips.forEach((chip) => {
-            const selected = chip.dataset.group === value;
-            chip.classList.toggle('is-selected', selected);
-            chip.setAttribute('aria-pressed', String(selected));
-        });
-        if (groupSelect) {
-            groupSelect.value = value;
-        }
-        applyFilters();
-        if (scroll && optionList) {
-            optionList.scrollTop = 0;
-        }
-    };
-
-    const updatePreview = () => {
-        const food = selectedFood();
-        const grams = parseFloat(gramsInput.value);
-
-        options.forEach((option) => {
-            option.classList.toggle('is-selected', option.querySelector('input').checked);
-        });
-
-        if (!food) {
-            preview.textContent = 'Elige un alimento para ver su aporte.';
+    // Esc cierra el drawer abierto (si el diálogo de confirmación no está encima)
+    document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') {
             return;
         }
 
-        if (!grams || grams <= 0 || !food.portion_grams) {
-            preview.textContent = `${food.name}: indica la cantidad en gramos.`;
-            return;
-        }
+        drawers.forEach((overlay) => closeDrawer(overlay));
+    });
 
-        const factor = grams / food.portion_grams;
-
-        preview.innerHTML = '';
-        const strong = document.createElement('strong');
-        strong.textContent = `${numberFormat.format(food.kcal * factor)} kcal`;
-        preview.append(
-            strong,
-            ` · P ${decimalFormat.format(food.protein * factor)} g`
-            + ` · C ${decimalFormat.format(food.carbs * factor)} g`
-            + ` · G ${decimalFormat.format(food.lipids * factor)} g`
-            + ` · ${decimalFormat.format(factor)} ${factor === 1 ? 'porción' : 'porciones'}`
-        );
+    /** Pone la ruta, el nombre y el id de la comida en el drawer. */
+    const bindMeal = (overlay, button) => {
+        overlay.querySelectorAll('[data-meal-label]').forEach((label) => {
+            label.textContent = button.dataset.mealName;
+        });
+        overlay.querySelectorAll('[data-meal-input]').forEach((input) => {
+            input.value = button.dataset.mealId;
+        });
     };
 
-    const openDialog = (button, { keepValues = false } = {}) => {
-        dialogForm.action = button.dataset.action;
-        mealLabel.textContent = button.dataset.mealName;
-        mealField.value = button.dataset.mealId;
+    /* ======================================================
+       DRAWER: ALIMENTO (catálogo + manual)
+       ====================================================== */
+    const foodDrawer = document.getElementById('foodDrawer');
 
-        if (!keepValues) {
-            dialogForm.querySelectorAll('input[name="food_id"]').forEach((input) => {
-                input.checked = false;
+    const food = (() => {
+        if (!foodDrawer) {
+            return null;
+        }
+
+        const form = document.getElementById('foodForm');
+        const customForm = document.getElementById('customFoodForm');
+        const divider = document.getElementById('customFoodDivider');
+        const select = document.getElementById('foodSelect');
+        const search = document.getElementById('foodSearch');
+        const group = document.getElementById('foodGroupSelect');
+        const count = document.getElementById('foodResultCount');
+        const quantity = document.getElementById('foodQuantity');
+        const quantityUnit = document.getElementById('foodQuantityUnit');
+        const equivalence = document.getElementById('portionEquivalence');
+        const gramsInput = document.getElementById('foodGrams');
+        const preview = document.getElementById('foodPreview');
+        const measureButtons = Array.from(foodDrawer.querySelectorAll('[data-measure]'));
+        const options = Array.from(select.options).filter((option) => option.value);
+
+        let mode = 'portion';
+
+        const selected = () => {
+            const option = select.options[select.selectedIndex];
+            return option && option.value ? option : null;
+        };
+
+        const warningsOf = (option) => {
+            try {
+                return JSON.parse(option.dataset.warnings || '[]');
+            } catch (error) {
+                return [];
+            }
+        };
+
+        /* Buscador y grupo: ocultan opciones del select */
+        const applyFilters = () => {
+            const term = normalize(search.value);
+            const groupId = group?.value || '';
+            let visible = 0;
+
+            options.forEach((option) => {
+                const matches = (!term || option.dataset.name.includes(term))
+                    && (!groupId || option.dataset.group === groupId);
+
+                option.hidden = !matches;
+                option.disabled = !matches && !option.selected;
+                visible += matches ? 1 : 0;
             });
-            gramsInput.value = '';
-            search.value = '';
-            gramsTouched = false;
-        } else {
-            gramsTouched = gramsInput.value !== '';
-        }
 
-        setGroup('', { scroll: false });
-        updatePreview();
-        lockPage();
-
-        if (typeof dialog.showModal === 'function') {
-            dialog.showModal();
-        } else {
-            dialog.setAttribute('open', '');
-        }
-
-        // Si hay un alimento elegido (p. ej. tras un error de validación) se
-        // muestra en la lista; si no, la lista empieza arriba.
-        const checked = dialog.querySelector('input[name="food_id"]:checked');
-        if (checked) {
-            checked.closest('[data-food-option]')?.scrollIntoView({ block: 'nearest' });
-        } else if (optionList) {
-            optionList.scrollTop = 0;
-        }
-
-        // En pantallas táctiles no se abre el teclado de golpe: tapaba la lista.
-        if (!window.matchMedia('(pointer: coarse)').matches) {
-            setTimeout(() => search.focus(), 30);
-        }
-    };
-
-    const closeDialog = () => {
-        if (typeof dialog.close === 'function') {
-            dialog.close();
-        } else {
-            dialog.removeAttribute('open');
-        }
-    };
-
-    document.querySelectorAll('[data-open-food-dialog]').forEach((button) => {
-        button.addEventListener('click', () => openDialog(button));
-    });
-
-    dialog.querySelectorAll('[data-close-dialog]').forEach((button) => {
-        button.addEventListener('click', closeDialog);
-    });
-
-    // Clic fuera del contenido cierra el diálogo
-    dialog.addEventListener('click', (event) => {
-        if (event.target === dialog) {
-            closeDialog();
-        }
-    });
-
-    search.addEventListener('input', () => {
-        applyFilters();
-        if (optionList) {
-            optionList.scrollTop = 0;
-        }
-    });
-
-    clearButtons.forEach((button) => {
-        button.addEventListener('click', () => {
-            search.value = '';
-            setGroup('');
-            search.focus();
-        });
-    });
-
-    groupSelect?.addEventListener('change', () => setGroup(groupSelect.value));
-
-    // Enter en el buscador no envía el formulario
-    search.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            const firstVisible = options.find((option) => !option.hidden);
-            firstVisible?.querySelector('input').click();
-            gramsInput.focus();
-        }
-    });
-
-    groupChips.forEach((chip) => {
-        chip.addEventListener('click', () => setGroup(chip.dataset.group));
-    });
-
-    dialogForm.addEventListener('change', (event) => {
-        if (event.target.name === 'food_id') {
-            const food = selectedFood();
-
-            // Propone una porción del catálogo si aún no se escribieron gramos
-            if (food && !gramsTouched && food.portion_grams) {
-                gramsInput.value = food.portion_grams;
+            if (count) {
+                const noun = options.length === 1 ? 'alimento' : 'alimentos';
+                count.textContent = (term || groupId)
+                    ? `${visible} de ${options.length} ${noun}`
+                    : `${options.length} ${noun}`;
             }
+
+            return visible;
+        };
+
+        /* Porciones o gramos */
+        const setMode = (value, { keepQuantity = false } = {}) => {
+            mode = value;
+
+            measureButtons.forEach((button) => {
+                const active = button.dataset.measure === value;
+                button.classList.toggle('is-active', active);
+                button.setAttribute('aria-pressed', String(active));
+            });
+
+            if (!keepQuantity) {
+                if (value === 'portion') {
+                    quantity.value = 1;
+                } else {
+                    const option = selected();
+                    quantity.value = option ? (parseFloat(option.dataset.portion) || 100) : 100;
+                }
+            }
+
+            quantity.min = value === 'portion' ? '0.25' : '0.1';
+            quantity.step = 'any';
 
             updatePreview();
+        };
+
+        const changeQuantity = (direction) => {
+            let value = parseFloat(quantity.value) || 0;
+            const step = mode === 'portion' ? 0.5 : 10;
+
+            value += direction * step;
+            value = mode === 'portion' ? Math.max(0.5, value) : Math.max(1, value);
+
+            quantity.value = Math.round(value * 100) / 100;
+            updatePreview();
+        };
+
+        function updatePreview() {
+            const option = selected();
+
+            quantity.setCustomValidity('');
+
+            if (!option) {
+                preview.innerHTML = '<div class="dp-preview-placeholder">'
+                    + '<i class="fas fa-apple-whole"></i>'
+                    + '<span>Selecciona un alimento para ver sus valores nutricionales.</span>'
+                    + '</div>';
+                equivalence.textContent = 'Selecciona un alimento.';
+                quantityUnit.textContent = mode === 'portion' ? 'porciones' : 'g';
+                gramsInput.value = '';
+                return;
+            }
+
+            const portionGrams = parseFloat(option.dataset.portion) || 0;
+            const portionDescription = option.dataset.portionDescription || '1 porción';
+            const amount = parseFloat(quantity.value) || 0;
+
+            let grams;
+            let visibleDescription;
+
+            if (mode === 'portion') {
+                grams = amount * portionGrams;
+                const piece = portionDescription.toLowerCase().includes('pieza');
+                quantityUnit.textContent = piece
+                    ? (amount === 1 ? 'pieza' : 'piezas')
+                    : (amount === 1 ? 'porción' : 'porciones');
+                visibleDescription = `${qtyFormat.format(amount)} × ${portionDescription}`;
+                equivalence.innerHTML = `<span>${escapeHtml(visibleDescription)}</span>`
+                    + `<strong>≈ ${numberFormat.format(grams)} g</strong>`;
+            } else {
+                grams = amount;
+                quantityUnit.textContent = 'g';
+                const portions = portionGrams > 0 ? grams / portionGrams : 0;
+                visibleDescription = `${numberFormat.format(grams)} g`;
+                equivalence.innerHTML = `<span>${escapeHtml(visibleDescription)}</span>`
+                    + `<strong>≈ ${qtyFormat.format(portions)} ${portions === 1 ? 'porción' : 'porciones'}</strong>`;
+            }
+
+            // diet_plan_items.grams DECIMAL(6,2): mín. 0.1 g, máx. 9999.99 g
+            grams = Math.round(grams * 100) / 100;
+            gramsInput.value = grams > 0 ? grams.toFixed(2) : '';
+
+            if (grams < 0.1) {
+                quantity.setCustomValidity('La cantidad debe ser de al menos 0.1 g.');
+            } else if (grams > 9999.99) {
+                quantity.setCustomValidity('La cantidad no puede ser mayor a 9999.99 g.');
+            }
+
+            const factor = portionGrams > 0 ? grams / portionGrams : 0;
+            const kcal = (parseFloat(option.dataset.kcal) || 0) * factor;
+            const protein = (parseFloat(option.dataset.protein) || 0) * factor;
+            const carbs = (parseFloat(option.dataset.carbs) || 0) * factor;
+            const fat = (parseFloat(option.dataset.fat) || 0) * factor;
+
+            const warnings = warningsOf(option)
+                .map((warning) => `<span class="dp-warning is-${escapeHtml(warning.type)}">`
+                    + '<i class="fas fa-exclamation-triangle" aria-hidden="true"></i> '
+                    + `${escapeHtml(warning.text)}</span>`)
+                .join('');
+
+            preview.innerHTML = `<div class="dp-food-preview-name">${escapeHtml(option.dataset.label)}</div>`
+                + `<div class="dp-food-preview-portion">${escapeHtml(visibleDescription)} · ${numberFormat.format(grams)} g</div>`
+                + `<div class="dp-food-preview-kcal">${numberFormat.format(kcal)} <small>kcal</small></div>`
+                + '<div class="dp-food-preview-macros">'
+                + `<div><span>PROTEÍNA</span><strong>${decimalFormat.format(protein)}g</strong></div>`
+                + `<div><span>CARBOHIDRATOS</span><strong>${decimalFormat.format(carbs)}g</strong></div>`
+                + `<div><span>GRASAS</span><strong>${decimalFormat.format(fat)}g</strong></div>`
+                + '</div>'
+                + (warnings ? `<div class="dp-food-preview-warnings">${warnings}</div>` : '');
         }
+
+        /* Catálogo ⇄ alimento manual */
+        const showPanel = (panel) => {
+            const custom = panel === 'custom';
+            form.hidden = custom;
+            divider.hidden = custom;
+            customForm.hidden = !custom;
+
+            if (!isTouch()) {
+                setTimeout(() => (custom ? customForm.querySelector('#customName') : search)?.focus(), 30);
+            }
+        };
+
+        const reset = () => {
+            form.reset();
+            customForm.reset();
+            select.value = '';
+            search.value = '';
+            if (group) {
+                group.value = '';
+            }
+            applyFilters();
+            setMode('portion');
+        };
+
+        const open = (button, { keepValues = false, panel = 'food' } = {}) => {
+            lastTrigger = button;
+
+            if (!keepValues) {
+                reset();
+            }
+
+            form.action = button.dataset.action;
+            customForm.action = button.dataset.customAction;
+            bindMeal(foodDrawer, button);
+
+            if (keepValues) {
+                // Tras un error: alimento y gramos que se habían elegido
+                applyFilters();
+                if (selected() && gramsInput.value) {
+                    quantity.value = parseFloat(gramsInput.value);
+                    setMode('grams', { keepQuantity: true });
+                } else {
+                    setMode('portion');
+                }
+            }
+
+            openDrawer(foodDrawer);
+            showPanel(panel);
+        };
+
+        search.addEventListener('input', applyFilters);
+        group?.addEventListener('change', applyFilters);
+
+        // Enter en el buscador elige el primer alimento visible (no envía)
+        search.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const first = options.find((option) => !option.hidden);
+
+                if (first) {
+                    select.value = first.value;
+                    select.dispatchEvent(new Event('change'));
+                    quantity.focus();
+                }
+            }
+        });
+
+        select.addEventListener('change', () => {
+            applyFilters();
+            setMode('portion');
+        });
+
+        measureButtons.forEach((button) => {
+            button.addEventListener('click', () => setMode(button.dataset.measure));
+        });
+
+        foodDrawer.querySelectorAll('[data-quantity-step]').forEach((button) => {
+            button.addEventListener('click', () => changeQuantity(parseFloat(button.dataset.quantityStep)));
+        });
+
+        quantity.addEventListener('input', updatePreview);
+
+        foodDrawer.querySelectorAll('[data-dp-custom]').forEach((button) => {
+            button.addEventListener('click', () => showPanel(button.dataset.dpCustom === 'show' ? 'custom' : 'food'));
+        });
+
+        // Antes de enviar: los gramos salen de la cantidad y la forma de medir
+        form.addEventListener('submit', (event) => {
+            updatePreview();
+
+            if (!gramsInput.value || !quantity.checkValidity()) {
+                event.preventDefault();
+                quantity.reportValidity();
+            }
+        });
+
+        return { open };
+    })();
+
+    /* ======================================================
+       DRAWER: PLATILLO
+       ====================================================== */
+    const dishDrawer = document.getElementById('dishDrawer');
+
+    const dish = (() => {
+        if (!dishDrawer) {
+            return null;
+        }
+
+        const form = dishDrawer.querySelector('[data-dp-form="dish"]');
+        const search = document.getElementById('dishSearch');
+        const hidden = document.getElementById('selectedDishId');
+        const submit = document.getElementById('dishSubmit');
+        const noResults = document.getElementById('dishNoResults');
+        const cards = Array.from(dishDrawer.querySelectorAll('.dp-dish-card-item'));
+
+        const select = (card) => {
+            cards.forEach((other) => {
+                const isSelected = other === card;
+                other.classList.toggle('is-selected', isSelected);
+                other.setAttribute('aria-selected', String(isSelected));
+            });
+
+            hidden.value = card ? card.dataset.dishId : '';
+            submit.disabled = !hidden.value;
+        };
+
+        /* Búsqueda en tiempo real de platillos */
+        const filter = () => {
+            const term = normalize(search.value);
+            let visible = 0;
+
+            cards.forEach((card) => {
+                card.hidden = Boolean(term) && !card.dataset.name.includes(term);
+                visible += card.hidden ? 0 : 1;
+            });
+
+            noResults.hidden = visible > 0;
+        };
+
+        const open = (button, { keepValues = false } = {}) => {
+            lastTrigger = button;
+            form.action = button.dataset.action;
+            bindMeal(dishDrawer, button);
+
+            search.value = '';
+            filter();
+
+            const previous = keepValues
+                ? cards.find((card) => card.dataset.dishId === hidden.value && !card.disabled)
+                : null;
+            select(previous || null);
+
+            openDrawer(dishDrawer);
+            previous?.scrollIntoView({ block: 'nearest' });
+
+            if (!isTouch()) {
+                setTimeout(() => search.focus(), 30);
+            }
+        };
+
+        cards.forEach((card) => {
+            card.addEventListener('click', () => {
+                if (!card.disabled) {
+                    select(card);
+                }
+            });
+        });
+
+        search.addEventListener('input', filter);
+
+        // Enter en el buscador elige el primer platillo disponible
+        search.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const first = cards.find((card) => !card.hidden && !card.disabled);
+
+                if (first) {
+                    select(first);
+                    submit.focus();
+                }
+            }
+        });
+
+        form.addEventListener('submit', (event) => {
+            if (!hidden.value) {
+                event.preventDefault();
+            }
+        });
+
+        return { open };
+    })();
+
+    /* ======================================================
+       DRAWER: DUPLICAR / ASIGNAR
+       ====================================================== */
+    const duplicateDrawer = document.getElementById('duplicateDrawer');
+
+    /* ---------- Botones que abren drawers ---------- */
+    document.querySelectorAll('[data-dp-open]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const type = button.dataset.dpOpen;
+
+            if (type === 'food') {
+                food?.open(button);
+            } else if (type === 'dish') {
+                dish?.open(button);
+            } else if (type === 'duplicate' && duplicateDrawer) {
+                lastTrigger = button;
+                openDrawer(duplicateDrawer);
+                if (!isTouch()) {
+                    setTimeout(() => duplicateDrawer.querySelector('select, input:not([type="hidden"])')?.focus(), 30);
+                }
+            }
+        });
     });
 
-    gramsInput.addEventListener('input', () => {
-        gramsTouched = true;
-        updatePreview();
-    });
+    /* ---------- Reabrir tras un error de validación ---------- */
+    const reopenFor = (overlay, type) => {
+        const mealId = overlay?.dataset.reopenMeal;
 
-    // Si la validación del servidor falló, se reabre en la misma comida
-    if (mealField.value) {
-        const button = document.querySelector(`[data-open-food-dialog][data-meal-id="${mealField.value}"]`);
-
-        if (button) {
-            openDialog(button, { keepValues: true });
+        if (!mealId) {
+            return;
         }
+
+        const button = document.querySelector(`[data-dp-open="${type}"][data-meal-id="${mealId}"]`);
+
+        if (!button) {
+            return;
+        }
+
+        if (type === 'food') {
+            food?.open(button, { keepValues: true, panel: overlay.dataset.reopenPanel === 'custom' ? 'custom' : 'food' });
+        } else {
+            dish?.open(button, { keepValues: true });
+        }
+    };
+
+    reopenFor(foodDrawer, 'food');
+    reopenFor(dishDrawer, 'dish');
+
+    if (duplicateDrawer?.dataset.reopen) {
+        openDrawer(duplicateDrawer);
     }
 
 })();

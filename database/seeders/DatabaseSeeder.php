@@ -25,6 +25,14 @@ class DatabaseSeeder extends Seeder
         // Seguro de ejecutar varias veces: php artisan db:seed --class=FoodSeeder
         $this->call(FoodSeeder::class);
 
+        // Catálogo INCMNSZ 2015 (1,513 alimentos, solo agrega). Seguro de repetir:
+        // php artisan db:seed --class=IncmnszCatalogSeeder
+        $this->call(IncmnszCatalogSeeder::class);
+
+        // Platillos del sistema con su receta (usa los dos catálogos). Seguro de repetir:
+        // php artisan db:seed --class=DietPlanDishSeeder
+        $this->call(DietPlanDishSeeder::class);
+
         // User::factory(10)->create();
 
         // Solo si no existe: así `php artisan db:seed` se puede repetir sin

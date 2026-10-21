@@ -12,7 +12,7 @@
     <div class="consultations-header">
         <div>
             <span class="consultation-eyebrow">
-                <i class="fas fa-leaf mr-1"></i>
+                <i class="fas fa-leaf me-1"></i>
                 NUTRILIFE
             </span>
             <h1>{{ $featureLabel }}</h1>

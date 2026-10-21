@@ -584,7 +584,12 @@ document.addEventListener('DOMContentLoaded', function () {
                         method="POST"
                         action="${appointment.cancel_url}"
                         class="appointment-action-form"
-                        onsubmit="return confirm('¿Deseas cancelar esta cita?');"
+                        data-confirm="La cita quedará marcada como «Cancelada»."
+                        data-confirm-title="¿Cancelar esta cita?"
+                        data-confirm-accept="Sí, cancelar cita"
+                        data-confirm-cancel="Volver"
+                        data-confirm-variant="warning"
+                        data-confirm-icon="fa-ban"
                     >
                         <input type="hidden" name="_token" value="${csrfToken}">
                         <input type="hidden" name="_method" value="PATCH">
@@ -627,7 +632,9 @@ document.addEventListener('DOMContentLoaded', function () {
                             method="POST"
                             action="${appointment.delete_url}"
                             class="appointment-action-form"
-                            onsubmit="return confirm('¿Eliminar esta cita definitivamente? Esta acción no se puede deshacer.');"
+                            data-confirm="Esta acción no se puede deshacer."
+                            data-confirm-title="¿Eliminar esta cita?"
+                            data-confirm-accept="Sí, eliminar"
                         >
                             <input type="hidden" name="_token" value="${csrfToken}">
                             <input type="hidden" name="_method" value="DELETE">

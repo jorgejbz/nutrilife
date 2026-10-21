@@ -17,6 +17,7 @@ use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\DietPlanController;
 use App\Http\Controllers\FoodCatalogController;
+use App\Http\Controllers\DishCatalogController;
 use App\Http\Controllers\DietPlanMealController;
 use App\Http\Controllers\DietPlanItemController;
 
@@ -141,6 +142,17 @@ Route::middleware(['auth', EnsureAccountIsActive::class, EnsureTrialSubscription
 
     /*
     |----------------------------------------------------------------
+    | Catálogo de platillos (solo consulta; mismo acceso que los planes)
+    |----------------------------------------------------------------
+    | diet_plan_dishes: platillos del sistema + los propios del
+    | nutriólogo, con sus ingredientes y aporte calculado.
+    */
+    Route::get('/platillos', [DishCatalogController::class, 'index'])
+        ->middleware('feature:diet_plans')
+        ->name('dishes.index');
+
+    /*
+    |----------------------------------------------------------------
     | Planes alimenticios (solo Pro, Consultorio y prueba gratuita)
     |----------------------------------------------------------------
     | feature:diet_plans → App\Http\Middleware\EnsureFeature: bloquea la
@@ -173,6 +185,10 @@ Route::middleware(['auth', EnsureAccountIsActive::class, EnsureTrialSubscription
             Route::post('/{plan}/comidas/{meal}/alimentos', [DietPlanItemController::class, 'store'])->name('items.store');
             Route::patch('/{plan}/comidas/{meal}/alimentos/{item}', [DietPlanItemController::class, 'update'])->name('items.update');
             Route::delete('/{plan}/comidas/{meal}/alimentos/{item}', [DietPlanItemController::class, 'destroy'])->name('items.destroy');
+
+            // Alimento personalizado (fuera del catálogo) y platillos (actualización 3.2)
+            Route::post('/{plan}/comidas/{meal}/alimentos-personalizados', [DietPlanItemController::class, 'storeCustom'])->name('items.custom.store');
+            Route::post('/{plan}/comidas/{meal}/platillos', [DietPlanItemController::class, 'storeDish'])->name('meals.dishes.store');
         });
 });
 

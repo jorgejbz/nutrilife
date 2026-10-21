@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasFoodOrCustomNutrients;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
@@ -9,21 +10,45 @@ use Illuminate\Support\Collection;
 /**
  * Alimento dentro de una comida (tabla `diet_plan_items`).
  *
- * En la BD definitiva food_id es NOT NULL: todo alimento sale del catálogo
- * `foods`. Se guardan los gramos indicados y sus equivalentes
- * (grams / foods.portion_grams, DECIMAL(4,2)). Las calorías y macros NO se
- * guardan: se calculan desde el catálogo con nutrients().
+ * Desde la actualización 3.2 un renglón es del catálogo `foods` (food_id;
+ * kcal y macros se calculan del catálogo y NO se guardan) o personalizado
+ * (food_id NULL + custom_*, aporte total de sus gramos): ver
+ * HasFoodOrCustomNutrients. Se guardan los gramos y sus equivalentes
+ * (grams / foods.portion_grams, DECIMAL(4,2); 1 para personalizados).
+ * diet_plan_dish_id = platillo del que salió el renglón (copia).
  */
 class DietPlanItem extends Model
 {
+    use HasFoodOrCustomNutrients;
+
     /** Límites de las columnas DECIMAL de la BD. */
     public const MAX_GRAMS = 9999.99;      // DECIMAL(6,2)
 
     public const MAX_EQUIVALENTS = 99.99;  // DECIMAL(4,2)
 
+    /**
+     * Columnas del aporte de un personalizado (custom_kcal DECIMAL(7,2) y
+     * macros DECIMAL(6,2): mismos límites que DietPlan::MAX_KCAL / MAX_MACRO_G).
+     */
+    public const CUSTOM_NUTRIENTS = [
+        'kcal' => 'custom_kcal',
+        'protein_g' => 'custom_protein_g',
+        'carbs_g' => 'custom_carbs_g',
+        'lipids_g' => 'custom_lipids_g',
+    ];
+
     protected $fillable = [
         'diet_plan_meal_id',
+        'diet_plan_dish_id',
         'food_id',
+        // Alimento personalizado (actualización 3.2)
+        'custom_name',
+        'custom_kcal',
+        'custom_protein_g',
+        'custom_carbs_g',
+        'custom_lipids_g',
+        'custom_portion_description',
+        'custom_image_url',
         'equivalents',
         'grams',
     ];
@@ -32,7 +57,12 @@ class DietPlanItem extends Model
     {
         return [
             'diet_plan_meal_id' => 'integer',
+            'diet_plan_dish_id' => 'integer',
             'food_id' => 'integer',
+            'custom_kcal' => 'decimal:2',
+            'custom_protein_g' => 'decimal:2',
+            'custom_carbs_g' => 'decimal:2',
+            'custom_lipids_g' => 'decimal:2',
             'equivalents' => 'decimal:2',
             'grams' => 'decimal:2',
         ];
@@ -48,6 +78,18 @@ class DietPlanItem extends Model
         return $this->belongsTo(Food::class);
     }
 
+    /** URL de la foto copiada del platillo de origen (null si no tiene). */
+    public function imageSrc(): ?string
+    {
+        return DietPlanDish::resolveImageUrl($this->custom_image_url);
+    }
+
+    /** Platillo de origen (NULL si se agregó suelto o si el platillo se borró). */
+    public function dish(): BelongsTo
+    {
+        return $this->belongsTo(DietPlanDish::class, 'diet_plan_dish_id');
+    }
+
     /**
      * Equivalentes de un alimento para cierta cantidad de gramos.
      * null si el alimento no tiene una porción válida.
@@ -60,28 +102,22 @@ class DietPlanItem extends Model
     }
 
     /**
-     * Aporte del alimento según los gramos indicados. Los valores de
-     * `foods` son por porción (portion_grams).
+     * Personalizado: su aporte es el de sus gramos, así que al cambiar la
+     * cantidad se reescala en proporción (NULL sigue NULL).
      *
-     * @return array{kcal: float, protein_g: float, carbs_g: float, lipids_g: float}
+     * @return array<string, float|null> custom_* => valor
      */
-    public function nutrients(): array
+    public function customNutrientsFor(float $grams): array
     {
-        $food = $this->food;
-        $portion = (float) ($food?->portion_grams ?? 0);
+        $current = (float) $this->grams;
+        $factor = $current > 0 ? $grams / $current : 1.0;
+        $scaled = [];
 
-        if (! $food || $portion <= 0) {
-            return self::emptyNutrients();
+        foreach (self::CUSTOM_NUTRIENTS as $column) {
+            $scaled[$column] = $this->{$column} === null ? null : round((float) $this->{$column} * $factor, 2);
         }
 
-        $factor = (float) $this->grams / $portion;
-
-        return [
-            'kcal' => (float) $food->kcal * $factor,
-            'protein_g' => (float) $food->protein_g * $factor,
-            'carbs_g' => (float) $food->carbs_g * $factor,
-            'lipids_g' => (float) $food->lipids_g * $factor,
-        ];
+        return $scaled;
     }
 
     /**

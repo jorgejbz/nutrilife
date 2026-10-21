@@ -2,30 +2,41 @@
 
 @section('title', 'Nuevo plan alimenticio | NutriLife')
 
+{{-- =========================================================
+     ENCABEZADO
+     ========================================================= --}}
 @section('content_header')
-    <div class="consultations-header">
-        <div>
-            <span class="consultation-eyebrow">
-                <i class="fas fa-leaf mr-1"></i>
-                PLANES ALIMENTICIOS
-            </span>
-            <h1>Nuevo plan</h1>
-            <p>Elige al paciente y define sus objetivos diarios.</p>
-        </div>
+<div class="consultations-header dp">
+    <div>
+        <span class="consultation-eyebrow">
+            <i class="fas fa-leaf me-1"></i>
+            NUTRILIFE
+        </span>
 
-        <a href="{{ route('diet-plans.index') }}" class="btn-consultation-primary">
-            <i class="fas fa-arrow-left"></i>
-            Regresar
-        </a>
+        <h1>Nuevo plan alimenticio</h1>
+
+        <p>
+            Diseña un plan nutricional personalizado
+            y establece los objetivos de tu paciente.
+        </p>
     </div>
+
+    <a href="{{ route('diet-plans.index') }}" class="dp-back-button">
+        <i class="fas fa-arrow-left"></i>
+        Volver a planes
+    </a>
+</div>
 @stop
 
+{{-- =========================================================
+     CONTENIDO
+     ========================================================= --}}
 @section('content')
     @include('diet-plans.partials.form', ['plan' => null])
 @stop
 
 @section('css')
-    @include('partials.theme-styles', ['section' => 'admin'])
+    @include('diet-plans.partials.styles')
 @stop
 
 @section('js')

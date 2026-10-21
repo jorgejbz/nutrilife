@@ -98,11 +98,23 @@ class DemoDataSeeder extends Seeder
     }
 
     /**
+     * Expedientes, agenda, consultas, evaluaciones, pagos y (opcional)
+     * planes para UN nutriólogo. Lo usa ProDemoSeeder para cargar solo la
+     * cuenta Pro. Mismas reglas que run(): no duplica pacientes existentes.
+     */
+    public function seedPatientsFor(User $user, array $patients, bool $withDietPlans = true): void
+    {
+        $this->foods ??= Food::with('allergens')->get()->keyBy('name');
+
+        $this->clinicalData($user, $patients, $withDietPlans);
+    }
+
+    /**
      * Restricciones por patología DE EJEMPLO (food_pathology_restrictions),
      * solo para ver los avisos del constructor de planes en local. No son
      * recomendaciones clínicas.
      */
-    private function demoFoodRestrictions(): void
+    public function demoFoodRestrictions(): void
     {
         $pathologies = Pathology::pluck('id', 'name');
         $groups = \App\Models\FoodGroup::pluck('id', 'name');

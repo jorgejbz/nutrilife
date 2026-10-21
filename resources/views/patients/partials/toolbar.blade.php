@@ -39,7 +39,7 @@
 
             <span class="patient-count">
 
-                <i class="fas fa-user-friends mr-1"></i>
+                <i class="fas fa-user-friends me-1"></i>
 
                 {{ $patients->count() }}
 

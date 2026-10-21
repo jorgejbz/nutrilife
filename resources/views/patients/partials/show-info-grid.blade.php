@@ -318,7 +318,7 @@
 
                             <strong>
 
-                                {{ $paciente->created_at->format('d/m/Y') }}
+                                {{ $paciente->created_at?->format('d/m/Y') ?? 'Sin fecha' }}
 
                             </strong>
 

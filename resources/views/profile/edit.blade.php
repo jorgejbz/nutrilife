@@ -32,7 +32,7 @@
     <div class="patients-header">
         <div>
             <span class="header-eyebrow">
-                <i class="fas fa-leaf mr-1"></i>
+                <i class="fas fa-leaf me-1"></i>
                 NUTRILIFE · CUENTA
             </span>
 
@@ -327,12 +327,12 @@
                         <tbody>
                             @foreach ($subscriptionPayments as $payment)
                                 <tr>
-                                    <td>{{ $fecha($payment->paid_at) }}</td>
-                                    <td>{{ $payment->subscription?->plan?->name ?? '—' }}</td>
-                                    <td>{{ $dinero($payment->amount) }}</td>
-                                    <td>{{ $payment->payment_method }}</td>
-                                    <td>{{ $payment->reference ?: '—' }}</td>
-                                    <td>
+                                    <td data-label="Fecha">{{ $fecha($payment->paid_at) }}</td>
+                                    <td data-label="Plan">{{ $payment->subscription?->plan?->name ?? '—' }}</td>
+                                    <td data-label="Monto">{{ $dinero($payment->amount) }}</td>
+                                    <td data-label="Método">{{ $payment->payment_method }}</td>
+                                    <td data-label="Referencia">{{ $payment->reference ?: '—' }}</td>
+                                    <td data-label="Estado">
                                         <span class="nl-status nl-status--{{ $payment->status === 'pagado' ? 'activa' : 'vencida' }}">
                                             {{ ucfirst($payment->status) }}
                                         </span>

@@ -11,6 +11,7 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/js/theme.js',
                 'resources/js/forms.js',
+                'resources/js/date-picker.js',
 
                 // Dashboard
                 // Los estilos ya no pasan por Vite: viven en public/css
@@ -35,6 +36,7 @@ export default defineConfig({
                 // Planes alimenticios (Pro, Consultorio y prueba)
                 'resources/js/pages/diet-plans.js',
                 'resources/js/pages/foods-index.js',
+                'resources/js/pages/dishes-index.js',
 
                 // Evaluaciones
                 'resources/js/pages/evaluations-create.js',

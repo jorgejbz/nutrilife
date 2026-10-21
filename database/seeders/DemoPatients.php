@@ -165,6 +165,85 @@ class DemoPatients
         ]);
     }
 
+    /**
+     * Paciente de pro@ que ProDemoSeeder da de baja (soft delete) después de
+     * cargar su historial: sirve para ver cómo quedan sus planes, pagos y
+     * consultas cuando el paciente ya no está en la lista.
+     */
+    public static function proArchived(): array
+    {
+        $deficit = self::plan('Déficit moderado 1,800 kcal', 1800, [25, 45, 30], 'Bajar de peso antes de su cirugía de rodilla.', "Caminar 20 minutos diarios.\nEvitar refrescos y jugos.");
+
+        return array_map([self::class, 'patient'], [
+            ['first' => 'Óscar', 'last' => 'Villalobos Prado', 'sex' => 'Masculino', 'birth' => '1970-10-02', 'phone' => '5590887766', 'email' => 'oscar.villalobos@pacientes-pro.test', 'occupation' => 'Chofer de transporte', 'goal' => 'Bajar 10 kg antes de su cirugía.', 'active' => false,
+                'pathologies' => [['Obesidad', null, null], ['Hipertensión arterial', '2020-08-14', null]], 'height' => 173, 'weight' => 104.0, 'fat' => 35.0, 'muscle' => 38.0, 'waist' => 112, 'hip_ratio' => 0.97, 'start' => 45, 'max_visits' => 2, 'future' => false, 'plan' => $deficit],
+        ]);
+    }
+
+    /**
+     * Paciente que DemoAccountsSeeder da de baja (soft delete) en cada cuenta
+     * después de cargar su historial. Con plan solo si el paquete los incluye.
+     */
+    public static function archivedFor(string $domain, string $first, string $last, bool $withPlan): array
+    {
+        $plan = $withPlan
+            ? self::plan('Plan de control 1,700 kcal', 1700, [22, 48, 30], 'Mejorar hábitos antes de su cambio de ciudad.', "Desayunar antes de las 9:00.\nIncluir verdura en dos comidas al día.")
+            : null;
+
+        $slug = strtolower(iconv('UTF-8', 'ASCII//TRANSLIT', $first.'.'.explode(' ', $last)[0]));
+
+        return array_map([self::class, 'patient'], [
+            ['first' => $first, 'last' => $last, 'sex' => 'Masculino', 'birth' => '1977-05-19', 'phone' => '5530112233', 'email' => preg_replace('/[^a-z.]/', '', $slug).'@'.$domain, 'occupation' => 'Agente de ventas', 'goal' => 'Bajar de peso y mejorar la presión arterial.', 'active' => false,
+                'pathologies' => [['Hipertensión arterial', '2021-04-04', null]], 'height' => 174, 'weight' => 96.0, 'fat' => 31.0, 'muscle' => 36.0, 'waist' => 104, 'hip_ratio' => 0.98, 'start' => 40, 'max_visits' => 2, 'future' => false, 'plan' => $plan],
+        ]);
+    }
+
+    /* ==================================================================
+     | josemanuelgarcializaola2212@gmail.com (Manuel, paquete Pro)
+     * ================================================================== */
+
+    public static function manuel(): array
+    {
+        $deficit = self::plan('Déficit calórico 1,700 kcal', 1700, [25, 45, 30], 'Bajar grasa corporal de forma gradual.', "Pesar los alimentos la primera semana.\nCaminar 30 minutos al día.");
+        $sport = self::plan('Rendimiento deportivo 2,800 kcal', 2800, [22, 55, 23], 'Mejorar el rendimiento y la recuperación.', "Hidratarse antes, durante y después de entrenar.\nColación con carbohidrato y proteína al terminar.");
+        $balance = self::plan('Alimentación equilibrada 2,000 kcal', 2000, [20, 50, 30], 'Mantener el peso con mejores hábitos.', "Comer sentado y sin pantallas.\nLimitar ultraprocesados a 1 vez por semana.");
+
+        return array_map([self::class, 'patient'], [
+            ['first' => 'Andrea', 'last' => 'Salazar Quintana', 'sex' => 'Femenino', 'birth' => '1992-06-14', 'phone' => '3312004501', 'email' => 'andrea.salazar@pacientes-manuel.test', 'occupation' => 'Dentista', 'goal' => 'Bajar 6 kg y mejorar la resistencia a la insulina.',
+                'pathologies' => [['Prediabetes / resistencia a la insulina', '2026-04-10', null]], 'height' => 162, 'weight' => 74.0, 'fat' => 35.0, 'waist' => 88, 'start' => 30, 'plan' => $deficit],
+            ['first' => 'Bruno', 'last' => 'Esparza Lima', 'sex' => 'Masculino', 'birth' => '2000-01-23', 'phone' => '3312004502', 'email' => 'bruno.esparza@pacientes-manuel.test', 'occupation' => 'Ciclista amateur', 'goal' => 'Mejorar rendimiento en ruta.',
+                'allergens' => [['Nueces y frutos de cáscara', 'moderada']], 'height' => 176, 'weight' => 68.0, 'weight_step' => 0.2, 'fat' => 12.0, 'fat_step' => -0.1, 'muscle' => 33.0, 'muscle_step' => 0.3, 'waist' => 76, 'waist_step' => 0.0, 'hip_ratio' => 1.15, 'start' => 28, 'plan' => $sport],
+            ['first' => 'Carmen', 'last' => 'Ochoa Villa', 'sex' => 'Femenino', 'birth' => '1966-03-08', 'phone' => '3312004503', 'email' => 'carmen.ochoa@pacientes-manuel.test', 'occupation' => 'Comerciante', 'goal' => 'Controlar la diabetes y la presión.',
+                'pathologies' => [['Diabetes mellitus tipo 2', '2015-02-02', 'Metformina.'], ['Hipertensión arterial', '2019-08-08', null]], 'allergens' => [['Mariscos (crustáceos y moluscos)', 'severa']], 'height' => 155, 'weight' => 78.0, 'fat' => 40.0, 'waist' => 98, 'start' => 27, 'cancel' => [1], 'plan' => $deficit],
+            ['first' => 'Damián', 'last' => 'Rojas Peralta', 'sex' => 'Masculino', 'birth' => '1988-11-30', 'phone' => '3312004504', 'email' => 'damian.rojas@pacientes-manuel.test', 'occupation' => 'Contador', 'goal' => 'Reducir grasa abdominal y triglicéridos.',
+                'pathologies' => [['Dislipidemia', '2025-09-09', null], ['Hígado graso (esteatosis hepática)', '2026-01-15', null]], 'height' => 172, 'weight' => 91.0, 'fat' => 29.0, 'muscle' => 36.0, 'waist' => 101, 'hip_ratio' => 1.0, 'start' => 25, 'last_payment_pending' => true, 'plan' => $deficit],
+            ['first' => 'Elena', 'last' => 'Fierro Campos', 'sex' => 'Femenino', 'birth' => '1997-07-07', 'phone' => '3312004505', 'email' => 'elena.fierro@pacientes-manuel.test', 'occupation' => 'Bailarina', 'goal' => 'Comer bien sin lácteos.',
+                'allergens' => [['Leche (proteína de la leche)', 'severa']], 'height' => 166, 'weight' => 55.0, 'weight_step' => 0.0, 'fat' => 21.0, 'fat_step' => -0.1, 'waist' => 64, 'waist_step' => 0.0, 'start' => 22, 'plan' => $balance],
+            ['first' => 'Gerardo', 'last' => 'Vela Montoya', 'sex' => 'Masculino', 'birth' => '1959-04-17', 'phone' => '3312004506', 'email' => 'gerardo.vela@pacientes-manuel.test', 'occupation' => 'Jubilado', 'goal' => 'Mejorar la glucosa.', 'active' => false,
+                'pathologies' => [['Diabetes mellitus tipo 2', '2009-09-09', null]], 'height' => 168, 'weight' => 86.0, 'fat' => 32.0, 'waist' => 102, 'hip_ratio' => 0.98, 'start' => 26, 'max_visits' => 1, 'plan' => $deficit],
+            ['first' => 'Ximena', 'last' => 'Arroyo Báez', 'sex' => 'Femenino', 'birth' => '2002-12-01', 'phone' => '3312004507', 'email' => 'ximena.arroyo@pacientes-manuel.test', 'occupation' => 'Estudiante', 'goal' => 'Organizar horarios de comida.',
+                'height' => 160, 'weight' => 58.0, 'fat' => 26.0, 'waist' => 70, 'start' => -2, 'max_visits' => 0],
+        ]);
+    }
+
+    /* ==================================================================
+     | jorgejb234@gmail.com (prueba Esencial vencida: sin planes)
+     * ================================================================== */
+
+    public static function jorge(): array
+    {
+        return array_map([self::class, 'patient'], [
+            ['first' => 'Lorena', 'last' => 'Méndez Arias', 'sex' => 'Femenino', 'birth' => '1990-02-18', 'phone' => '3398001101', 'email' => 'lorena.mendez@pacientes-jorge.test', 'occupation' => 'Maestra', 'goal' => 'Bajar de peso después del embarazo.',
+                'pathologies' => [['Hipotiroidismo', '2020-05-05', null]], 'height' => 161, 'weight' => 72.0, 'fat' => 35.0, 'waist' => 87, 'start' => 22],
+            ['first' => 'Marco', 'last' => 'Ibarra Toledo', 'sex' => 'Masculino', 'birth' => '1984-09-09', 'phone' => '3398001102', 'email' => 'marco.ibarra@pacientes-jorge.test', 'occupation' => 'Supervisor de almacén', 'goal' => 'Controlar ácido úrico.',
+                'pathologies' => [['Hiperuricemia / gota', '2025-03-03', null]], 'allergens' => [['Pescado', 'moderada']], 'height' => 175, 'weight' => 94.0, 'fat' => 30.0, 'muscle' => 36.0, 'waist' => 103, 'hip_ratio' => 1.0, 'start' => 21, 'last_payment_pending' => true],
+            ['first' => 'Natalia', 'last' => 'Cruz Esquivel', 'sex' => 'Femenino', 'birth' => '2001-08-28', 'phone' => '3398001103', 'email' => 'natalia.cruz@pacientes-jorge.test', 'occupation' => 'Estudiante de medicina', 'goal' => 'Mejorar energía durante guardias.',
+                'pathologies' => [['Anemia', '2026-07-07', null]], 'height' => 158, 'weight' => 50.0, 'weight_step' => 0.2, 'fat' => 22.0, 'fat_step' => 0.0, 'waist' => 64, 'waist_step' => 0.0, 'start' => 20, 'cancel' => [1]],
+            ['first' => 'Pedro', 'last' => 'Solís Garza', 'sex' => 'Masculino', 'birth' => '1972-01-12', 'phone' => '3398001104', 'email' => 'pedro.solis@pacientes-jorge.test', 'occupation' => 'Taxista', 'goal' => 'Bajar de peso.', 'active' => false,
+                'pathologies' => [['Obesidad', null, null]], 'height' => 170, 'weight' => 108.0, 'fat' => 37.0, 'waist' => 118, 'hip_ratio' => 0.97, 'start' => 21, 'max_visits' => 1],
+        ]);
+    }
+
     /* ==================================================================
      | consultorio@nutrilife.test
      * ================================================================== */

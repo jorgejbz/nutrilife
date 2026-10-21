@@ -12,7 +12,7 @@
     <div class="consultations-header">
         <div>
             <span class="consultation-eyebrow">
-                <i class="fas fa-leaf mr-1"></i>
+                <i class="fas fa-leaf me-1"></i>
                 PAQUETES NUTRILIFE
             </span>
             <h1>{{ $hasAccess ? 'Cambia de paquete' : 'Elige tu paquete' }}</h1>
@@ -76,6 +76,11 @@
             <p>Todavía no hay paquetes activos en la tabla <code>subscription_plans</code>.</p>
         </div>
     @else
+        @php
+            // Paquete vigente (solo si es pagado y activo, igual que $currentPlanId)
+            $currentPlan = $currentPlanId ? ($plans->firstWhere('id', $currentPlanId) ?? $subscription?->plan) : null;
+        @endphp
+
         <div class="plans-grid">
             @foreach($plans as $plan)
                 @php
@@ -131,9 +136,17 @@
                         @elseif(! $checkoutEnabled)
                             <button type="button" class="diet-btn diet-btn--ghost" disabled>No disponible en línea</button>
                         @else
+                            @include('subscription.partials.confirm-details')
+
                             <form method="POST"
                                   action="{{ route('subscription.checkout', $plan) }}"
-                                  data-confirm="¿Contratar el paquete {{ $plan->name }} por ${{ number_format((float) $plan->price, 2) }} MXN al {{ $period }}?{{ $currentPlanId ? ' Tu paquete actual se cancelará hoy.' : '' }}&#10;&#10;Es un pago simulado: no se hará ningún cargo.">
+                                  data-confirm="{{ $currentPlan ? 'Tu paquete '.$currentPlan->name.' se cancela hoy y '.$plan->name.' se activa de inmediato.' : 'El paquete se activa de inmediato.' }}"
+                                  data-confirm-title="{{ $currentPlan ? '¿Cambiar a '.$plan->name.'?' : '¿Contratar '.$plan->name.'?' }}"
+                                  data-confirm-accept="{{ $currentPlan ? 'Sí, cambiar a '.$plan->name : 'Sí, contratar '.$plan->name }}"
+                                  data-confirm-cancel="{{ $currentPlan ? 'Mantener '.$currentPlan->name : 'Cancelar' }}"
+                                  data-confirm-variant="plan"
+                                  data-confirm-icon="fa-crown"
+                                  data-confirm-details="#plan-confirm-{{ $plan->id }}">
                                 @csrf
                                 <button type="submit" class="diet-btn diet-btn--primary" data-loading-text="Activando…">
                                     {{ $currentPlanId ? 'Cambiar a '.$plan->name : 'Elegir '.$plan->name }}

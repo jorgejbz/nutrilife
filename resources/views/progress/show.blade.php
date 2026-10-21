@@ -13,7 +13,7 @@
     <div>
 
         <span class="progress-eyebrow">
-            <i class="fas fa-leaf mr-1"></i>
+            <i class="fas fa-leaf me-1"></i>
             NUTRILIFE
         </span>
 
@@ -29,11 +29,11 @@
     </div>
 
 
-    <div class="d-flex">
+    <div class="d-flex flex-wrap gap-2">
 
         <a
             href="{{ route('evaluaciones.create', $paciente) }}"
-            class="btn-progress-add mr-2"
+            class="btn-progress-add"
         >
             <i class="fas fa-plus"></i>
             Nueva evaluación

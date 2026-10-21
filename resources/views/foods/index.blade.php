@@ -61,7 +61,7 @@
     <div class="consultations-header food-header">
         <div>
             <span class="consultation-eyebrow">
-                <i class="fas fa-leaf mr-1" aria-hidden="true"></i>
+                <i class="fas fa-leaf me-1" aria-hidden="true"></i>
                 NUTRICIÓN
             </span>
             <h1>Catálogo de alimentos</h1>

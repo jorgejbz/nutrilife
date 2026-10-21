@@ -2,30 +2,38 @@
 
 @section('title', 'Editar plan alimenticio | NutriLife')
 
+{{-- =========================================================
+     ENCABEZADO
+     ========================================================= --}}
 @section('content_header')
-    <div class="consultations-header">
-        <div>
-            <span class="consultation-eyebrow">
-                <i class="fas fa-leaf mr-1"></i>
-                PLANES ALIMENTICIOS
-            </span>
-            <h1>Editar plan</h1>
-            <p>{{ $plan->name }}</p>
-        </div>
+<div class="consultations-header dp">
+    <div>
+        <span class="consultation-eyebrow">
+            <i class="fas fa-leaf me-1"></i>
+            NUTRILIFE
+        </span>
 
-        <a href="{{ route('diet-plans.show', $plan) }}" class="btn-consultation-primary">
-            <i class="fas fa-arrow-left"></i>
-            Regresar al plan
-        </a>
+        <h1>Editar plan alimenticio</h1>
+
+        <p>{{ $plan->name }}</p>
     </div>
+
+    <a href="{{ route('diet-plans.show', $plan) }}" class="dp-back-button">
+        <i class="fas fa-arrow-left"></i>
+        Volver al plan
+    </a>
+</div>
 @stop
 
+{{-- =========================================================
+     CONTENIDO
+     ========================================================= --}}
 @section('content')
     @include('diet-plans.partials.form', ['plan' => $plan])
 @stop
 
 @section('css')
-    @include('partials.theme-styles', ['section' => 'admin'])
+    @include('diet-plans.partials.styles')
 @stop
 
 @section('js')

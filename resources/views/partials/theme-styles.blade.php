@@ -55,3 +55,8 @@
 @if ($section !== 'app')
     @vite(['resources/js/forms.js'])
 @endif
+
+{{-- Panel: calendario de NutriLife para los campos de fecha (resources/js/date-picker.js) --}}
+@if ($section === 'admin')
+    @vite(['resources/js/date-picker.js'])
+@endif

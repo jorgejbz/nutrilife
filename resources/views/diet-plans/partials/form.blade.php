@@ -1,342 +1,393 @@
 {{-- =========================================================
-     PLANES ALIMENTICIOS — FORMULARIO (crear y editar)
-     Columnas de diet_plans: patient_id (solo al crear), name,
-     goal e instructions (opcionales, actualización 3.1),
-     starts_at, ends_at, target_kcal DECIMAL(7,2),
+     PLANES ALIMENTICIOS — FORMULARIO POR PASOS (crear y editar)
+     Diseño de la versión nutrilife_planesAlim (pasos 01 · 02 · 03)
+     más los campos de la versión final: objetivo, indicaciones y,
+     al editar, el estado Activo / Finalizado.
+
+     Columnas de diet_plans: patient_id (solo al crear), name, goal,
+     instructions, starts_at, ends_at, target_kcal DECIMAL(7,2),
      target_protein_g / target_carbs_g / target_lipids_g DECIMAL(6,2)
      y active (solo al editar).
 
-     Variables: $plan (DietPlan|null), $patients (solo crear),
+     Variables: $plan (DietPlan|null), $patients y
      $selectedPatientId (solo crear).
      ========================================================= --}}
 @php
-    $isEdit = isset($plan) && $plan->exists;
+    $isEdit = isset($plan) && $plan?->exists;
 
     $macroFields = [
-        'target_kcal' => ['label' => 'Calorías', 'unit' => 'kcal', 'icon' => 'fas fa-fire', 'max' => \App\Models\DietPlan::MAX_KCAL, 'placeholder' => '1800'],
-        'target_protein_g' => ['label' => 'Proteínas', 'unit' => 'g', 'icon' => 'fas fa-drumstick-bite', 'max' => \App\Models\DietPlan::MAX_MACRO_G, 'placeholder' => '100'],
-        'target_carbs_g' => ['label' => 'Carbohidratos', 'unit' => 'g', 'icon' => 'fas fa-bread-slice', 'max' => \App\Models\DietPlan::MAX_MACRO_G, 'placeholder' => '200'],
-        'target_lipids_g' => ['label' => 'Grasas', 'unit' => 'g', 'icon' => 'fas fa-tint', 'max' => \App\Models\DietPlan::MAX_MACRO_G, 'placeholder' => '60'],
+        'target_kcal' => ['class' => 'kcal', 'kicker' => 'ENERGÍA', 'label' => 'Calorías', 'unit' => 'kcal', 'icon' => 'fas fa-fire', 'max' => \App\Models\DietPlan::MAX_KCAL, 'placeholder' => '2000'],
+        'target_protein_g' => ['class' => 'protein', 'kicker' => 'MACRONUTRIENTE', 'label' => 'Proteínas', 'unit' => 'g', 'icon' => 'fas fa-dumbbell', 'max' => \App\Models\DietPlan::MAX_MACRO_G, 'placeholder' => '160'],
+        'target_carbs_g' => ['class' => 'carbs', 'kicker' => 'MACRONUTRIENTE', 'label' => 'Carbohidratos', 'unit' => 'g', 'icon' => 'fas fa-bread-slice', 'max' => \App\Models\DietPlan::MAX_MACRO_G, 'placeholder' => '220'],
+        'target_lipids_g' => ['class' => 'fats', 'kicker' => 'MACRONUTRIENTE', 'label' => 'Grasas', 'unit' => 'g', 'icon' => 'fas fa-tint', 'max' => \App\Models\DietPlan::MAX_MACRO_G, 'placeholder' => '65'],
     ];
 
     $value = fn (string $field, $default = null) => old($field, $isEdit ? $plan->{$field} : $default);
     $dateValue = fn (string $field, $default = null) => old($field, $isEdit ? $plan->{$field}?->format('Y-m-d') : $default);
+    $number = fn ($raw) => $raw === null || $raw === '' ? '' : rtrim(rtrim((string) $raw, '0'), '.');
 @endphp
 
-<div class="consultation-form-page">
+<div class="dp dp-create-page">
 
-    <div class="ambient ambient-one"></div>
-    <div class="ambient ambient-two"></div>
-    <div class="ambient ambient-three"></div>
+    {{-- INTRODUCCIÓN --}}
+    <div class="dp-intro">
+        <div class="dp-intro-icon">
+            <i class="fas fa-clipboard-list"></i>
+        </div>
 
+        <div>
+            <span>CONFIGURACIÓN NUTRICIONAL</span>
+            <h2>{{ $isEdit ? 'Editar plan alimenticio' : 'Crear plan alimenticio' }}</h2>
+            <p>
+                {{ $isEdit
+                    ? 'Ajusta los datos, los objetivos o finaliza el plan.'
+                    : 'Completa la información para registrar un nuevo plan. Después agregarás sus comidas.' }}
+            </p>
+        </div>
+    </div>
+
+    {{-- ERRORES DE VALIDACIÓN --}}
     @if($errors->any())
-        <div class="diet-form-alert" role="alert">
-            <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+        <div class="dp-validation-alert" role="alert">
+            <i class="fas fa-exclamation-circle"></i>
             <div>
                 <strong>Revisa la información</strong>
-                <span>Hay {{ $errors->count() === 1 ? 'un campo' : $errors->count().' campos' }} por corregir.</span>
+                <p>
+                    {{ $errors->count() === 1 ? 'Un campo necesita' : $errors->count().' campos necesitan' }}
+                    corregirse antes de {{ $isEdit ? 'guardar' : 'crear' }} el plan.
+                </p>
             </div>
         </div>
     @endif
 
-    <form method="POST"
-          action="{{ $isEdit ? route('diet-plans.update', $plan) : route('diet-plans.store') }}"
+    <form action="{{ $isEdit ? route('diet-plans.update', $plan) : route('diet-plans.store') }}"
+          method="POST"
+          class="dp-form"
           id="dietPlanForm">
         @csrf
         @if($isEdit)
             @method('PUT')
         @endif
 
-        <div class="form-glass-card">
-            <div class="glass-shine"></div>
+        {{-- =====================================
+             01 - PACIENTE
+             ===================================== --}}
+        <section class="dp-section">
+            <div class="dp-section-heading">
+                <div class="dp-step-icon"><i class="fas fa-user"></i></div>
 
-            {{-- ENCABEZADO --}}
-            <div class="form-card-header">
-                <div class="form-heading">
-                    <div class="form-heading-icon">
-                        <i class="fas fa-utensils"></i>
-                    </div>
-                    <div>
-                        <span>PLAN ALIMENTICIO</span>
-                        <h3>{{ $isEdit ? 'Datos del plan' : 'Nuevo plan alimenticio' }}</h3>
-                        <p>
-                            {{ $isEdit
-                                ? 'Ajusta el nombre, las fechas, los objetivos o finaliza el plan.'
-                                : 'Después de guardarlo podrás agregar las comidas y sus alimentos.' }}
-                        </p>
-                    </div>
+                <div class="dp-section-copy">
+                    <span>PASO 01 · PACIENTE</span>
+                    <h3>{{ $isEdit ? 'Paciente del plan' : 'Seleccionar paciente' }}</h3>
+                    <p>
+                        {{ $isEdit
+                            ? 'El paciente no se cambia: las comidas se diseñaron para él. Para otro paciente usa «Duplicar / asignar».'
+                            : 'Elige a quién se asignará este plan alimenticio.' }}
+                    </p>
                 </div>
 
-                <div class="required-badge">
-                    <span>*</span>
-                    Campos obligatorios
-                </div>
+                <span class="dp-step-number">01</span>
             </div>
 
-            {{-- 01 · PACIENTE --}}
-            <div class="form-section">
-                <div class="section-label">
-                    <span class="section-number">01</span>
-                    <div>
-                        <h4>Paciente</h4>
-                        <p>{{ $isEdit ? 'El paciente no se cambia: las comidas se diseñaron para él.' : '¿Para quién es el plan?' }}</p>
-                    </div>
-                </div>
-
+            <div class="dp-section-body">
                 @if($isEdit)
-                    <div class="diet-fixed-patient">
-                        <span class="diet-avatar" aria-hidden="true">
+                    <div class="dp-fixed-patient">
+                        <span class="dp-avatar" aria-hidden="true">
                             {{ mb_strtoupper(mb_substr($plan->patient?->first_name ?? 'P', 0, 1)) }}
                         </span>
                         <div>
                             <strong>{{ $plan->patient?->first_name }} {{ $plan->patient?->last_name }}</strong>
-                            <small>{{ $plan->patient?->email }}</small>
+                            @if($plan->patient?->email)
+                                <small>{{ $plan->patient->email }}</small>
+                            @endif
                         </div>
                     </div>
                 @else
-                    <div class="form-group">
-                        <label for="patient_id">Paciente <span class="required">*</span></label>
-                        <div class="liquid-input liquid-select @error('patient_id') input-error @enderror">
-                            <span class="input-icon"><i class="far fa-user"></i></span>
-                            <select name="patient_id" id="patient_id" required @error('patient_id') aria-invalid="true" aria-describedby="patient_id_error" @enderror>
-                                <option value="">Selecciona un paciente</option>
+                    <div class="dp-field">
+                        <label for="patient_id">
+                            <i class="far fa-user"></i>
+                            Paciente
+                            <span class="dp-required">*</span>
+                        </label>
+
+                        <div class="dp-select-wrapper">
+                            <select name="patient_id"
+                                    id="patient_id"
+                                    class="dp-input @error('patient_id') is-invalid @enderror"
+                                    required
+                                    @error('patient_id') aria-invalid="true" aria-describedby="patient_id_error" @enderror>
+                                <option value="">Seleccionar paciente...</option>
                                 @foreach($patients as $patient)
-                                    <option value="{{ $patient->id }}" @selected((string) old('patient_id', $selectedPatientId) === (string) $patient->id)>
-                                        {{ $patient->first_name }} {{ $patient->last_name }}
-                                    </option>
+                                    <option value="{{ $patient->id }}" @selected((string) old('patient_id', $selectedPatientId) === (string) $patient->id)>{{ $patient->first_name }} {{ $patient->last_name }}</option>
                                 @endforeach
                             </select>
+                            <i class="fas fa-chevron-down"></i>
                         </div>
 
+                        @error('patient_id')
+                            <span class="dp-error" id="patient_id_error">{{ $message }}</span>
+                        @enderror
+
                         @if($patients->isEmpty())
-                            <small class="field-hint">
+                            <small>
                                 No tienes pacientes activos.
                                 <a href="{{ route('pacientes.create') }}">Registra uno</a> para crearle un plan.
                             </small>
                         @else
-                            <small class="field-hint">Solo aparecen tus pacientes activos.</small>
+                            <small>Selecciona un paciente previamente registrado (solo aparecen tus pacientes activos).</small>
                         @endif
-
-                        @error('patient_id')
-                            <div class="field-error" id="patient_id_error">
-                                <i class="fas fa-exclamation-circle"></i>
-                                {{ $message }}
-                            </div>
-                        @enderror
                     </div>
                 @endif
             </div>
+        </section>
 
-            {{-- 02 · DATOS DEL PLAN --}}
-            <div class="form-section">
-                <div class="section-label">
-                    <span class="section-number">02</span>
-                    <div>
-                        <h4>Datos del plan</h4>
-                        <p>Nombre y periodo de seguimiento.</p>
-                    </div>
+        {{-- =====================================
+             02 - INFORMACIÓN DEL PLAN
+             ===================================== --}}
+        <section class="dp-section">
+            <div class="dp-section-heading">
+                <div class="dp-step-icon"><i class="fas fa-file-medical"></i></div>
+
+                <div class="dp-section-copy">
+                    <span>PASO 02 · INFORMACIÓN</span>
+                    <h3>Detalles del plan</h3>
+                    <p>Define el nombre, el objetivo y el periodo de seguimiento nutricional.</p>
                 </div>
 
-                <div class="form-group">
-                    <label for="name">Nombre del plan <span class="required">*</span></label>
-                    <div class="liquid-input @error('name') input-error @enderror">
-                        <span class="input-icon"><i class="fas fa-pen"></i></span>
-                        <input type="text"
-                               name="name"
-                               id="name"
-                               value="{{ $value('name') }}"
-                               maxlength="255"
-                               placeholder="Ej. Déficit moderado 1,800 kcal"
-                               required>
-                    </div>
+                <span class="dp-step-number">02</span>
+            </div>
+
+            <div class="dp-section-body">
+                <div class="dp-field">
+                    <label for="name">
+                        <i class="fas fa-pen"></i>
+                        Nombre del plan
+                        <span class="dp-required">*</span>
+                    </label>
+
+                    <input type="text"
+                           name="name"
+                           id="name"
+                           class="dp-input @error('name') is-invalid @enderror"
+                           value="{{ $value('name') }}"
+                           maxlength="255"
+                           placeholder="Ej. Plan de déficit calórico - 1800 kcal"
+                           required>
+
                     @error('name')
-                        <div class="field-error">
-                            <i class="fas fa-exclamation-circle"></i>
-                            {{ $message }}
-                        </div>
+                        <span class="dp-error">{{ $message }}</span>
                     @enderror
                 </div>
 
-                <div class="form-group">
-                    <label for="goal">Objetivo del plan</label>
-                    <div class="liquid-input @error('goal') input-error @enderror">
-                        <span class="input-icon"><i class="fas fa-bullseye"></i></span>
-                        <input type="text"
-                               name="goal"
-                               id="goal"
-                               value="{{ $value('goal') }}"
-                               maxlength="255"
-                               placeholder="Ej. Pérdida de grasa gradual con control de glucosa">
-                    </div>
-                    @if(! $isEdit && $patients->isNotEmpty())
-                        <small class="field-hint">Opcional. Tip: el objetivo registrado en la ficha del paciente aparece en el constructor del plan.</small>
-                    @endif
+                <div class="dp-field" id="goal">
+                    <label for="goal_input">
+                        <i class="fas fa-bullseye"></i>
+                        Objetivo del plan
+                    </label>
+
+                    <input type="text"
+                           name="goal"
+                           id="goal_input"
+                           class="dp-input @error('goal') is-invalid @enderror"
+                           value="{{ $value('goal') }}"
+                           maxlength="255"
+                           placeholder="Ej. Pérdida de grasa gradual con control de glucosa">
+
                     @error('goal')
-                        <div class="field-error">
-                            <i class="fas fa-exclamation-circle"></i>
-                            {{ $message }}
-                        </div>
+                        <span class="dp-error">{{ $message }}</span>
                     @enderror
+
+                    <small>Opcional.</small>
                 </div>
 
-                <div class="diet-form-grid">
-                    <div class="form-group">
-                        <label for="starts_at">Inicio <span class="required">*</span></label>
-                        <div class="liquid-input @error('starts_at') input-error @enderror">
-                            <span class="input-icon"><i class="far fa-calendar-alt"></i></span>
-                            <input type="date"
-                                   name="starts_at"
-                                   id="starts_at"
-                                   value="{{ $dateValue('starts_at', now()->format('Y-m-d')) }}"
-                                   min="2000-01-01"
-                                   max="2100-12-31"
-                                   required>
-                        </div>
+                <div class="dp-field-grid">
+                    <div class="dp-field">
+                        <label for="starts_at">
+                            <i class="far fa-calendar-alt"></i>
+                            Fecha de inicio
+                            <span class="dp-required">*</span>
+                        </label>
+
+                        <input type="date"
+                               name="starts_at"
+                               id="starts_at"
+                               class="dp-input @error('starts_at') is-invalid @enderror"
+                               value="{{ $dateValue('starts_at', now()->format('Y-m-d')) }}"
+                               min="2000-01-01"
+                               max="2100-12-31"
+                               required>
+
                         @error('starts_at')
-                            <div class="field-error">
-                                <i class="fas fa-exclamation-circle"></i>
-                                {{ $message }}
-                            </div>
+                            <span class="dp-error">{{ $message }}</span>
                         @enderror
                     </div>
 
-                    <div class="form-group">
-                        <label for="ends_at">Fin</label>
-                        <div class="liquid-input @error('ends_at') input-error @enderror">
-                            <span class="input-icon"><i class="far fa-calendar-check"></i></span>
-                            <input type="date"
-                                   name="ends_at"
-                                   id="ends_at"
-                                   value="{{ $dateValue('ends_at') }}"
-                                   min="{{ $dateValue('starts_at', now()->format('Y-m-d')) }}"
-                       max="2100-12-31">
-                        </div>
-                        <small class="field-hint">Opcional. Déjalo vacío si el plan no tiene fecha de cierre.</small>
+                    <div class="dp-field">
+                        <label for="ends_at">
+                            <i class="far fa-calendar-check"></i>
+                            Fecha de finalización
+                        </label>
+
+                        <input type="date"
+                               name="ends_at"
+                               id="ends_at"
+                               class="dp-input @error('ends_at') is-invalid @enderror"
+                               value="{{ $dateValue('ends_at') }}"
+                               min="{{ $dateValue('starts_at', now()->format('Y-m-d')) }}"
+                               max="2100-12-31">
+
                         @error('ends_at')
-                            <div class="field-error">
-                                <i class="fas fa-exclamation-circle"></i>
-                                {{ $message }}
-                            </div>
+                            <span class="dp-error">{{ $message }}</span>
                         @enderror
+
+                        <small>Opcional</small>
                     </div>
                 </div>
 
                 @if($isEdit)
-                    <div class="form-group mb-0">
-                        <label>Estado del plan</label>
-                        <div class="status-control">
-                            <input type="hidden" name="active" value="0">
-                            <label class="liquid-switch">
-                                <input type="checkbox" name="active" value="1" id="planActive" @checked(old('active', $plan->active))>
-                                <span class="switch-slider"></span>
-                                <span class="switch-text">
-                                    <strong id="planActiveText"
-                                            data-on="Plan activo"
-                                            data-off="Plan finalizado">
-                                        {{ old('active', $plan->active) ? 'Plan activo' : 'Plan finalizado' }}
-                                    </strong>
-                                    <small>Desactívalo cuando el paciente termine este plan.</small>
-                                </span>
-                            </label>
-                        </div>
+                    <div class="dp-field" style="margin-top: 19px;">
+                        <input type="hidden" name="active" value="0">
+                        <label class="dp-switch" for="planActive">
+                            <input type="checkbox" name="active" value="1" id="planActive" @checked(old('active', $plan->active))>
+                            <span class="dp-switch-track" aria-hidden="true"></span>
+                            <span>
+                                <strong id="planActiveText" data-on="Plan activo" data-off="Plan finalizado">
+                                    {{ old('active', $plan->active) ? 'Plan activo' : 'Plan finalizado' }}
+                                </strong>
+                                <small>Desactívalo cuando el paciente termine este plan.</small>
+                            </span>
+                        </label>
                     </div>
                 @endif
             </div>
+        </section>
 
-            {{-- INDICACIONES --}}
-            <div class="form-section">
-                <div class="section-label">
-                    <span class="section-number">03</span>
-                    <div>
-                        <h4>Indicaciones para el paciente</h4>
-                        <p>Recomendaciones generales del plan (hidratación, horarios, preparación…).</p>
-                    </div>
+        {{-- =====================================
+             03 - OBJETIVOS NUTRICIONALES
+             ===================================== --}}
+        <section class="dp-section">
+            <div class="dp-section-heading">
+                <div class="dp-step-icon"><i class="fas fa-chart-pie"></i></div>
+
+                <div class="dp-section-copy">
+                    <span>PASO 03 · NUTRICIÓN</span>
+                    <h3>Objetivos nutricionales</h3>
+                    <p>Establece las calorías y los macronutrientes diarios.</p>
                 </div>
 
-                <div class="form-group mb-0">
-                    <label for="instructions" class="visually-hidden">Indicaciones</label>
-                    <div class="liquid-textarea @error('instructions') input-error @enderror">
-                        <span class="textarea-icon"><i class="far fa-file-alt"></i></span>
-                        <textarea name="instructions"
-                                  id="instructions"
-                                  rows="4"
-                                  maxlength="5000"
-                                  placeholder="Ej. Tomar 2 L de agua al día. Cenar 2 horas antes de dormir.">{{ $value('instructions') }}</textarea>
-                    </div>
-                    <small class="field-hint">Opcional. Una indicación por línea.</small>
-                    @error('instructions')
-                        <div class="field-error">
-                            <i class="fas fa-exclamation-circle"></i>
-                            {{ $message }}
-                        </div>
-                    @enderror
-                </div>
+                <span class="dp-step-number">03</span>
             </div>
 
-            {{-- 03 · OBJETIVOS DIARIOS --}}
-            <div class="form-section last-section">
-                <div class="section-label">
-                    <span class="section-number">04</span>
-                    <div>
-                        <h4>Objetivos diarios</h4>
-                        <p>Calorías y macronutrientes que debe cubrir un día del plan.</p>
-                    </div>
-                </div>
-
-                <div class="diet-form-grid diet-form-grid--macros">
+            <div class="dp-section-body">
+                <div class="dp-macro-grid">
                     @foreach($macroFields as $field => $meta)
-                        <div class="form-group">
-                            <label for="{{ $field }}">{{ $meta['label'] }} <span class="required">*</span></label>
-                            <div class="liquid-input diet-unit-input @error($field) input-error @enderror">
-                                <span class="input-icon"><i class="{{ $meta['icon'] }}"></i></span>
+                        <div class="dp-macro-card {{ $meta['class'] }}">
+                            <div class="dp-macro-top">
+                                <div class="dp-macro-icon"><i class="{{ $meta['icon'] }}"></i></div>
+                                <span>{{ $meta['kicker'] }}</span>
+                            </div>
+
+                            <label for="{{ $field }}">
+                                {{ $meta['label'] }}
+                                <span class="dp-required">*</span>
+                            </label>
+
+                            <div class="dp-macro-input @error($field) is-invalid @enderror">
                                 <input type="number"
                                        name="{{ $field }}"
                                        id="{{ $field }}"
-                                       value="{{ $value($field) !== null ? rtrim(rtrim((string) $value($field), '0'), '.') : '' }}"
+                                       value="{{ $number($value($field)) }}"
+                                       placeholder="{{ $meta['placeholder'] }}"
+                                       step="0.01"
                                        min="0"
                                        max="{{ $meta['max'] }}"
-                                       step="0.01"
                                        inputmode="decimal"
-                                       placeholder="{{ $meta['placeholder'] }}"
                                        data-macro="{{ $field }}"
                                        required>
-                                <span class="diet-unit" aria-hidden="true">{{ $meta['unit'] }}</span>
+                                <span>{{ $meta['unit'] }}</span>
                             </div>
+
                             @error($field)
-                                <div class="field-error">
-                                    <i class="fas fa-exclamation-circle"></i>
-                                    {{ $message }}
-                                </div>
+                                <span class="dp-error">{{ $message }}</span>
                             @enderror
                         </div>
                     @endforeach
                 </div>
 
-                {{-- Lo llena diet-plans-form.js: kcal que aportan los macros
+                <div class="dp-info-note">
+                    <i class="fas fa-info-circle"></i>
+                    <p>Los valores registrados serán utilizados como objetivos nutricionales del plan.</p>
+                </div>
+
+                {{-- Lo llena diet-plans.js: kcal que aportan los macros
                      (4 kcal/g proteína y carbohidratos, 9 kcal/g grasa). --}}
-                <div class="diet-macro-check" id="macroCheck" aria-live="polite" hidden>
-                    <div class="diet-macro-split" aria-hidden="true">
-                        <span class="is-protein" data-split="protein"></span>
-                        <span class="is-carbs" data-split="carbs"></span>
-                        <span class="is-lipids" data-split="lipids"></span>
-                    </div>
+                <div class="dp-info-note" id="macroCheck" aria-live="polite" hidden>
+                    <i class="fas fa-calculator"></i>
                     <p id="macroCheckText"></p>
                 </div>
             </div>
+        </section>
 
-            {{-- ACCIONES --}}
-            <div class="form-actions">
-                <a href="{{ $isEdit ? route('diet-plans.show', $plan) : route('diet-plans.index') }}" class="btn-cancel-liquid">
+        {{-- =====================================
+             04 - INDICACIONES
+             ===================================== --}}
+        <section class="dp-section" id="instructions">
+            <div class="dp-section-heading">
+                <div class="dp-step-icon"><i class="far fa-clipboard"></i></div>
+
+                <div class="dp-section-copy">
+                    <span>PASO 04 · INDICACIONES</span>
+                    <h3>Indicaciones para el paciente</h3>
+                    <p>Recomendaciones generales del plan (hidratación, horarios, preparación…).</p>
+                </div>
+
+                <span class="dp-step-number">04</span>
+            </div>
+
+            <div class="dp-section-body">
+                <div class="dp-field">
+                    <label for="instructions_input">
+                        <i class="far fa-file-alt"></i>
+                        Indicaciones
+                    </label>
+
+                    <textarea name="instructions"
+                              id="instructions_input"
+                              class="dp-input @error('instructions') is-invalid @enderror"
+                              rows="4"
+                              maxlength="5000"
+                              placeholder="Ej. Tomar 2 L de agua al día. Cenar 2 horas antes de dormir.">{{ $value('instructions') }}</textarea>
+
+                    @error('instructions')
+                        <span class="dp-error">{{ $message }}</span>
+                    @enderror
+
+                    <small>Opcional. Una indicación por línea.</small>
+                </div>
+            </div>
+        </section>
+
+        {{-- =====================================
+             ACCIONES
+             ===================================== --}}
+        <div class="dp-form-footer">
+            <div class="dp-footer-info">
+                <i class="fas fa-shield-alt"></i>
+                <span>Completa los campos obligatorios para {{ $isEdit ? 'guardar' : 'registrar' }} el plan.</span>
+            </div>
+
+            <div class="dp-footer-buttons">
+                <a href="{{ $isEdit ? route('diet-plans.show', $plan) : route('diet-plans.index') }}" class="dp-cancel-button">
                     Cancelar
                 </a>
-                <button type="submit" class="btn-save-liquid">
-                    <span class="save-text">
-                        <i class="far fa-save"></i>
-                        {{ $isEdit ? 'Guardar cambios' : 'Crear y armar comidas' }}
-                    </span>
-                    <span class="save-arrow">
-                        <i class="fas fa-arrow-right"></i>
-                    </span>
+
+                <button type="submit"
+                        class="dp-save-button"
+                        data-loading-text="{{ $isEdit ? 'Guardando…' : 'Creando…' }}"
+                        @disabled(! $isEdit && $patients->isEmpty())>
+                    <i class="fas fa-check"></i>
+                    {{ $isEdit ? 'Guardar cambios' : 'Crear plan' }}
+                    <i class="fas fa-arrow-right"></i>
                 </button>
             </div>
         </div>

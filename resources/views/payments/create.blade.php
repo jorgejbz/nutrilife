@@ -13,7 +13,7 @@
     <div>
 
         <span class="header-eyebrow">
-            <i class="fas fa-leaf mr-1"></i>
+            <i class="fas fa-leaf me-1"></i>
             NUTRILIFE
         </span>
 
