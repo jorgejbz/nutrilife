@@ -71,7 +71,7 @@
     <a href="#" class="nav-link dropdown-toggle nl-user-toggle" data-bs-toggle="dropdown"
        aria-expanded="false" aria-label="Menú de {{ $umName }}">
         <span class="nl-user-avatar" aria-hidden="true">{{ $umInitials ?: 'NL' }}</span>
-        <span class="nl-user-name">{{ $umName }}</span>
+        <span class="nl-user-name" title="{{ $umName }}">{{ $umName }}</span>
     </a>
 
     <ul class="dropdown-menu dropdown-menu-end nl-user-dropdown">
@@ -90,16 +90,16 @@
         {{-- Enlaces configurados en adminlte.menu (navbar-user) --}}
         @each('adminlte::partials.navbar.dropdown-item', $adminlte->menu("navbar-user"), 'item')
 
-        @if(Route::has('profile.edit'))
+        @if(Route::has('perfil'))
             <li>
-                <a class="dropdown-item nl-user-dropdown__link" href="{{ route('profile.edit') }}">
+                <a class="dropdown-item nl-user-dropdown__link" href="{{ route('perfil') }}">
                     <i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>
                     Mi perfil
                 </a>
             </li>
         @endif
 
-        @if(Route::has('subscription.plans') && $umUser?->isNutritionist())
+        @if(Route::has('subscription.plans') && $umUser?->isNutritionist() && ! $umUser->isClinicMember())
             <li>
                 <a class="dropdown-item nl-user-dropdown__link" href="{{ route('subscription.plans') }}">
                     <i class="fas fa-box-open fa-fw" aria-hidden="true"></i>

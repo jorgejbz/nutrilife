@@ -1,0 +1,251 @@
+/* =========================================================
+   app/layout.css
+   Sitio público: estructura, navbar y botón de tema
+   Parte de la hoja de la sección: el orden de carga está en
+   config/stylesheets.php. Los ajustes por tamaño de pantalla
+   viven en public/css/responsive/.
+   ========================================================= */
+
+/* =============================================================
+   NUTRILIFE — SITIO PÚBLICO (landing) · ESTRUCTURA
+   -------------------------------------------------------------
+   Carga: nutrilife-tokens.css → app.css → app-light.css o
+          app-dark.css (solo uno activo; ver resources/js/theme.js)
+
+   Este archivo no define colores propios: todo sale de
+   variables definidas en app-light.css / app-dark.css.
+   Las rutas de imágenes son relativas (../images/...) para que
+   funcionen aunque el proyecto no esté en la raíz del dominio.
+============================================================= */
+
+/* Logotipo NutriLife en la barra de navegación y el pie */
+.nl-logo {
+    display: block;
+    height: auto;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.landing-logo .nl-logo {
+    height: 46px;
+    width: auto;
+}
+
+/* =========================================================
+   NUTRILIFE — SITIO PÚBLICO · ESTRUCTURA
+========================================================= */
+
+@import url(
+    'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap'
+);
+
+
+* {
+    box-sizing: border-box;
+}
+
+
+html {
+    scroll-behavior: smooth;
+}
+
+
+body {
+    margin: 0;
+    background: var(--landing-dark);
+    color: var(--landing-white);
+    font-family:
+        'Inter',
+        sans-serif;
+}
+
+
+a {
+    text-decoration: none;
+}
+
+
+.landing-container {
+    width: min(
+        1180px,
+        calc(100% - 40px)
+    );
+    margin: auto;
+}
+
+
+/* =========================================================
+   NAVBAR
+========================================================= */
+
+.landing-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    transition: .25s;
+}
+
+
+.landing-navbar.scrolled {
+    border-bottom:
+        1px solid var(--landing-card-border);
+}
+
+
+.navbar-content {
+    min-height: 78px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+}
+
+
+/* LOGO */
+
+.landing-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family:
+        'Manrope',
+        sans-serif;
+    font-size: 19px;
+    font-weight: 700;
+}
+
+
+/* LINKS */
+
+.landing-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 29px;
+}
+
+
+.landing-nav-links a {
+    position: relative;
+    font-size: 14px;
+    font-weight: 500;
+    transition: .2s;
+}
+
+
+.landing-nav-links a:hover {
+    color: var(--landing-white);
+}
+
+
+.landing-nav-links a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+    width: 0;
+    height: 2px;
+    border-radius: 10px;
+    background:
+        var(--landing-green-light);
+    transition: .2s;
+}
+
+
+.landing-nav-links a:hover::after {
+    width: 100%;
+}
+
+
+/* ACCIONES */
+
+.landing-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+.nav-login {
+    padding:
+        10px 14px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+
+.nav-trial {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding:
+        11px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    transition: .2s;
+}
+
+
+.nav-trial:hover {
+    transform:
+        translateY(-2px);
+}
+
+
+/* =========================================================
+   THEME TOGGLE (botón claro/oscuro)
+   Mismo componente que resources/views/partials/theme-toggle.blade.php,
+   con la paleta de esta página (variables --landing-*).
+========================================================= */
+
+.theme-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--landing-card-border);
+    background: var(--landing-card-bg);
+    color: var(--landing-muted-strong);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.theme-toggle-btn:hover {
+    border-color: var(--landing-green-light);
+    color: var(--landing-white);
+}
+
+.theme-toggle-btn i {
+    font-size: 13px;
+    color: var(--landing-green-light);
+}
+
+.theme-toggle-btn--icon-only {
+    padding: 9px;
+}
+
+.theme-toggle-btn--icon-only span {
+    display: none;
+}
+
+
+/* MÓVIL */
+
+.mobile-menu-button {
+    display: none;
+    width: 42px;
+    height: 42px;
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.1);
+    border-radius: 12px;
+    background:
+        rgba(var(--nl-overlay-rgb), 0.05);
+    color: white;
+}

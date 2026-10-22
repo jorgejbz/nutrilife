@@ -7,16 +7,16 @@
      Secciones: 'app' (sitio público), 'admin' (panel), 'login'
      (login, registro y recuperación de contraseña).
 
-     Carga, en este orden:
-       1. nutrilife-tokens.css   → paleta de marca
-       2. {section}.css          → estructura de la sección
-       3. {section}-light.css    → valores del modo claro
-       4. {section}-dark.css     → valores del modo oscuro
-     Solo una de las dos últimas queda activa; la otra se
-     deshabilita y theme.js las intercambia al pulsar el botón.
+     Carga, en este orden (lista completa en config/stylesheets.php):
+       1. base/tokens.css + módulos base de la sección
+       2. themes/{section}-light.css y themes/{section}-dark.css:
+          solo una queda activa; theme.js las intercambia
+       3. responsive/{section}/*.css → todas las @media, de mayor
+          a menor ancho, para que puedan ajustar lo anterior
      ========================================================= --}}
 @php
     $section = in_array($section ?? 'app', ['app', 'admin', 'login'], true) ? ($section ?? 'app') : 'app';
+    $nlSheets = config('stylesheets.sections.'.$section);
 
     // ?v=<fecha de modificación> evita que el navegador use una versión vieja en caché
     $nlCss = static function (string $file): string {
@@ -32,10 +32,15 @@
 <link rel="icon" type="image/png" href="{{ asset('images/brand/nutrilife-emblem-192.png') }}">
 <link rel="apple-touch-icon" href="{{ asset('images/brand/nutrilife-emblem-192.png') }}">
 
-<link rel="stylesheet" href="{{ $nlCss('nutrilife-tokens.css') }}">
-<link rel="stylesheet" href="{{ $nlCss($section.'.css') }}">
-<link rel="stylesheet" href="{{ $nlCss($section.'-light.css') }}" data-theme-stylesheet="light">
-<link rel="stylesheet" href="{{ $nlCss($section.'-dark.css') }}" data-theme-stylesheet="dark">
+@foreach ($nlSheets['base'] as $nlSheet)
+    <link rel="stylesheet" href="{{ $nlCss($nlSheet) }}">
+@endforeach
+@foreach ($nlSheets['themes'] as $nlMode => $nlSheet)
+    <link rel="stylesheet" href="{{ $nlCss($nlSheet) }}" data-theme-stylesheet="{{ $nlMode }}">
+@endforeach
+@foreach ($nlSheets['responsive'] as $nlSheet)
+    <link rel="stylesheet" href="{{ $nlCss($nlSheet) }}">
+@endforeach
 
 <script>
     window.nutrilifeSyncThemeStylesheets(document.documentElement.getAttribute('data-theme'));

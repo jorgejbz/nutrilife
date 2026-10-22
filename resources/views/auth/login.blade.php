@@ -12,7 +12,7 @@
 
     <title>Iniciar sesión | NutriLife</title>
 
-    {{-- Estilos de autenticación: tokens + login.css + login-light/dark.css.
+    {{-- Estilos de autenticación: tokens + public/css/login/* + temas + responsive (config/stylesheets.php).
          No tiene botón propio de tema: respeta el modo elegido en el resto
          del sitio (misma preferencia guardada). --}}
     @include('partials.theme-styles', ['section' => 'login'])
@@ -61,11 +61,15 @@
             <div class="brand-top">
 
                 <div class="brand-logo">
-                    {{-- Logotipo NutriLife (versión según el modo claro/oscuro) --}}
-                    <img src="{{ asset('images/brand/nutrilife-wordmark-light.png') }}" alt="NutriLife"
-                         class="nl-logo nl-logo--on-light brand-logo-img" width="600" height="186">
-                    <img src="{{ asset('images/brand/nutrilife-wordmark-dark.png') }}" alt="NutriLife"
-                         class="nl-logo nl-logo--on-dark brand-logo-img" width="600" height="186">
+                    {{-- Logotipo NutriLife (versión según el modo claro/oscuro).
+                         Enlace a la landing pública (route('landing')), accesible
+                         con teclado (Tab + Enter) y sin necesidad de sesión. --}}
+                    <a href="{{ route('landing') }}" class="brand-logo-link" aria-label="NutriLife: ir a la página principal">
+                        <img src="{{ asset('images/brand/nutrilife-wordmark-light.png') }}" alt="NutriLife"
+                             class="nl-logo nl-logo--on-light brand-logo-img" width="600" height="186">
+                        <img src="{{ asset('images/brand/nutrilife-wordmark-dark.png') }}" alt="NutriLife"
+                             class="nl-logo nl-logo--on-dark brand-logo-img" width="600" height="186">
+                    </a>
                 </div>
 
 
@@ -254,11 +258,13 @@
 
 
                     <div class="mobile-logo">
-                        {{-- Logotipo NutriLife (versión según el modo claro/oscuro) --}}
-                        <img src="{{ asset('images/brand/nutrilife-wordmark-light.png') }}" alt="NutriLife"
-                             class="nl-logo nl-logo--on-light mobile-logo-img" width="600" height="186">
-                        <img src="{{ asset('images/brand/nutrilife-wordmark-dark.png') }}" alt="NutriLife"
-                             class="nl-logo nl-logo--on-dark mobile-logo-img" width="600" height="186">
+                        {{-- Logotipo NutriLife (versión según el modo claro/oscuro), enlace a la landing --}}
+                        <a href="{{ route('landing') }}" class="mobile-logo-link" aria-label="NutriLife: ir a la página principal">
+                            <img src="{{ asset('images/brand/nutrilife-wordmark-light.png') }}" alt="NutriLife"
+                                 class="nl-logo nl-logo--on-light mobile-logo-img" width="600" height="186">
+                            <img src="{{ asset('images/brand/nutrilife-wordmark-dark.png') }}" alt="NutriLife"
+                                 class="nl-logo nl-logo--on-dark mobile-logo-img" width="600" height="186">
+                        </a>
                     </div>
 
 

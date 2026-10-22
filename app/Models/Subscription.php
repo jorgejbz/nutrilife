@@ -264,7 +264,7 @@ class Subscription extends Model
      * y perfil). Devuelve null si no hay nada que mostrar.
      *
      * @return array{type: string, label: string, plan: ?string}|null
-     *   type: trial | expired | active | cancelled | admin
+     *   type: trial | expired | active | cancelled | admin | member
      */
     public static function accountTypeFor(?User $user): ?array
     {
@@ -274,6 +274,19 @@ class Subscription extends Model
 
         if ($user->isAdmin()) {
             return ['type' => 'admin', 'label' => 'Administrador', 'plan' => null];
+        }
+
+        // Subperfil de clínica: sin suscripción propia; usa la licencia de su
+        // consultorio (funciones del plan config nutrilife.clinic.member_plan).
+        if ($user->isClinicMember()) {
+            $clinic = $user->clinic;
+
+            return [
+                'type' => 'member',
+                'label' => 'Nutriólogo · '.($clinic?->name ?? 'Clínica'),
+                'plan' => (string) config('nutrilife.clinic.member_plan'),
+                'license_active' => (bool) $clinic?->clinicLicenseActive(),
+            ];
         }
 
         $subscription = $user->latestSubscription;

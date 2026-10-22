@@ -1,0 +1,312 @@
+/* =========================================================
+   admin/components/confirm-dialog.css
+   Diálogo de confirmación (resources/js/forms.js)
+   Parte de la hoja de la sección: el orden de carga está en
+   config/stylesheets.php. Los ajustes por tamaño de pantalla
+   viven en public/css/responsive/.
+   ========================================================= */
+
+/* =========================================================
+   DIÁLOGO DE CONFIRMACIÓN (resources/js/forms.js)
+   <dialog> nativo: queda en la capa superior del navegador,
+   así que ningún z-index de AdminLTE lo puede tapar.
+========================================================= */
+
+.nl-confirm {
+    width: min(520px, calc(100% - 24px));
+    max-width: none;
+    max-height: calc(100dvh - 24px);
+    margin: auto;
+    padding: 0;
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    background: var(--surface-solid);
+    color: var(--text-primary);
+    box-shadow:
+        0 30px 70px rgba(var(--nl-shadow-rgb), .45),
+        var(--card-inset-highlight);
+    overflow: auto;
+    overscroll-behavior: contain;
+    font-family: inherit;
+    animation: nl-confirm-in .22s cubic-bezier(.2, .8, .2, 1);
+}
+
+.nl-confirm::backdrop {
+    background: rgba(6, 16, 10, .62);
+    backdrop-filter: blur(3px);
+    animation: nl-confirm-fade .22s ease;
+}
+
+.nl-confirm--plan {
+    width: min(640px, calc(100% - 24px));
+}
+
+@keyframes nl-confirm-in {
+    from { opacity: 0; transform: translateY(10px) scale(.97); }
+    to   { opacity: 1; transform: none; }
+}
+
+@keyframes nl-confirm-fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.nl-confirm__box {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin: 0;
+    padding: 28px;
+}
+
+.nl-confirm__head {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 16px;
+    row-gap: 6px;
+    align-items: center;
+}
+
+.nl-confirm__icon {
+    grid-row: span 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+    border: 1px solid rgba(var(--nl-accent-rgb), .25);
+    background: rgba(var(--nl-accent-rgb), .12);
+    color: var(--accent);
+    font-size: 22px;
+}
+
+.nl-confirm--danger .nl-confirm__icon {
+    border-color: rgba(220, 110, 110, .35);
+    background: rgba(220, 110, 110, .14);
+    color: var(--nl-danger-text, #C24545);
+}
+
+.nl-confirm--warning .nl-confirm__icon {
+    border-color: rgba(217, 191, 112, .35);
+    background: rgba(217, 191, 112, .14);
+    color: var(--nl-warning-text, #9A7A1E);
+}
+
+.nl-confirm__title {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.nl-confirm__message {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 15.5px;
+    line-height: 1.55;
+    white-space: pre-line;
+}
+
+/* ---------- Comparación de paquetes ---------- */
+.nl-plan-compare {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 12px;
+    align-items: stretch;
+}
+
+.nl-plan-compare.is-single {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.nl-plan-compare__card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px 18px;
+    border: 1px solid var(--card-border-soft);
+    border-radius: 18px;
+    background: rgba(var(--nl-overlay-rgb), .04);
+}
+
+.nl-plan-compare__card.is-new {
+    border-color: rgba(var(--nl-accent-rgb), .45);
+    background: rgba(var(--nl-accent-rgb), .09);
+}
+
+.nl-plan-compare__tag {
+    color: var(--text-muted);
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.nl-plan-compare__card.is-new .nl-plan-compare__tag {
+    color: var(--accent-text);
+}
+
+.nl-plan-compare__name {
+    color: var(--text-primary);
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.nl-plan-compare__price {
+    color: var(--text-primary);
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.nl-plan-compare__price small {
+    color: var(--text-muted);
+    font-size: 13.5px;
+    font-weight: 500;
+}
+
+.nl-plan-compare__card ul {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 6px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.nl-plan-compare__card li {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    color: var(--text-secondary);
+    font-size: 14.5px;
+    line-height: 1.4;
+}
+
+.nl-plan-compare__card li i {
+    width: 16px;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.nl-plan-compare__card li.is-ending,
+.nl-plan-compare__card li.is-ending i {
+    color: var(--nl-warning-text, #9A7A1E);
+}
+
+.nl-plan-compare__arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    font-size: 18px;
+}
+
+/* ---------- Avisos ---------- */
+.nl-confirm-notes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 14px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.nl-confirm-notes li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 11px 14px;
+    border-radius: 14px;
+    border: 1px solid var(--card-border-soft);
+    background: rgba(var(--nl-overlay-rgb), .035);
+    color: var(--text-secondary);
+    font-size: 14.5px;
+    line-height: 1.5;
+}
+
+.nl-confirm-notes li i {
+    margin-top: 3px;
+    color: var(--nl-info-text, var(--accent));
+}
+
+.nl-confirm-notes li.is-warning {
+    border-color: rgba(217, 191, 112, .35);
+    background: rgba(217, 191, 112, .08);
+}
+
+.nl-confirm-notes li.is-warning i {
+    color: var(--nl-warning-text, #9A7A1E);
+}
+
+.nl-confirm-notes li.is-success i {
+    color: var(--accent);
+}
+
+.nl-confirm-notes strong {
+    color: var(--text-primary);
+}
+
+/* ---------- Botones ---------- */
+.nl-confirm__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 4px;
+}
+
+.nl-confirm__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 46px;
+    padding: 11px 20px;
+    border: 1px solid transparent;
+    border-radius: 14px;
+    font-family: inherit;
+    font-size: 15.5px;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: background .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+
+.nl-confirm__btn:focus-visible {
+    outline: 3px solid rgba(var(--nl-accent-rgb), .55);
+    outline-offset: 2px;
+}
+
+.nl-confirm__btn--ghost {
+    border-color: rgba(var(--nl-overlay-rgb), .16);
+    background: rgba(var(--nl-overlay-rgb), .05);
+    color: var(--text-primary);
+}
+
+.nl-confirm__btn--ghost:hover {
+    background: rgba(var(--nl-overlay-rgb), .1);
+}
+
+.nl-confirm__btn--accept {
+    background: linear-gradient(135deg, rgb(var(--nl-accent-rgb)), rgb(var(--nl-accent-strong-rgb)));
+    color: rgb(var(--nl-on-accent-rgb));
+    box-shadow: 0 10px 24px rgba(var(--nl-accent-rgb), .22);
+}
+
+.nl-confirm__btn--accept:hover {
+    transform: translateY(-1px);
+}
+
+.nl-confirm--danger .nl-confirm__btn--accept {
+    background: #C24545;
+    color: #FFFFFF;
+    box-shadow: 0 10px 24px rgba(194, 69, 69, .25);
+}
+
+.nl-confirm--warning .nl-confirm__btn--accept {
+    background: #A7801F;
+    color: #FFFFFF;
+    box-shadow: 0 10px 24px rgba(167, 128, 31, .25);
+}

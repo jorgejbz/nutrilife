@@ -3,7 +3,7 @@
  * NUTRILIFE — COLORES DE GRÁFICAS SEGÚN EL TEMA
  *
  * Las gráficas (Chart.js) ya no llevan colores fijos: los leen de
- * las variables --chart-* definidas en admin-light.css y
+ * las variables --chart-* definidas en public/css/themes/admin-light.css y
  * admin-dark.css. Al cambiar de modo, se vuelven a pintar.
  *
  * Uso:

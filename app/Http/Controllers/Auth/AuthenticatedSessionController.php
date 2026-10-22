@@ -32,6 +32,18 @@ class AuthenticatedSessionController extends Controller
         // abierta y se muestra la pantalla de "cuenta en preparación".
         $user = $request->user();
 
+        // Cuenta desactivada (administrador o clínica): no se abre la sesión.
+        if ($user && $user->isDisabled()) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()
+                ->route('login')
+                ->withInput($request->only('email'))
+                ->withErrors(['email' => AccountActivation::DISABLED_MESSAGE]);
+        }
+
         if ($user && ! AccountActivation::refresh($user)) {
             Auth::guard('web')->logout();
             $request->session()->invalidate();
@@ -43,6 +55,11 @@ class AuthenticatedSessionController extends Controller
         }
 
         $request->session()->regenerate();
+
+        // El administrador global entra directo a su panel.
+        if ($user?->isAdmin()) {
+            return redirect()->intended(route('admin.dashboard', absolute: false));
+        }
 
         return redirect()->intended(route('dashboard.index', absolute: false));
     }

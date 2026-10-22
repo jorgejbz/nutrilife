@@ -1,0 +1,381 @@
+/* =========================================================
+   app/mockups.css
+   Maquetas del panel
+   Parte de la hoja de la sección: el orden de carga está en
+   config/stylesheets.php. Los ajustes por tamaño de pantalla
+   viven en public/css/responsive/.
+   ========================================================= */
+
+/* =============================================================
+   MAQUETAS DEL PANEL (resources/views/landing/partials/mockups)
+   Sustituyen a las capturas PNG, que mostraban la marca y la
+   paleta anteriores. Son HTML/SVG: siguen el modo claro/oscuro y
+   escalan con su contenedor (unidades cqw).
+============================================================= */
+
+.demo-browser-image,
+.demo-card-image {
+    container-type: inline-size;
+}
+
+.demo-note {
+    display: block;
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--text-faint);
+}
+
+.nlm {
+    --nlm-card: rgba(var(--nl-overlay-rgb), .045);
+    --nlm-line: rgba(var(--nl-overlay-rgb), .09);
+    width: 100%;
+    height: 100%;
+    padding: 3.4cqw;
+    display: flex;
+    flex-direction: column;
+    gap: 2.2cqw;
+    background:
+        radial-gradient(circle at 85% 0%, rgba(var(--nl-accent-rgb), .12), transparent 45%),
+        rgb(var(--nl-surface-rgb));
+    color: var(--text-primary);
+    font-family: var(--nl-font-family);
+    overflow: hidden;
+    text-align: left;
+}
+
+.nlm small {
+    display: block;
+    font-size: 2.1cqw;
+    letter-spacing: .04em;
+    color: var(--text-muted);
+}
+
+.nlm strong {
+    display: block;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.nlm-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2cqw;
+}
+
+.nlm-top strong {
+    font-size: 3.6cqw;
+}
+
+.nlm-pill {
+    flex-shrink: 0;
+    padding: .9cqw 2.2cqw;
+    border-radius: 99px;
+    background: rgba(var(--nl-accent-rgb), .14);
+    color: var(--accent-text);
+    font-size: 2cqw;
+    font-weight: 600;
+}
+
+.nlm-card {
+    padding: 2.4cqw;
+    border-radius: 2cqw;
+    border: 1px solid var(--nlm-line);
+    background: var(--nlm-card);
+}
+
+.nlm-grid line {
+    stroke: var(--nlm-line);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+}
+
+.nlm-line {
+    fill: none;
+    stroke: rgb(var(--nl-accent-rgb));
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+}
+
+/* ---------- Dashboard (contenedor 16:9 grande) ---------- */
+.nlm-dashboard {
+    flex-direction: row;
+    padding: 0;
+    gap: 0;
+}
+
+.nlm-dashboard small { font-size: 1.15cqw; }
+.nlm-dashboard .nlm-top strong { font-size: 2.2cqw; }
+.nlm-dashboard .nlm-pill { font-size: 1.1cqw; padding: .5cqw 1.2cqw; }
+
+.nlm-side {
+    width: 7cqw;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.4cqw;
+    padding: 2cqw 0;
+    border-right: 1px solid var(--nlm-line);
+    background: rgba(var(--nl-overlay-rgb), .025);
+}
+
+/* .demo-browser-image img (regla de las capturas anteriores) estiraba el logo */
+.demo-browser-image .nlm .nlm-side-logo,
+.nlm-side-logo {
+    width: 3.6cqw;
+    height: 3.6cqw;
+    margin-bottom: 1cqw;
+    object-fit: contain;
+    display: block;
+}
+
+.nlm-side-item {
+    width: 3.4cqw;
+    height: 3.4cqw;
+    border-radius: 1cqw;
+    background: rgba(var(--nl-overlay-rgb), .06);
+}
+
+.nlm-side-item.is-active {
+    background: rgb(var(--nl-accent-rgb));
+}
+
+.nlm-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.6cqw;
+    padding: 2.4cqw 2.8cqw;
+}
+
+.nlm-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.2cqw;
+}
+
+.nlm-stat {
+    padding: 1.4cqw;
+    border-radius: 1.2cqw;
+    border: 1px solid var(--nlm-line);
+    background: var(--nlm-card);
+}
+
+.nlm-stat strong {
+    margin: .4cqw 0 .9cqw;
+    font-size: 2.6cqw;
+}
+
+.nlm-bar {
+    display: block;
+    height: .45cqw;
+    border-radius: 99px;
+    background: linear-gradient(90deg, rgb(var(--nl-accent-rgb)) var(--w), rgba(var(--nl-overlay-rgb), .08) var(--w));
+}
+
+.nlm-bar.is-gold {
+    background: linear-gradient(90deg, var(--nl-warning) var(--w), rgba(var(--nl-overlay-rgb), .08) var(--w));
+}
+
+.nlm-row {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 1.2cqw;
+}
+
+.nlm-dashboard .nlm-card {
+    padding: 1.4cqw;
+    border-radius: 1.2cqw;
+}
+
+.nlm-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 1cqw;
+}
+
+.nlm-chart svg {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+}
+
+.nlm-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1cqw;
+}
+
+.nlm-item {
+    display: flex;
+    align-items: center;
+    gap: 1cqw;
+    font-size: 1.15cqw;
+}
+
+.nlm-item div {
+    flex: 1;
+    min-width: 0;
+}
+
+.nlm-item b,
+.nlm-pay b {
+    display: block;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nlm-item i,
+.nlm-pay i {
+    display: block;
+    font-style: normal;
+    color: var(--text-muted);
+}
+
+.nlm-item em,
+.nlm-pay em {
+    font-style: normal;
+    font-weight: 600;
+    color: var(--accent-text);
+}
+
+.nlm-avatar {
+    width: 2.8cqw;
+    height: 2.8cqw;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(var(--nl-accent-rgb), .16);
+    color: var(--accent-text);
+    font-size: 1cqw;
+    font-weight: 700;
+}
+
+/* ---------- Calendario ---------- */
+.nlm-cal-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-auto-rows: 1fr;
+    gap: .9cqw;
+}
+
+.nlm-cal-head {
+    align-self: end;
+    text-align: center;
+    font-size: 2.2cqw;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.nlm-cal-day {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: .6cqw 1cqw;
+    border-radius: 1.2cqw;
+    background: var(--nlm-card);
+    font-size: 2.2cqw;
+    color: var(--text-secondary);
+}
+
+.nlm-cal-day.is-today {
+    background: rgb(var(--nl-accent-rgb));
+    color: rgb(var(--nl-on-accent-rgb));
+    font-weight: 700;
+}
+
+.nlm-dot {
+    position: absolute;
+    right: 1cqw;
+    bottom: 1cqw;
+    width: 1.5cqw;
+    height: 1.5cqw;
+    border-radius: 50%;
+}
+
+.nlm-dot.is-confirmed { background: rgb(var(--nl-accent-rgb)); }
+.nlm-dot.is-pending { background: var(--nl-warning); }
+.nlm-dot.is-done { background: var(--nl-info); }
+.nlm-cal-day.is-today .nlm-dot { background: rgb(var(--nl-on-accent-rgb)); }
+
+/* ---------- Progreso ---------- */
+.nlm-progress-chart {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+}
+
+.nlm-points circle {
+    fill: rgb(var(--nl-accent-rgb));
+    stroke: rgb(var(--nl-surface-rgb));
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+}
+
+.nlm-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.6cqw;
+}
+
+.nlm-metrics div {
+    padding: 1.6cqw 2cqw;
+    border-radius: 1.6cqw;
+    background: var(--nlm-card);
+}
+
+.nlm-metrics strong {
+    font-size: 3.2cqw;
+    color: var(--accent-text);
+}
+
+/* ---------- Pagos ---------- */
+.nlm-payments .nlm-top strong {
+    font-size: 5cqw;
+}
+
+.nlm-pay {
+    display: flex;
+    align-items: center;
+    gap: 2cqw;
+    padding: 2cqw 2.4cqw;
+    border-radius: 1.8cqw;
+    background: var(--nlm-card);
+    font-size: 2.5cqw;
+}
+
+.nlm-pay div {
+    flex: 1;
+    min-width: 0;
+}
+
+.nlm-status {
+    flex-shrink: 0;
+    padding: .6cqw 1.8cqw;
+    border-radius: 99px;
+    font-size: 2cqw;
+    font-weight: 600;
+}
+
+.nlm-status.is-ok {
+    background: rgba(var(--nl-accent-rgb), .15);
+    color: var(--accent-text);
+}
+
+.nlm-status.is-wait {
+    background: rgba(var(--nl-warning-rgb), .16);
+    color: var(--nl-warning-text);
+}

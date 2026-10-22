@@ -1,0 +1,691 @@
+/* =========================================================
+   diet-plans/drawers.css
+   Drawers: alimento, alimento manual, platillo
+   Parte de la hoja de la sección: el orden de carga está en
+   config/stylesheets.php. Los ajustes por tamaño de pantalla
+   viven en public/css/responsive/.
+   ========================================================= */
+
+/* =============================================================
+   DRAWERS (alimento, alimento manual, platillo)
+============================================================= */
+
+.dp-drawer-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    justify-content: flex-end;
+    visibility: hidden;
+    background: rgba(1, 8, 5, .60);
+    opacity: 0;
+    backdrop-filter: blur(4px);
+    transition: .25s ease;
+}
+
+[data-theme="light"] .dp-drawer-overlay {
+    background: rgba(27, 54, 37, .35);
+}
+
+.dp-drawer-overlay.is-open {
+    visibility: visible;
+    opacity: 1;
+}
+
+/*
+ * Un solo scroll (el del panel): el encabezado queda fijo arriba y el botón
+ * de cada formulario fijo abajo, así la X y "Agregar" siempre están a la
+ * vista aunque la lista sea larga o la pantalla baja (celular horizontal).
+ * 100dvh = alto visible real en móviles (sin la barra del navegador).
+ */
+.dp-drawer {
+    width: min(460px, 100%);
+    height: 100%;
+    height: 100dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 24px;
+    border-left: 1px solid var(--dp-line-strong);
+    background: var(--dp-drawer-bg);
+    box-shadow: -25px 0 70px rgba(0, 0, 0, .35);
+    color: var(--text-primary);
+    transform: translateX(100%);
+    transition: .28s ease;
+}
+
+.dp-drawer-overlay.is-open .dp-drawer {
+    transform: translateX(0);
+}
+
+.dp-drawer-header {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin: 0 -24px;
+    padding: 22px 24px 18px;
+    border-bottom: 1px solid var(--dp-line);
+    background: var(--dp-drawer-solid);
+}
+
+.dp-drawer-header > div {
+    min-width: 0;
+}
+
+.dp-drawer-header > div > span:first-child {
+    color: var(--dp-green);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+}
+
+.dp-drawer-header h3 {
+    margin: 5px 0 0;
+    color: var(--text-primary);
+    font-size: 20px;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+}
+
+.dp-drawer-header h3 [data-meal-label] {
+    color: var(--dp-green);
+}
+
+/* Botón principal fijo al pie del panel */
+.dp-drawer-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    margin: 0 -24px;
+    padding: 14px 24px calc(16px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--dp-line);
+    background: var(--dp-drawer-solid);
+}
+
+.dp-drawer-form:last-child {
+    padding-bottom: 0;
+}
+
+.dp-drawer-header button {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    border: 1px solid var(--dp-line-strong);
+    border-radius: 11px;
+    background: var(--dp-layer);
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.dp-drawer-form {
+    margin: 0;
+    padding-top: 22px;
+}
+
+.dp-drawer-form[hidden] {
+    display: none;
+}
+
+.dp-drawer-field {
+    margin-bottom: 20px;
+}
+
+.dp-drawer-field > label,
+.dp-drawer-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.dp-drawer-field > label small {
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.dp-drawer-field > label a {
+    color: var(--dp-green);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.dp-drawer-search {
+    position: relative;
+}
+
+.dp-drawer-search > i {
+    position: absolute;
+    top: 50%;
+    left: 13px;
+    color: var(--text-muted);
+    font-size: 12px;
+    transform: translateY(-50%);
+}
+
+.dp-search-input,
+.dp-food-select,
+.dp-custom-input {
+    width: 100%;
+    height: 44px;
+    padding: 0 13px;
+    border: 1px solid var(--input-border);
+    border-radius: 11px;
+    outline: none;
+    background: var(--input-bg);
+    color: var(--input-text);
+    font-size: 13px;
+    color-scheme: var(--native-color-scheme);
+}
+
+.dp-search-input {
+    padding-left: 36px;
+}
+
+.dp-search-input::placeholder,
+.dp-custom-input::placeholder {
+    color: var(--input-placeholder);
+}
+
+.dp-search-input:focus,
+.dp-food-select:focus,
+.dp-custom-input:focus {
+    border-color: rgba(var(--nl-accent-rgb), .45);
+}
+
+.dp-food-select {
+    height: 46px;
+    padding: 0 12px;
+    background: var(--dp-select-bg);
+}
+
+.dp-food-select option {
+    background: var(--dp-select-bg);
+    color: var(--text-primary);
+}
+
+.dp-search-count {
+    display: block;
+    margin-top: 6px;
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+/* Porciones / gramos */
+.dp-measure-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    padding: 4px;
+    border: 1px solid var(--dp-line);
+    border-radius: 12px;
+    background: var(--dp-layer);
+}
+
+.dp-measure-option {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    height: 38px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.dp-measure-option.is-active {
+    background: var(--dp-green-soft);
+    color: var(--dp-green);
+    box-shadow: inset 0 0 0 1px var(--dp-green-border);
+}
+
+.dp-quantity-control {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    gap: 8px;
+}
+
+.dp-quantity-control > button {
+    height: 46px;
+    border: 1px solid var(--dp-line-strong);
+    border-radius: 11px;
+    background: var(--dp-layer);
+    color: var(--dp-green);
+    cursor: pointer;
+}
+
+.dp-quantity-control > button:hover {
+    background: var(--dp-layer-2);
+}
+
+.dp-quantity-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 46px;
+    padding: 0 13px;
+    border: 1px solid var(--input-border);
+    border-radius: 11px;
+    background: var(--input-bg);
+}
+
+.dp-quantity-input-wrapper input {
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: var(--input-text);
+    font-size: 17px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.dp-quantity-input-wrapper span {
+    color: var(--text-muted);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.dp-portion-equivalence {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 9px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    background: var(--dp-layer);
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.dp-portion-equivalence strong {
+    color: var(--dp-green);
+}
+
+.dp-food-preview {
+    min-height: 140px;
+    margin: 5px 0 20px;
+    padding: 18px;
+    border: 1px solid var(--dp-line);
+    border-radius: 16px;
+    background: var(--dp-layer);
+}
+
+.dp-preview-placeholder {
+    min-height: 102px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 12px;
+    text-align: center;
+}
+
+.dp-preview-placeholder i {
+    color: var(--dp-green);
+    font-size: 21px;
+    opacity: .7;
+}
+
+.dp-food-preview-name {
+    color: var(--text-primary);
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.dp-food-preview-portion {
+    margin-top: 3px;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.dp-food-preview-kcal {
+    margin-top: 15px;
+    color: var(--text-primary);
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.dp-food-preview-kcal small {
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.dp-food-preview-macros {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+    margin-top: 13px;
+}
+
+.dp-food-preview-macros > div {
+    padding: 10px;
+    border-radius: 11px;
+    background: var(--dp-layer-2);
+}
+
+.dp-food-preview-macros span {
+    display: block;
+    color: var(--text-muted);
+    font-size: 10px;
+}
+
+.dp-food-preview-macros strong {
+    display: block;
+    margin-top: 3px;
+    color: var(--text-primary);
+    font-size: 14px;
+}
+
+.dp-food-preview-warnings {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+}
+
+.dp-drawer-submit {
+    width: 100%;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--dp-btn-grad);
+    color: var(--dp-btn-text);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.dp-drawer-submit:hover {
+    filter: brightness(1.04);
+}
+
+.dp-drawer-submit:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.dp-custom-food-divider {
+    margin-top: 22px;
+    padding-top: 20px;
+    border-top: 1px solid var(--dp-line);
+    text-align: center;
+}
+
+.dp-custom-food-divider[hidden] {
+    display: none;
+}
+
+.dp-custom-food-divider span {
+    display: block;
+    margin-bottom: 9px;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.dp-custom-food-divider button {
+    border: 0;
+    background: transparent;
+    color: var(--dp-green);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.dp-custom-food-divider button i {
+    margin-right: 5px;
+}
+
+.dp-custom-form-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 17px;
+}
+
+.dp-custom-form-header > button {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    border: 1px solid var(--dp-line-strong);
+    border-radius: 10px;
+    background: var(--dp-layer);
+    color: var(--dp-green);
+    cursor: pointer;
+}
+
+.dp-custom-form-header span {
+    display: block;
+    color: var(--dp-green);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+}
+
+.dp-custom-form-header h4 {
+    margin: 3px 0 0;
+    color: var(--text-primary);
+    font-size: 16px;
+}
+
+.dp-custom-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    margin-bottom: 20px;
+    padding: 11px;
+    border: 1px solid rgba(178, 204, 112, .18);
+    border-radius: 11px;
+    background: rgba(180, 202, 103, .07);
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.dp-custom-warning i {
+    margin-top: 2px;
+    color: var(--dp-lime);
+}
+
+.dp-unit-row {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--input-border);
+    border-radius: 11px;
+    background: var(--input-bg);
+}
+
+.dp-unit-row:focus-within {
+    border-color: rgba(var(--nl-accent-rgb), .45);
+}
+
+.dp-unit-row .dp-custom-input {
+    border: 0;
+    background: transparent;
+}
+
+.dp-unit-row span {
+    padding-right: 12px;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.dp-custom-macro-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.dp-custom-macro-grid label {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+
+/* Sin scroll propio: se desplaza todo el panel (antes la lista tenía su
+   propio scroll y en celular el botón "Insertar" quedaba fuera de vista). */
+.dp-dish-cards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.dp-dish-card-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--dp-line-strong);
+    border-radius: 13px;
+    background: var(--dp-layer);
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+.dp-dish-card-item:hover {
+    border-color: rgba(175, 216, 166, .40);
+    background: var(--dp-layer-2);
+}
+
+.dp-dish-card-item.is-selected {
+    border-color: #addba5;
+    background: rgba(154, 198, 148, .16);
+}
+
+.dp-dish-card-item:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+.dp-dish-card-item[hidden] {
+    display: none;
+}
+
+.dp-dish-card-thumb {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: 10px;
+    background: var(--dp-green-soft);
+    color: var(--dp-green);
+}
+
+.dp-dish-card-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.dp-dish-card-info {
+    flex: 1;
+    min-width: 0;
+}
+
+/* El nombre se ve completo hasta en 2 renglones (antes se cortaba con "…") */
+.dp-dish-card-info strong {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    color: var(--text-primary);
+    font-size: 13px;
+    line-height: 1.35;
+}
+
+.dp-dish-card-info > span {
+    display: block;
+    margin-top: 2px;
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+.dp-dish-card-info > .dp-dish-nutrients {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 5px;
+}
+
+.dp-dish-nutrients b,
+.dp-dish-nutrients i {
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: var(--dp-layer-2);
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.dp-dish-nutrients b {
+    color: var(--dp-green);
+}
+
+.dp-dish-ingredients {
+    display: -webkit-box !important;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.dp-dish-card-info .dp-warning {
+    display: flex;
+    width: fit-content;
+}
+
+.dp-dish-card-check {
+    color: transparent;
+    font-size: 16px;
+    transition: .2s;
+}
+
+.dp-dish-card-item.is-selected .dp-dish-card-check {
+    color: var(--dp-lime);
+}
+
+.dp-no-results {
+    padding: 20px;
+    color: var(--text-muted);
+    font-size: 12px;
+    text-align: center;
+}
+
+.dp-no-results[hidden] {
+    display: none;
+}
+
+body.dp-drawer-lock {
+    overflow: hidden;
+}

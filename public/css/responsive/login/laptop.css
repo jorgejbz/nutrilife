@@ -1,0 +1,36 @@
+/* =========================================================
+   RESPONSIVE · LOGIN · LAPTOP (max-width 992 px – 1200 px)
+   Todas las @media de esta sección para este rango de
+   pantalla, agrupadas por el archivo de origen y en el mismo
+   orden en que estaban. Se cargan después de las hojas base y
+   de los temas (config/stylesheets.php), de mayor a menor ancho.
+   ========================================================= */
+/* ---------------------------------------------------------
+   login/login.css
+   --------------------------------------------------------- */
+
+@media (max-width: 1000px) {
+    .login-shell {
+        max-width: 620px;
+        grid-template-columns: 1fr;
+    }
+    .brand-panel {
+        display: none;
+    }
+    .form-panel {
+        min-height: 700px;
+        padding: 45px;
+    }
+    .login-glass {
+        max-width: 430px;
+    }
+    .mobile-logo {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin-bottom: 35px;
+        color: var(--login-text);
+        font-size: 16.5px;
+        font-weight: 600;
+    }
+}

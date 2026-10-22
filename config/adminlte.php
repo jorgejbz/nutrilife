@@ -764,41 +764,145 @@ return [
 
     'menu' => [
 
+    // 'can' usa los Gates de AppServiceProvider (nutritionist, clinic,
+    // admin, diet-plans). Ocultar una opción es solo visual: las rutas
+    // tienen su propio middleware (nutritionist, clinic, admin, feature).
+
+    // ---------------- Administrador global ----------------
+    [
+        'header' => 'ADMINISTRACIÓN GLOBAL',
+        'can' => 'admin',
+    ],
+
+    [
+        'text' => 'Panel general',
+        'url'  => 'admin',
+        'icon' => 'fas fa-fw fa-gauge-high',
+        'can' => 'admin',
+        'active' => ['admin'],
+    ],
+
+    [
+        'text' => 'Cuentas',
+        'url'  => 'admin/cuentas',
+        'icon' => 'fas fa-fw fa-users-gear',
+        'can' => 'admin',
+        'active' => ['admin/cuentas', 'admin/cuentas/*'],
+    ],
+
+    [
+        'text' => 'Cobros de la plataforma',
+        'url'  => 'admin/cobros',
+        'icon' => 'fas fa-fw fa-file-invoice-dollar',
+        'can' => 'admin',
+        'active' => ['admin/cobros', 'admin/cobros/*'],
+        'classes' => 'nl-nav-wrap',
+    ],
+
+    [
+        'text' => 'Bitácora',
+        'url'  => 'admin/auditoria',
+        'icon' => 'fas fa-fw fa-clipboard-list',
+        'can' => 'admin',
+    ],
+
+    // ---------------- Consultorio (cuenta principal) ----------------
+    [
+        'header' => 'MI CLÍNICA',
+        'can' => 'clinic',
+    ],
+
+    [
+        'text' => 'Panel de la clínica',
+        'url'  => 'clinica',
+        'icon' => 'fas fa-fw fa-hospital',
+        'can' => 'clinic',
+        'active' => ['clinica'],
+    ],
+
+    [
+        'text' => 'Equipo',
+        'url'  => 'clinica/equipo',
+        'icon' => 'fas fa-fw fa-user-doctor',
+        'can' => 'clinic',
+        'active' => ['clinica/equipo', 'clinica/equipo/*'],
+    ],
+
+    [
+        'text' => 'Pacientes de la clínica',
+        'url'  => 'clinica/pacientes',
+        'icon' => 'fas fa-fw fa-people-group',
+        'can' => 'clinic',
+        'classes' => 'nl-nav-wrap',
+    ],
+
+    [
+        'text' => 'Agenda de la clínica',
+        'url'  => 'clinica/agenda',
+        'icon' => 'fas fa-fw fa-calendar-week',
+        'can' => 'clinic',
+        'classes' => 'nl-nav-wrap',
+    ],
+
+    [
+        'text' => 'Consultas de la clínica',
+        'url'  => 'clinica/consultas',
+        'icon' => 'fas fa-fw fa-notes-medical',
+        'can' => 'clinic',
+        'classes' => 'nl-nav-wrap',
+    ],
+
+    [
+        'text' => 'Pagos de la clínica',
+        'url'  => 'clinica/pagos',
+        'icon' => 'fas fa-fw fa-receipt',
+        'can' => 'clinic',
+        'classes' => 'nl-nav-wrap',
+    ],
+
+    // ---------------- Consulta (todas las cuentas de nutriólogo) ----------------
     [
         'text' => 'Dashboard',
         'url'  => 'dashboard',
         'icon' => 'fas fa-fw fa-home',
+        'can' => 'nutritionist',
     ],
 
-    ['header' => 'GESTIÓN'],
+    [
+        'header' => 'GESTIÓN',
+        'can' => 'nutritionist',
+    ],
 
     [
         'text' => 'Pacientes',
         'url'  => 'pacientes',
         'icon' => 'fas fa-fw fa-users',
+        'can' => 'nutritionist',
     ],
 
     [
         'text' => 'Citas',
         'url'  => 'citas',
         'icon' => 'fas fa-fw fa-calendar-alt',
+        'can' => 'nutritionist',
     ],
 
     [
         'text' => 'Consultas',
         'url'  => 'consultas',
         'icon' => 'fas fa-fw fa-notes-medical',
+        'can' => 'nutritionist',
     ],
 
     [
         'text' => 'Progreso',
         'url'  => 'progreso',   // antes 'progreso.index' (URL literal → 404)
         'icon' => 'fas fa-fw fa-chart-line',
+        'can' => 'nutritionist',
     ],
 
-    // Planes alimenticios: solo Pro, Consultorio y prueba gratuita
-    // ('can' usa el Gate "diet-plans" de AppServiceProvider). Ocultarlo es
-    // solo visual: las rutas también lo bloquean (middleware feature).
+    // Planes alimenticios: solo Pro, Consultorio, subperfiles de clínica y
+    // prueba gratuita ('can' usa el Gate "diet-plans" de AppServiceProvider).
     [
         'header' => 'NUTRICIÓN',
         'can' => 'diet-plans',
@@ -831,29 +935,30 @@ return [
         'classes' => 'nl-nav-wrap',
     ],
 
-    ['header' => 'ADMINISTRACIÓN'],
+    [
+        'header' => 'ADMINISTRACIÓN',
+        'can' => 'nutritionist',
+    ],
 
     [
         'text' => 'Pagos',
         'url'  => 'pagos',
         'icon' => 'fas fa-fw fa-credit-card',
+        'can' => 'nutritionist',
+        'active' => ['pagos', 'pagos/*'],
     ],
 
-    // "Reportes" apuntaba a /reportes, que no existe (404). Se oculta hasta
-    // que exista el módulo:
-    // [
-    //     'text' => 'Reportes',
-    //     'url'  => 'reportes',
-    //     'icon' => 'fas fa-fw fa-file-alt',
-    // ],
+    [
+        // Perfil: datos de la cuenta, información profesional, plan,
+        // suscripción, uso del plan y cobros (ProfileController@edit).
+        'header' => 'CUENTA',
+    ],
 
     [
-        // Perfil del nutriólogo: datos de la cuenta, plan contratado,
-        // suscripción, uso del plan y cobros (ProfileController@edit).
         'text' => 'Mi perfil',
-        'url'  => 'profile',
+        'url'  => 'perfil',
         'icon' => 'fas fa-fw fa-user-circle',
-        'active' => ['profile', 'profile/*'],
+        'active' => ['perfil', 'perfil/*'],
     ],
 
 ],

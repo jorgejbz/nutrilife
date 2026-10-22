@@ -1,6 +1,6 @@
 {{-- =========================================================
      DATOS DE LA CUENTA (users.name, users.email)
-     Ruta: PATCH profile.update → ProfileController@update
+     Ruta: PATCH perfil.update → ProfileController@update
      Validación: ProfileUpdateRequest (correo en minúsculas, único).
      Si cambia el correo, email_verified_at vuelve a null.
      ========================================================= --}}
@@ -10,7 +10,7 @@
         <span class="nl-settings-icon" aria-hidden="true"><i class="far fa-id-card"></i></span>
         <div>
             <h3>Datos de la cuenta</h3>
-            <p>Tu nombre aparece en el panel; con tu correo inicias sesión.</p>
+            <p>{{ ($isClinic ?? false) ? 'El nombre de la clínica aparece en el panel y en los perfiles de tu equipo; con tu correo inicias sesión.' : 'Tu nombre aparece en el panel; con tu correo inicias sesión.' }}</p>
         </div>
     </header>
 
@@ -19,12 +19,12 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="nl-settings-form" novalidate>
+    <form method="post" action="{{ route('perfil.update') }}" class="nl-settings-form" novalidate>
         @csrf
         @method('patch')
 
         <div class="nl-field">
-            <label for="name">Nombre completo <span class="nl-req" aria-hidden="true">*</span></label>
+            <label for="name">{{ ($isClinic ?? false) ? 'Nombre de la clínica' : 'Nombre completo' }} <span class="nl-req" aria-hidden="true">*</span></label>
             <div class="nl-input @error('name') has-error @enderror">
                 <i class="far fa-user" aria-hidden="true"></i>
                 <input

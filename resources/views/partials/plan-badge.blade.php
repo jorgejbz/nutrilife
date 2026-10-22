@@ -19,7 +19,7 @@
         @switch($nlAccount['type'])
 
             @case('trial')
-                <a href="{{ route('profile.edit') }}"
+                <a href="{{ route('perfil') }}"
                    class="nl-trial-badge {{ ($nlTrial['days'] ?? 7) <= 2 ? 'is-ending' : '' }}"
                    title="Tu prueba termina el {{ $nlTrial['ends_at']->format('d/m/Y') }}">
                     <i class="fas fa-seedling" aria-hidden="true"></i>
@@ -37,12 +37,23 @@
                 @break
 
             @case('active')
-                <a href="{{ route('profile.edit') }}"
+                <a href="{{ route('perfil') }}"
                    class="nl-trial-badge is-plan is-plan-{{ \Illuminate\Support\Str::slug($nlAccount['plan'] ?? '') }}"
                    title="Ver mi suscripción">
                     <i class="fas fa-crown" aria-hidden="true"></i>
                     <span>Plan</span>
                     <strong>{{ $nlAccount['plan'] }}</strong>
+                </a>
+                @break
+
+            @case('member')
+                {{-- Subperfil de clínica: funciones Pro con la licencia del consultorio --}}
+                <a href="{{ route('perfil') }}"
+                   class="nl-trial-badge {{ ($nlAccount['license_active'] ?? false) ? 'is-plan' : 'is-expired' }}"
+                   title="{{ $nlAccount['label'] }}">
+                    <i class="fas fa-hospital" aria-hidden="true"></i>
+                    <span>{{ ($nlAccount['license_active'] ?? false) ? 'Clínica' : 'Licencia de la clínica' }}</span>
+                    <strong>{{ ($nlAccount['license_active'] ?? false) ? $nlAccount['plan'] : 'Sin vigencia' }}</strong>
                 </a>
                 @break
 
@@ -55,7 +66,7 @@
 
             @default
                 {{-- expired / cancelled --}}
-                <a href="{{ route('profile.edit') }}" class="nl-trial-badge is-expired" title="Ver mi suscripción">
+                <a href="{{ route('perfil') }}" class="nl-trial-badge is-expired" title="Ver mi suscripción">
                     <i class="fas fa-hourglass-end" aria-hidden="true"></i>
                     <span>{{ $nlAccount['label'] }}</span>
                     <strong>Elegir plan</strong>

@@ -21,7 +21,25 @@ class EnsureAccountIsActive
     {
         $user = $request->user();
 
-        if (! $user || AccountActivation::refresh($user)) {
+        if (! $user) {
+            return $next($request);
+        }
+
+        // Cuenta desactivada (por el administrador o por su clínica): la
+        // sesión abierta se cierra en la siguiente petición.
+        if ($user->isDisabled()) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            if ($request->expectsJson()) {
+                return response()->json(['message' => AccountActivation::DISABLED_MESSAGE], Response::HTTP_FORBIDDEN);
+            }
+
+            return redirect()->route('login')->withErrors(['email' => AccountActivation::DISABLED_MESSAGE]);
+        }
+
+        if (AccountActivation::refresh($user)) {
             return $next($request);
         }
 

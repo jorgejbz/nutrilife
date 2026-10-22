@@ -1,0 +1,130 @@
+/* =========================================================
+   diet-plans/dishes.css
+   Catálogo de platillos
+   Parte de la hoja de la sección: el orden de carga está en
+   config/stylesheets.php. Los ajustes por tamaño de pantalla
+   viven en public/css/responsive/.
+   ========================================================= */
+
+/* =============================================================
+   CATÁLOGO DE PLATILLOS (resources/views/dishes/index)
+   La base son las tarjetas food-* del Catálogo de alimentos
+   (admin.css); aquí solo lo propio: imagen, origen,
+   ingredientes y la tabla del detalle.
+============================================================= */
+
+.dish-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
+}
+
+.dish-card {
+    overflow: hidden;
+    padding-top: 0;
+}
+
+.dish-card.is-empty {
+    opacity: .78;
+}
+
+.dish-card-media {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 150px;
+    margin: 0 -16px;
+    overflow: hidden;
+    background: var(--dp-green-soft);
+    color: var(--dp-green);
+    font-size: 34px;
+}
+
+.dish-card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .35s ease;
+}
+
+.dish-card:hover .dish-card-media img {
+    transform: scale(1.04);
+}
+
+.dish-origin {
+    position: absolute;
+    left: 12px;
+    top: 12px;
+    padding: 4px 9px;
+    border-radius: 20px;
+    background: rgba(18, 38, 26, .78);
+    color: #e6fce5;
+    font-size: 11px;
+    font-weight: 600;
+    backdrop-filter: blur(6px);
+}
+
+.dish-origin.is-own {
+    background: rgba(201, 162, 75, .9);
+    color: #1b3625;
+}
+
+.dish-ingredients-line {
+    display: -webkit-box;
+    margin: 0;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    color: var(--text-muted);
+    font-size: 12.5px;
+    line-height: 1.5;
+}
+
+.dish-card .food-card-foot .dp-warning {
+    margin-top: 0;
+}
+
+/* Detalle */
+.dish-detail-head {
+    align-items: flex-start;
+}
+
+.dish-detail-head > div {
+    flex: 1;
+    min-width: 0;
+}
+
+.dish-detail-img {
+    width: 72px;
+    height: 72px;
+    flex-shrink: 0;
+    border-radius: 14px;
+    object-fit: cover;
+}
+
+.dish-detail-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.dish-photo-credit {
+    margin: 10px 0 0;
+    color: var(--text-muted);
+    font-size: 11.5px;
+    overflow-wrap: anywhere;
+}
+
+.dish-detail-table tbody th small {
+    display: block;
+    margin-top: 1px;
+    color: var(--text-muted);
+    font-size: 11.5px;
+    font-weight: 400;
+}
+
+.dish-detail-table tfoot th,
+.dish-detail-table tfoot td {
+    padding-top: 10px;
+    border-bottom: 0;
+    color: var(--text-primary);
+    font-weight: 700;
+}

@@ -1,0 +1,211 @@
+/* =========================================================
+   RESPONSIVE · ADMIN · TABLET (max-width 768 px – 991.98 px)
+   Todas las @media de esta sección para este rango de
+   pantalla, agrupadas por el archivo de origen y en el mismo
+   orden en que estaban. Se cargan después de las hojas base y
+   de los temas (config/stylesheets.php), de mayor a menor ancho.
+   ========================================================= */
+/* ---------------------------------------------------------
+   admin/pages/dashboard.css
+   --------------------------------------------------------- */
+
+@media (max-width: 900px) {
+    .dashboard-bottom-grid {
+        grid-template-columns: 1fr;
+    }
+    .dashboard-quick-actions__grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/pages/progress.css
+   --------------------------------------------------------- */
+
+@media (max-width: 900px) {
+    .progress-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/pages/account.css
+   --------------------------------------------------------- */
+
+/* ---------- Responsive del perfil ---------- */
+
+@media (max-width: 991.98px) {
+    .nl-facts--grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 991.98px) {
+    .nl-settings-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/pages/patients-clinical.css
+   --------------------------------------------------------- */
+
+@media (max-width: 991.98px) {
+    .clinical-grid--compact {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/components/global.css
+   --------------------------------------------------------- */
+
+/* ---------- Menú lateral en móvil y tablet ---------- */
+
+@media (max-width: 991.98px) {
+    /* Fondo sólido: el degradado translúcido dejaba ver el
+       contenido de la página detrás del menú. */
+    .app-sidebar {
+        background: var(--nl-forest-deep, #0f2418) !important;
+    }
+
+    [data-theme="light"] .app-sidebar {
+        background: #FFFFFF !important;
+    }
+
+    .sidebar-open .sidebar-overlay {
+        position: fixed !important;
+        background-color: rgba(0, 0, 0, .55) !important;
+        backdrop-filter: blur(2px);
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/pages/clinic-admin.css
+   --------------------------------------------------------- */
+
+@media (max-width: 991.98px) {
+    .nl-kpis,
+    .nl-checks {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .nl-split {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* ---------- Tablet y celular ---------- */
+
+@media (max-width: 991.98px) {
+    .nl-profile-card {
+        padding: 22px;
+    }
+
+    /* Tablas como tarjetas: etiqueta a la izquierda, dato a la derecha y
+       los subtextos (correo, fechas) debajo, a todo lo ancho. */
+    .nl-table {
+        min-width: 0;
+    }
+
+    .nl-table thead {
+        display: none;
+    }
+
+    .nl-table,
+    .nl-table tbody,
+    .nl-table tr,
+    .nl-table td {
+        display: block;
+        box-sizing: border-box;
+        width: 100%;
+    }
+
+    .nl-table tr {
+        margin-bottom: 10px;
+        padding: 6px 12px;
+        border: 1px solid var(--card-border-soft);
+        border-radius: 14px;
+    }
+
+    .nl-table td {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 4px 12px;
+        padding: 7px 0;
+        border-bottom: 1px solid var(--card-border-soft);
+        text-align: right;
+    }
+
+    .nl-table tr td:last-child {
+        border-bottom: 0;
+    }
+
+    .nl-table td::before {
+        content: attr(data-label);
+        flex: 0 0 auto;
+        max-width: 45%;
+        color: var(--text-muted);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: .06em;
+        text-align: left;
+        text-transform: uppercase;
+    }
+
+    .nl-table td > * {
+        min-width: 0;
+        max-width: 100%;
+        overflow-wrap: anywhere;
+    }
+
+    .nl-table td > small {
+        flex: 1 0 100%;
+        text-align: right;
+    }
+
+    .nl-table .is-num {
+        text-align: right;
+    }
+
+    /* La celda de acciones no lleva etiqueta: botones a todo lo ancho */
+    .nl-table td[data-label="Acciones"]::before {
+        display: none;
+    }
+
+    .nl-table td[data-label="Acciones"] .nl-row-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/components/interface.css
+   --------------------------------------------------------- */
+
+@media (max-width: 991.98px) {
+    .nl-table td[data-label="Responsable"] .nl-owner {
+        flex: 1 1 auto;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/components/payment-reference.css
+   --------------------------------------------------------- */
+
+@media (max-width: 991.98px) {
+    .payment-reference-cell {
+        min-width: 0;
+    }
+}

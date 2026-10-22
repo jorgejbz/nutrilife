@@ -1,0 +1,164 @@
+/* =========================================================
+   RESPONSIVE · ADMIN · LAPTOP (max-width 992 px – 1200 px)
+   Todas las @media de esta sección para este rango de
+   pantalla, agrupadas por el archivo de origen y en el mismo
+   orden en que estaban. Se cargan después de las hojas base y
+   de los temas (config/stylesheets.php), de mayor a menor ancho.
+   ========================================================= */
+/* ---------------------------------------------------------
+   admin/pages/dashboard.css
+   --------------------------------------------------------- */
+
+/* -------------------------------------------------------------
+   RESPONSIVE
+------------------------------------------------------------- */
+
+@media (max-width: 1200px) {
+    .dashboard-metrics {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .dashboard-charts {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/pages/patients.css
+   --------------------------------------------------------- */
+
+@media (max-width: 1100px) {
+    .patients-grid {
+        grid-template-columns:
+            repeat(2, minmax(0,1fr));
+    }
+}
+
+@media (max-width: 1050px) {
+    .patient-form-layout {
+        grid-template-columns: 1fr;
+    }
+    .patient-side-panel {
+        display: grid;
+        grid-template-columns:
+            1fr
+            1fr;
+    }
+    .profile-preview-glass {
+        grid-row: span 2;
+    }
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1050px) {
+    .edit-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 1100px) {
+    .patient-hero-glass {
+        align-items: flex-start;
+    }
+    .hero-summary {
+        display: none;
+    }
+    .top-grid {
+        grid-template-columns: 1fr;
+    }
+    .left-column {
+        display: grid;
+        grid-template-columns:
+            1fr
+            1fr;
+    }
+    .privacy-glass {
+        grid-column: 1 / -1;
+    }
+    .evaluation-metrics {
+        grid-template-columns:
+            repeat(2,1fr);
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/pages/appointments.css
+   --------------------------------------------------------- */
+
+@media (max-width: 1100px) {
+    .calendar-layout {
+        grid-template-columns: 1fr;
+    }
+    .side-panel {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+    .calendar-stats {
+        grid-template-columns:
+            repeat(2,1fr);
+    }
+}
+
+@media (max-width: 1050px) {
+    .appointment-layout {
+        grid-template-columns: 1fr;
+    }
+    .appointment-sidebar {
+        display: grid;
+        grid-template-columns:
+            1fr
+            1fr;
+    }
+    .appointment-preview-glass {
+        grid-row: span 2;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/pages/payments.css
+   --------------------------------------------------------- */
+
+@media (max-width: 1000px) {
+    .payment-stats {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/pages/evaluations.css
+   --------------------------------------------------------- */
+
+@media (max-width: 1050px) {
+    .evaluation-layout {
+        grid-template-columns: 1fr;
+    }
+    .evaluation-sidebar {
+        display: grid;
+        grid-template-columns:
+            1fr
+            1fr;
+    }
+    .evaluation-tip-glass {
+        grid-column: 1 / -1;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/pages/progress.css
+   --------------------------------------------------------- */
+
+/* RESPONSIVE */
+
+@media (max-width: 1000px) {
+    .detail-stats {
+        grid-template-columns: 1fr 1fr;
+    }
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+}

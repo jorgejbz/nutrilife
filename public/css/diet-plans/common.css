@@ -1,0 +1,276 @@
+/* =========================================================
+   diet-plans/common.css
+   Planes alimenticios: tokens y componentes comunes (.dp)
+   Parte de la hoja de la sección: el orden de carga está en
+   config/stylesheets.php. Los ajustes por tamaño de pantalla
+   viven en public/css/responsive/.
+   ========================================================= */
+
+/* =============================================================
+   NUTRILIFE — PLANES ALIMENTICIOS (resources/views/diet-plans/*)
+   -------------------------------------------------------------
+   Diseño migrado de la versión "nutrilife_planesAlim":
+     - index:  banner de bienvenida, métricas y lista de planes.
+     - create / edit: formulario por pasos (01 · 02 · 03 …).
+     - show:   constructor nutricional (resumen del día, tarjetas
+               de comida, drawers de alimento / platillo /
+               alimento personalizado).
+
+   Todo vive bajo la clase .dp y usa el prefijo dp- para no
+   chocar con admin.css (ahí .nl-input, .nl-field, .food-search
+   y .status-dot ya existen para Perfil y Catálogo de alimentos).
+
+   Colores: leen las variables del tema del panel (admin-light /
+   admin-dark). El modo oscuro reproduce la paleta original del
+   constructor; el claro es su equivalente sobre crema.
+   Se carga desde las vistas, después de partials/theme-styles.
+============================================================= */
+
+.dp {
+    /* Acentos propios del módulo (oscuro = valores originales) */
+    --dp-lime: #dce96c;
+    --dp-lime-text: #e2e99a;
+    --dp-btn-grad: linear-gradient(135deg, #afd1a4, #dce873);
+    --dp-btn-text: #102417;
+    --dp-layer: rgba(var(--nl-overlay-rgb), .035);
+    --dp-layer-2: rgba(var(--nl-overlay-rgb), .06);
+    --dp-line: rgba(var(--nl-overlay-rgb), .075);
+    --dp-line-strong: rgba(var(--nl-overlay-rgb), .11);
+    --dp-green: var(--accent-text);
+    --dp-green-soft: rgba(var(--nl-accent-rgb), .11);
+    --dp-green-border: rgba(var(--nl-accent-rgb), .20);
+    --dp-danger: var(--nl-danger-text);
+    --dp-danger-bg: rgba(var(--nl-danger-rgb), .08);
+    --dp-danger-border: rgba(var(--nl-danger-rgb), .22);
+    --dp-warning: var(--nl-warning-text);
+    --dp-warning-bg: rgba(var(--nl-warning-rgb), .10);
+    --dp-info: var(--nl-info-text);
+    --dp-protein: #9bc6a3;
+    --dp-carbs: #d1da80;
+    --dp-fats: #8eb9c6;
+    --dp-kcal: #d5a257;
+    --dp-drawer-bg: radial-gradient(circle at 20% 5%, rgba(77, 133, 89, .18), transparent 28%), #0b1d14;
+    --dp-drawer-solid: #0f2219;
+    --dp-select-bg: #153025;
+    --dp-progress: linear-gradient(90deg, #91c18e, #dce872);
+    --dp-progress-over: linear-gradient(90deg, #d98973, #edb06f);
+
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .dp {
+    --dp-lime: #8a9a1e;
+    --dp-lime-text: #6d7a12;
+    --dp-btn-grad: linear-gradient(135deg, #8fc489, #c9dc5c);
+    --dp-btn-text: #10291a;
+    --dp-protein: #3f8f53;
+    --dp-carbs: #8a8f22;
+    --dp-fats: #3f8197;
+    --dp-kcal: #b47a22;
+    --dp-drawer-bg: radial-gradient(circle at 20% 5%, rgba(151, 215, 165, .30), transparent 30%), #fefbf4;
+    --dp-drawer-solid: #fbf9f1;
+    --dp-select-bg: #ffffff;
+    --dp-progress: linear-gradient(90deg, #5fae66, #b9cd3f);
+    --dp-progress-over: linear-gradient(90deg, #cf7a62, #e09a4f);
+}
+
+.dp *,
+.dp *::before,
+.dp *::after {
+    box-sizing: border-box;
+}
+
+.dp .visually-hidden {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+/* =============================================================
+   COMPONENTES COMUNES
+============================================================= */
+
+.dp-alert {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 14px 17px;
+    border-radius: 15px;
+}
+
+.dp-alert.is-success {
+    border: 1px solid rgba(var(--nl-accent-rgb), .20);
+    background: rgba(var(--nl-accent-rgb), .09);
+    color: var(--accent-text);
+}
+
+.dp-alert.is-error {
+    border: 1px solid var(--dp-danger-border);
+    background: var(--dp-danger-bg);
+    color: var(--dp-danger);
+}
+
+.dp-alert-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 11px;
+    background: var(--dp-layer-2);
+}
+
+.dp-alert strong,
+.dp-alert span {
+    display: block;
+}
+
+.dp-alert strong {
+    font-size: 13px;
+}
+
+.dp-alert span {
+    margin-top: 2px;
+    font-size: 12px;
+    opacity: .85;
+}
+
+.dp-btn,
+.dp-btn-primary,
+.dp-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 40px;
+    padding: 0 15px;
+    border-radius: 11px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none !important;
+    cursor: pointer;
+    transition: .2s ease;
+    white-space: nowrap;
+}
+
+.dp-btn-primary {
+    border: 0;
+    background: var(--dp-btn-grad);
+    color: var(--dp-btn-text) !important;
+}
+
+.dp-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(119, 169, 111, .18);
+}
+
+.dp-btn-primary:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.dp-btn-secondary {
+    border: 1px solid var(--dp-line-strong);
+    background: var(--dp-layer);
+    color: var(--text-secondary) !important;
+    font-weight: 600;
+}
+
+.dp-btn-secondary:hover {
+    background: var(--dp-layer-2);
+    color: var(--text-primary) !important;
+}
+
+.dp-btn {
+    border: 1px solid var(--dp-green-border);
+    background: var(--dp-green-soft);
+    color: var(--dp-green) !important;
+    font-weight: 600;
+}
+
+.dp-btn:hover {
+    background: rgba(var(--nl-accent-rgb), .20);
+    transform: translateY(-2px);
+}
+
+.dp-icon-btn {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 0;
+    border: 1px solid var(--dp-line-strong);
+    border-radius: 10px;
+    background: var(--dp-layer);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.dp-icon-btn:hover {
+    background: var(--dp-layer-2);
+    color: var(--text-primary);
+}
+
+.dp-icon-btn.is-danger {
+    border-color: var(--dp-danger-border);
+    background: var(--dp-danger-bg);
+    color: var(--dp-danger);
+}
+
+.dp-icon-btn.is-danger:hover {
+    background: rgba(var(--nl-danger-rgb), .18);
+}
+
+.dp :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.dp-warning {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin-top: 5px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.dp-warning.is-allergen,
+.dp-warning.is-forbidden {
+    background: var(--dp-danger-bg);
+    color: var(--dp-danger);
+}
+
+.dp-warning.is-limited {
+    background: var(--dp-warning-bg);
+    color: var(--dp-warning);
+}
+
+.dp-warning.is-info {
+    background: rgba(var(--nl-info-rgb), .10);
+    color: var(--dp-info);
+}
+
+.dp-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: rgba(var(--nl-warning-rgb), .14);
+    color: var(--dp-warning);
+    font-size: 10px;
+    font-weight: 700;
+}

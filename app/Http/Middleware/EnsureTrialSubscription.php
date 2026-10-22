@@ -31,12 +31,38 @@ class EnsureTrialSubscription
         'subscription.checkout',
     ];
 
+    /** Lo que un subperfil puede abrir aunque su clínica no tenga licencia. */
+    public const MEMBER_ALWAYS_ALLOWED = [
+        'perfil',
+        'perfil.update',
+    ];
+
     public function handle(Request $request, Closure $next): Response
     {
         $user = $request->user();
 
         if (! $user || ! $user->isNutritionist()) {
             return $next($request);
+        }
+
+        // Subperfil de clínica: sin prueba ni paquete propio. Entra mientras
+        // la licencia de su consultorio esté vigente; si no, ve un aviso (no
+        // la pantalla de contratación: quien paga es la clínica).
+        if ($user->isClinicMember()) {
+            if ($user->clinic?->clinicLicenseActive() || $request->routeIs(...self::MEMBER_ALWAYS_ALLOWED)) {
+                return $next($request);
+            }
+
+            $message = 'La licencia de tu clínica no está vigente. Pide a '.($user->clinic?->name ?? 'tu clínica').' que renueve su plan para seguir usando NutriLife.';
+
+            if ($request->expectsJson()) {
+                return response()->json(['message' => $message], Response::HTTP_PAYMENT_REQUIRED);
+            }
+
+            return response()->view('partials.clinic-license-inactive', [
+                'message' => $message,
+                'clinicName' => $user->clinic?->name,
+            ], Response::HTTP_PAYMENT_REQUIRED);
         }
 
         $subscription = $user->latestSubscription;

@@ -1,0 +1,28 @@
+/* =========================================================
+   RESPONSIVE · ADMIN · PREFERENCIAS DEL USUARIO (movimiento reducido)
+   Todas las @media de esta sección para este rango de
+   pantalla, agrupadas por el archivo de origen y en el mismo
+   orden en que estaban. Se cargan después de las hojas base y
+   de los temas (config/stylesheets.php), de mayor a menor ancho.
+   ========================================================= */
+/* ---------------------------------------------------------
+   admin/components/confirm-dialog.css
+   --------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .nl-confirm,
+    .nl-confirm::backdrop {
+        animation: none;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/components/date-picker.css
+   --------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .nl-datepicker {
+        animation: none;
+    }
+}

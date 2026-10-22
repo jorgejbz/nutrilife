@@ -6,9 +6,9 @@
 
     <title>Crear cuenta | NutriLife</title>
 
-    {{-- Estilos de autenticación: tokens + login.css + login-light/dark.css.
+    {{-- Estilos de autenticación: tokens + public/css/login/* + temas + responsive (config/stylesheets.php).
          El CSS que antes estaba aquí en un <style> inline (sin modo claro)
-         ahora vive en public/css/login.css, sección "2. REGISTRO". --}}
+         ahora vive en public/css/login/register.css. --}}
     @include('partials.theme-styles', ['section' => 'login'])
 </head>
 

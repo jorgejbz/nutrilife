@@ -1,0 +1,898 @@
+/* =========================================================
+   RESPONSIVE · ADMIN · TELÉFONO (max-width < 768 px y pantallas bajas)
+   Todas las @media de esta sección para este rango de
+   pantalla, agrupadas por el archivo de origen y en el mismo
+   orden en que estaban. Se cargan después de las hojas base y
+   de los temas (config/stylesheets.php), de mayor a menor ancho.
+   ========================================================= */
+/* ---------------------------------------------------------
+   admin/pages/dashboard.css
+   --------------------------------------------------------- */
+
+@media (max-width: 767.98px) {
+    .dashboard-header__content {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+    .dashboard-header__status {
+        display: none;
+    }
+    .dashboard-hero {
+        padding: 26px 22px;
+    }
+    .dashboard-hero__content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+    .dashboard-hero__icon {
+        width: 58px;
+        min-width: 58px;
+        height: 58px;
+        border-radius: 18px;
+        font-size: 23px;
+    }
+    .dashboard-hero__title {
+        font-size: 27px;
+    }
+    .dashboard-metrics {
+        grid-template-columns: 1fr 1fr;
+    }
+    .dashboard-chart-card {
+        padding: 18px;
+    }
+    .dashboard-chart-card__header {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 520px) {
+    .dashboard-metrics {
+        grid-template-columns: 1fr;
+    }
+    .dashboard-quick-actions__grid {
+        grid-template-columns: 1fr;
+    }
+    .dashboard-footer {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+    .dashboard-chart-card__body {
+        height: 220px;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/pages/patients.css
+   --------------------------------------------------------- */
+
+@media (max-width: 767.98px) {
+
+    .hero-glass {
+        padding: 27px 22px;
+    }
+
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    .patients-grid {
+        grid-template-columns: 1fr;
+    }
+    .glass-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+    .search-glass {
+        width: 100%;
+    }
+
+    .patient-form-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+    .form-card-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+
+    .form-card-header {
+        padding:
+            23px
+            19px;
+    }
+
+    .patient-side-panel {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .edit-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .form-heading {
+        padding:
+            23px
+            19px;
+    }
+}
+
+@media (max-width: 500px) {
+
+    .btn-cancel,
+    .btn-save {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .patient-show-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+    .header-actions {
+        width: 100%;
+    }
+    .header-actions a {
+        flex: 1;
+    }
+    .patient-hero-glass {
+        padding: 25px 20px;
+    }
+    .patient-hero-main {
+        align-items: flex-start;
+    }
+    .hero-avatar {
+        width: 65px;
+        height: 65px;
+        border-radius: 20px;
+        font-size: 19px;
+    }
+    .hero-patient-info h2 {
+        font-size: 23px;
+    }
+    .left-column {
+        display: flex;
+    }
+    .general-info-grid {
+        grid-template-columns: 1fr;
+    }
+    .evaluation-header,
+    .history-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+    .evaluation-metrics {
+        grid-template-columns:
+            1fr
+            1fr;
+    }
+    .history-header .btn-liquid-primary {
+        width: 100%;
+    }
+    .liquid-table {
+        min-width: 720px;
+    }
+}
+
+@media (max-width: 480px) {
+    .patient-hero-main {
+        flex-direction: column;
+    }
+    .evaluation-metrics {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/pages/appointments.css
+   --------------------------------------------------------- */
+
+@media (max-width: 767.98px) {
+    .appointments-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+    .calendar-hero {
+        padding: 26px 21px;
+    }
+    .hero-decoration {
+        display: none;
+    }
+    .hero-content {
+        align-items: flex-start;
+    }
+    .hero-icon {
+        width: 58px;
+        min-width: 58px;
+        height: 58px;
+        border-radius: 18px;
+        font-size: 23px;
+    }
+    .hero-content h2 {
+        font-size: 27px;
+    }
+    .calendar-stats {
+        grid-template-columns: 1fr 1fr;
+    }
+    .calendar-glass-card {
+        padding: 18px 10px;
+    }
+    .calendar-day {
+        min-height: 64px;
+        margin: 1px;
+        padding: 5px;
+        border-radius: 10px;
+    }
+    .calendar-event {
+        display: none;
+    }
+    .calendar-day.has-event::after {
+        content: "";
+        position: absolute;
+        width: 5px;
+        height: 5px;
+        bottom: 7px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 50%;
+        background: rgb(var(--nl-accent-rgb));
+    }
+    .side-panel {
+        grid-template-columns: 1fr;
+    }
+    .selected-appointments {
+        grid-template-columns: 1fr;
+    }
+    .calendar-legend {
+        flex-wrap: wrap;
+    }
+
+    .appointment-page-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .required-badge {
+        display: none;
+    }
+
+
+    .appointment-sidebar {
+        display: flex;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/pages/consultations.css
+   --------------------------------------------------------- */
+
+/* RESPONSIVE */
+
+@media (max-width: 700px) {
+    .consultations-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+    .consultation-stats {
+        grid-template-columns: 1fr;
+    }
+    .consultation-item {
+        align-items: flex-start;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/pages/payments.css
+   --------------------------------------------------------- */
+
+@media (max-width: 600px) {
+
+    .payment-stats {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .payments-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .payments-header h1 {
+        font-size: 29px;
+    }
+    .payment-card-header {
+        align-items: flex-start;
+        padding: 24px 20px;
+    }
+    .payment-icon {
+        width: 54px;
+        min-width: 54px;
+        height: 54px;
+        border-radius: 17px;
+        font-size: 20px;
+    }
+    .payment-card-header h2 {
+        font-size: 22px;
+    }
+    .payment-form-body {
+        padding: 25px 20px 15px;
+    }
+    .payment-footer {
+        padding: 18px 20px;
+        flex-direction: column-reverse;
+    }
+    .btn-cancel-glass,
+    .btn-payment-primary {
+        width: 100%;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/pages/evaluations.css
+   --------------------------------------------------------- */
+
+@media (max-width: 767.98px) {
+    .evaluation-page-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+    .form-main-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+    .patient-mini-badge {
+        display: none;
+    }
+    .form-section {
+        padding:
+            24px
+            19px
+            8px;
+    }
+    .last-section {
+        padding-bottom: 24px;
+    }
+    .measurements-grid {
+        grid-template-columns:
+            repeat(2,1fr);
+    }
+    .evaluation-sidebar {
+        display: flex;
+    }
+    .form-actions {
+        padding:
+            18px
+            19px;
+    }
+}
+
+@media (max-width: 500px) {
+    .measurements-grid {
+        grid-template-columns: 1fr;
+    }
+    .form-actions {
+        align-items: stretch;
+        flex-direction: column-reverse;
+    }
+    .btn-cancel-liquid,
+    .btn-save-liquid {
+        width: 100%;
+    }
+    .live-values {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/pages/progress.css
+   --------------------------------------------------------- */
+
+@media (max-width: 700px) {
+    .progress-stats {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 650px) {
+    .progress-detail-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+    .detail-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .trial-alert {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+    .trial-alert-button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/pages/account.css
+   --------------------------------------------------------- */
+
+@media (max-width: 575.98px) {
+    .nl-trial-badge {
+        margin-right: 6px;
+        padding: 6px 10px;
+    }
+
+    .nl-trial-badge > span {
+        display: none;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .nl-facts,
+    .nl-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .nl-features ul {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 430px) {
+    .nl-account-head {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .nl-facts--grid {
+        grid-template-columns: 1fr;
+    }
+
+    .nl-settings-actions .nl-btn,
+    .nl-dialog-actions .nl-btn {
+        width: 100%;
+    }
+
+    .nl-dialog-actions {
+        flex-direction: column-reverse;
+    }
+
+    .nl-dialog-body {
+        padding: 22px;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/pages/patients-clinical.css
+   --------------------------------------------------------- */
+
+@media (max-width: 767.98px) {
+    .clinical-grid,
+    .clinical-grid--compact {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 430px) {
+    .clinical-details {
+        padding-left: 14px;
+    }
+
+    .clinical-detail-row {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 767.98px) {
+    .clinical-show-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/pages/diet-plans.css
+   --------------------------------------------------------- */
+
+@media (max-width: 767.98px) {
+
+
+    .diet-filter-select,
+.diet-filter-select select {
+        width: 100%;
+    }
+
+
+    .diet-dialog-foot {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .diet-dialog-actions .diet-btn {
+        flex: 1;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/pages/subscription.css
+   --------------------------------------------------------- */
+
+@media (max-width: 575.98px) {
+    .plans-lock {
+        flex-direction: column;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/components/user-menu.css
+   --------------------------------------------------------- */
+
+@media (max-width: 767.98px) {
+    .nl-user-name {
+        display: none;
+    }
+
+    .nl-user-toggle {
+        padding: 3px !important;
+    }
+
+    .nl-user-dropdown {
+        min-width: min(270px, calc(100vw - 24px));
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/pages/food-catalog.css
+   --------------------------------------------------------- */
+
+@media (max-width: 575.98px) {
+    .diet-dialog {
+        max-width: none;
+        width: calc(100vw - 16px);
+        max-height: calc(100vh - 16px);
+        max-height: calc(100dvh - 16px);
+        border-radius: 18px;
+    }
+
+
+    .diet-dialog-head {
+        padding: 16px 16px 10px;
+    }
+
+
+    .diet-dialog-foot {
+        padding: 12px 16px 16px;
+    }
+
+    .food-toolbar {
+        padding: 14px;
+    }
+
+    /* Buscador a todo lo ancho; "Buscar" y "Filtros" debajo, mitad y mitad */
+    .food-search-row {
+        flex-wrap: wrap;
+    }
+
+    .food-search {
+        flex-basis: 100%;
+    }
+
+    .food-search-btn,
+    .food-filters-toggle {
+        flex: 1 1 0;
+        min-height: 42px;
+    }
+
+    .food-filter-panel {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .food-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .food-detail-table th,
+    .food-detail-table td {
+        padding: 8px 4px;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/components/global.css
+   --------------------------------------------------------- */
+
+/* ---------- Teléfonos ---------- */
+
+@media (max-width: 575.98px) {
+    /* Hojas decorativas del hero del dashboard: se encimaban
+       con el ícono principal. */
+    .dashboard-hero__leaf,
+    .dashboard-hero__decoration {
+        display: none;
+    }
+
+    /* Tarjetas de métricas en dos columnas en lugar de una
+       debajo de otra (menos desplazamiento). */
+    .stats-grid,
+    .calendar-stats,
+    .consultation-stats,
+    .payment-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 10px;
+    }
+
+    .stats-grid .liquid-stat,
+    .calendar-stats .liquid-stat {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        min-height: 0;
+        padding: 14px;
+    }
+
+    /* Historial de cobros (Mi perfil): cada cobro como tarjeta. */
+}
+
+
+/* ---------------------------------------------------------
+   admin/components/confirm-dialog.css
+   --------------------------------------------------------- */
+
+/* ---------- Teléfono: hoja inferior ---------- */
+
+@media (max-width: 575.98px) {
+    .nl-confirm {
+        width: calc(100% - 16px);
+        margin: auto auto 8px;
+        border-radius: 22px;
+    }
+
+    .nl-confirm__box {
+        gap: 16px;
+        padding: 22px 18px 18px;
+    }
+
+    .nl-confirm__head {
+        grid-template-columns: minmax(0, 1fr);
+        justify-items: center;
+        text-align: center;
+    }
+
+    .nl-confirm__icon {
+        grid-row: auto;
+        width: 52px;
+        height: 52px;
+        margin-bottom: 6px;
+    }
+
+    .nl-confirm__title {
+        font-size: 20px;
+    }
+
+    .nl-plan-compare {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .nl-plan-compare__arrow {
+        transform: rotate(90deg);
+    }
+
+    /* Acción principal arriba y ambos botones a lo ancho */
+    .nl-confirm__actions {
+        flex-direction: column-reverse;
+    }
+
+    .nl-confirm__btn {
+        width: 100%;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/components/date-picker.css
+   --------------------------------------------------------- */
+
+/* ---------- Teléfono: hoja inferior con áreas táctiles grandes ---------- */
+
+@media (max-width: 575.98px) {
+    .nl-datepicker.is-sheet {
+        top: auto !important;
+        right: 0;
+        bottom: 0;
+        left: 0 !important;
+        width: 100%;
+        max-width: none;
+        max-height: 92dvh;
+        padding: 18px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+        border-radius: 24px 24px 0 0;
+        animation: nl-datepicker-sheet .2s ease-out;
+    }
+
+    .nl-datepicker-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 2049;
+        display: block;
+        background: rgba(6, 16, 10, .55);
+    }
+
+    .nl-datepicker__day {
+        height: 46px;
+        font-size: 16px;
+    }
+
+    .nl-datepicker__nav {
+        flex-basis: 46px;
+        width: 46px;
+        height: 46px;
+    }
+
+    .nl-datepicker__selects select {
+        height: 46px;
+        font-size: 16px;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/pages/clinic-admin.css
+   --------------------------------------------------------- */
+
+@media (max-width: 767.98px) {
+    .nl-form-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .nl-bars li {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .nl-bars li .nl-usage-bar {
+        grid-column: 1 / -1;
+        grid-row: 2;
+    }
+
+    .nl-row-actions {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 430px) {
+    .nl-kpis,
+    .nl-checks {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 767.98px) {
+    .patients-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .patients-header h1 {
+        font-size: 26px;
+    }
+
+    .patients-header .nl-page-actions,
+    .patients-header .nl-page-actions form {
+        width: 100%;
+    }
+
+    .patients-header .nl-page-actions .nl-btn {
+        flex: 1 1 auto;
+    }
+
+    .nl-toolbar-actions {
+        width: 100%;
+    }
+
+    .nl-toolbar-actions .nl-btn {
+        flex: 1 1 0;
+    }
+
+    .nl-section-head > * {
+        min-width: 0;
+    }
+
+    .nl-section-head .nl-btn-ghost {
+        white-space: normal;
+    }
+
+    .nl-list-plain li {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .nl-list-plain li > small {
+        text-align: left;
+    }
+
+    .nl-inline-form > .nl-btn,
+    .nl-inline-form > form,
+    .nl-inline-form > form .nl-btn {
+        width: 100%;
+    }
+
+    .nl-bars li > span:first-child {
+        grid-column: 1 / 2;
+    }
+}
+
+@media (max-width: 430px) {
+    .nl-profile-card {
+        padding: 16px;
+    }
+
+    .nl-table td {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .nl-table td::before {
+        max-width: 100%;
+    }
+
+    .nl-table td > small,
+    .nl-table .is-num {
+        text-align: left;
+    }
+
+    .nl-table td[data-label="Acciones"] .nl-row-actions {
+        justify-content: flex-start;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   admin/components/interface.css
+   --------------------------------------------------------- */
+
+@media (max-width: 767.98px) {
+    .nl-quick-days {
+        gap: 6px;
+    }
+
+    .nl-quick-days__label {
+        flex-basis: 100%;
+    }
+
+    .nl-quick-day {
+        flex: 1 1 0;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+        padding: 7px 8px;
+    }
+
+    .appointment-actions .appointment-action,
+    .appointment-actions .appointment-action-form {
+        flex: 1 1 auto;
+    }
+
+    .appointment-actions .appointment-action-form .appointment-action {
+        width: 100%;
+    }
+
+    .calendar-nutritionist-filter {
+        max-width: none;
+    }
+}

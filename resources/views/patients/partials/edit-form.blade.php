@@ -364,6 +364,70 @@
                         </div>
 
 
+                        {{-- NUTRIÓLOGO RESPONSABLE (solo la cuenta principal de la clínica) --}}
+                        @if ($teamOptions->isNotEmpty())
+
+                            <div class="col-md-8">
+
+                                <div class="form-group">
+
+                                    <label for="nutritionist_id">
+                                        Nutriólogo responsable
+                                    </label>
+
+                                    <div class="liquid-input @error('nutritionist_id') input-error @enderror">
+
+                                        <div class="input-icon">
+                                            <i class="fas fa-user-doctor"></i>
+                                        </div>
+
+                                        <select id="nutritionist_id" name="nutritionist_id" required aria-describedby="nutritionistHelp">
+                                            @foreach ($teamOptions as $member)
+                                                <option value="{{ $member->id }}" @selected((int) old('nutritionist_id', $paciente->user_id) === $member->id)>
+                                                    {{ $member->name }}{{ $member->isClinicMember() ? '' : ' (cuenta principal)' }}{{ $member->isDisabled() ? ' · desactivado' : '' }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+
+                                    </div>
+
+                                    <small id="nutritionistHelp" class="field-help">
+                                        Al cambiarlo, sus citas próximas (pendientes o confirmadas) y sus planes alimenticios pasan al nuevo nutriólogo. Consultas, pagos y evaluaciones se quedan con quien las registró.
+                                    </small>
+
+                                    @error('nutritionist_id')
+
+                                        <div class="field-error">
+                                            {{ $message }}
+                                        </div>
+
+                                    @enderror
+
+                                </div>
+
+                            </div>
+
+                        @elseif ($inClinic && $responsible)
+
+                            <div class="col-md-8">
+
+                                <div class="form-group">
+
+                                    <label>Nutriólogo responsable</label>
+
+                                    <p class="field-static">
+                                        <i class="fas fa-user-doctor" aria-hidden="true"></i>
+                                        {{ $responsible->name }}
+                                        <small>Solo la cuenta principal de la clínica puede cambiarlo.</small>
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        @endif
+
+
                     </div>
 
                 </div>

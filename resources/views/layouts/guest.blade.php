@@ -3,7 +3,7 @@
      Recuperar / restablecer contraseña, verificar correo y
      confirmar contraseña. Antes usaba Tailwind (Breeze) con el
      logo de Laravel; ahora comparte los estilos del login
-     (public/css/login.css, sección "3. PÁGINAS GUEST").
+     (public/css/login/guest.css).
      ========================================================= --}}
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">

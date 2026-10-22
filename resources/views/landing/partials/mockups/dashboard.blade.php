@@ -1,7 +1,7 @@
 {{-- =========================================================
      MAQUETA: DASHBOARD (sustituye a la captura anterior, ahora en resources/brand/legado/landing/: dashboard.png,
      que mostraba la marca y paleta anteriores).
-     Datos ilustrativos. Estilos: public/css/app.css → "MAQUETAS".
+     Datos ilustrativos. Estilos: public/css/app/mockups.css.
      ========================================================= --}}
 <div class="nlm nlm-dashboard" role="img" aria-label="Vista ilustrativa del panel de NutriLife: pacientes, citas, ingresos y crecimiento">
     <aside class="nlm-side">

@@ -1,0 +1,151 @@
+/* =========================================================
+   admin/components/fields-status.css
+   Campos de fecha/hora y estado del paciente
+   Parte de la hoja de la sección: el orden de carga está en
+   config/stylesheets.php. Los ajustes por tamaño de pantalla
+   viven en public/css/responsive/.
+   ========================================================= */
+
+/* =============================================================
+   CAMPOS DE FECHA Y HORA (todas las vistas del panel)
+   -------------------------------------------------------------
+   Varias secciones fijaban `color-scheme: dark` en los input
+   date / datetime-local: en modo claro el icono del calendario
+   quedaba blanco sobre blanco (invisible) y parecía que solo se
+   podía escribir la fecha. Aquí se corrige para TODO el panel:
+   - el control nativo sigue al tema (claro / oscuro),
+   - el icono del calendario es visible y clicable,
+   - forms.js abre el calendario al hacer clic en cualquier parte
+     del campo (showPicker), no solo en el icono.
+   El valor enviado sigue siendo AAAA-MM-DD / AAAA-MM-DDTHH:MM.
+============================================================= */
+input[type="date"],
+input[type="datetime-local"],
+input[type="time"],
+.liquid-input input[type="date"],
+.liquid-input input[type="datetime-local"],
+.liquid-input input[type="time"] {
+    color-scheme: var(--native-color-scheme, dark) !important;
+    cursor: pointer;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+    width: 18px;
+    height: 18px;
+    margin-left: 6px;
+    padding: 4px;
+    border-radius: 6px;
+    opacity: .75;
+    cursor: pointer;
+    transition: opacity .15s ease, background-color .15s ease;
+}
+
+input[type="date"]:hover::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]:hover::-webkit-calendar-picker-indicator,
+input[type="time"]:hover::-webkit-calendar-picker-indicator,
+input[type="date"]:focus::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]:focus::-webkit-calendar-picker-indicator,
+input[type="time"]:focus::-webkit-calendar-picker-indicator {
+    opacity: 1;
+    background-color: rgba(var(--nl-accent-rgb), .14);
+}
+
+input[type="date"]:disabled,
+input[type="datetime-local"]:disabled,
+input[type="time"]:disabled {
+    cursor: not-allowed;
+}
+
+
+/* =============================================================
+   ESTADO DEL PACIENTE (patients.active) — partials/patient-status
+   Antes "Inactivo" usaba el mismo verde que "Activo". Ahora:
+   activo = verde de acento + ✓ · inactivo = gris neutro + pausa.
+   Se aplica a la lista, la ficha, la vista previa de edición y
+   las métricas de /pacientes.
+============================================================= */
+.nl-patient-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 11px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.nl-patient-status i {
+    font-size: 14.5px;
+}
+
+.nl-patient-status--sm {
+    padding: 4px 9px;
+    font-size: 12.5px;
+}
+
+.nl-patient-status.is-active {
+    border-color: rgba(var(--nl-accent-rgb), .3);
+    background: rgba(var(--nl-accent-rgb), .14);
+    color: var(--accent);
+}
+
+.nl-patient-status.is-inactive {
+    border-color: rgba(var(--nl-overlay-rgb), .16);
+    background: rgba(var(--nl-overlay-rgb), .07);
+    color: var(--text-muted);
+}
+
+/* Tarjeta de paciente inactivo: un poco atenuada */
+.patient-glass-card.is-inactive .patient-avatar {
+    filter: grayscale(.85);
+    opacity: .7;
+}
+
+/* Vista previa de edición y estilos anteriores con el mismo criterio */
+.preview-state.inactive {
+    color: var(--text-muted) !important;
+    background: rgba(var(--nl-overlay-rgb), .07) !important;
+    border-color: rgba(var(--nl-overlay-rgb), .16) !important;
+}
+
+.preview-state.inactive > span {
+    box-shadow: none;
+}
+
+.inactive-icon {
+    color: var(--text-muted) !important;
+    background: rgba(var(--nl-overlay-rgb), .07) !important;
+    border-color: rgba(var(--nl-overlay-rgb), .14) !important;
+}
+
+/* Filtro por estado en /pacientes */
+.patient-status-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.patient-status-filter .diet-chip span {
+    margin-left: 4px;
+    padding: 0 6px;
+    border-radius: 99px;
+    background: rgba(var(--nl-overlay-rgb), .1);
+    font-size: 12.5px;
+}
+
+.patient-status-filter .diet-chip i {
+    margin-right: 5px;
+    font-size: 14.5px;
+}
+
+.toolbar-right {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}

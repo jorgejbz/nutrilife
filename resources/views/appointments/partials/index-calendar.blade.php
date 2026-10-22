@@ -79,6 +79,20 @@
             </div>
 
 
+            @if ($isClinic && $nutritionists->count() > 1)
+                <div class="calendar-nutritionist-filter nl-input">
+                    <i class="fas fa-user-doctor" aria-hidden="true"></i>
+                    <label for="calendarNutritionist" class="visually-hidden">Nutriólogo</label>
+                    <select id="calendarNutritionist">
+                        <option value="">Todo el equipo</option>
+                        @foreach ($nutritionists as $nutritionist)
+                            <option value="{{ $nutritionist->id }}">{{ $nutritionist->name }}{{ $nutritionist->isClinicMember() ? '' : ' (cuenta principal)' }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            @endif
+
+
             <div class="calendar-week">
 
                 <div>LUN</div>
@@ -103,6 +117,8 @@
                 class="calendar-grid"
 
                 id="calendarGrid"
+
+                aria-label="Días del mes: elige uno para ver sus citas"
 
             >
 
@@ -293,6 +309,13 @@
 
                                     </p>
 
+                                    @if ($isClinic)
+                                        <p class="upcoming-nutritionist">
+                                            <i class="fas fa-user-doctor" aria-hidden="true"></i>
+                                            {{ $appointment->user?->name }}
+                                        </p>
+                                    @endif
+
 
                                     @if($appointment->status === 'Confirmada')
 
@@ -387,23 +410,28 @@
 
                 </h4>
 
+                <small class="selected-day-count" id="selectedDayCount"></small>
+
             </div>
 
 
             <div class="selected-icon">
 
-                <i class="far fa-calendar-check"></i>
+                <i class="far fa-calendar-check" aria-hidden="true"></i>
 
             </div>
 
         </div>
 
 
+        {{-- Lo llena appointments-index.js al elegir un día del calendario --}}
         <div
 
             class="selected-appointments"
 
             id="selectedAppointments"
+
+            aria-live="polite"
 
         >
 

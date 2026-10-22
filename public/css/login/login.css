@@ -1,0 +1,977 @@
+/* =========================================================
+   login/login.css
+   Inicio de sesión
+   Parte de la hoja de la sección: el orden de carga está en
+   config/stylesheets.php. Los ajustes por tamaño de pantalla
+   viven en public/css/responsive/.
+   ========================================================= */
+
+/* =============================================================
+   1. LOGIN
+============================================================= */
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
+
+
+body {
+    font-family: 'Poppins', sans-serif;
+    color: var(--login-text);
+    background: var(--login-bg);
+}
+
+
+/* =========================================================
+   PÁGINA
+========================================================= */
+
+.login-page {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 35px;
+    background: var(--login-bg);
+}
+
+
+/* =========================================================
+   LUCES
+========================================================= */
+
+.ambient {
+    position: absolute;
+    pointer-events: none;
+    border-radius: 50%;
+    filter: blur(110px);
+    opacity: var(--login-ambient-opacity);
+}
+
+
+.ambient-one {
+    width: 430px;
+    height: 430px;
+    top: -150px;
+    left: -120px;
+    background: rgba(var(--nl-accent-deep-rgb), 0.3);
+}
+
+
+.ambient-two {
+    width: 420px;
+    height: 420px;
+    bottom: -180px;
+    right: -100px;
+    background: rgba(var(--nl-accent-strong-rgb), 0.22);
+}
+
+
+.ambient-three {
+    width: 240px;
+    height: 240px;
+    top: 30%;
+    right: 35%;
+    background: rgba(var(--nl-accent-rgb), 0.09);
+}
+
+
+/* =========================================================
+   HOJAS DE FONDO
+========================================================= */
+
+.background-leaf {
+    position: absolute;
+    color: rgba(var(--nl-accent-rgb), 0.035);
+    pointer-events: none;
+}
+
+
+.leaf-one {
+    left: -80px;
+    bottom: -100px;
+    font-size: 390px;
+    transform: rotate(-25deg);
+}
+
+
+.leaf-two {
+    top: -80px;
+    right: -80px;
+    font-size: 330px;
+    transform: rotate(40deg);
+}
+
+
+.leaf-three {
+    right: 28%;
+    bottom: -40px;
+    font-size: 210px;
+    transform: rotate(-12deg);
+}
+
+
+/* =========================================================
+   SHELL
+========================================================= */
+
+.login-shell {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    max-width: 1220px;
+    min-height: 700px;
+    display: grid;
+    grid-template-columns:
+        1.1fr
+        .9fr;
+    border: 1px solid var(--login-card-border);
+    border-radius: 34px;
+    overflow: hidden;
+    background:
+        var(--login-card-bg);
+    box-shadow:
+        inset 0 1px 0 rgba(var(--nl-highlight-rgb), 0.1),
+        var(--login-shadow);
+    backdrop-filter:
+        blur(35px)
+        saturate(140%);
+    -webkit-backdrop-filter:
+        blur(35px)
+        saturate(140%);
+}
+
+
+/* =========================================================
+   PANEL DE MARCA
+========================================================= */
+
+.brand-panel {
+    position: relative;
+    overflow: hidden;
+    min-height: 700px;
+    padding: 45px 48px;
+    display: flex;
+    flex-direction: column;
+    /* Fijo siempre oscuro (franja de marca) — independiente del tema,
+       porque su texto usa colores claros fijos. Antes era translúcido
+       y dejaba ver el fondo de .login-shell (blanco en tema claro),
+       lo que volvía el texto ilegible. */
+    background:
+        linear-gradient(
+            145deg,
+            rgb(var(--nl-surface-rgb)),
+            rgb(var(--nl-surface-rgb))
+        );
+    border-right:
+        1px solid rgba(var(--nl-overlay-rgb), 0.1);
+}
+
+
+.brand-panel::before {
+    content: "";
+    position: absolute;
+    width: 480px;
+    height: 480px;
+    border-radius: 50%;
+    left: -230px;
+    bottom: -190px;
+    border:
+        65px solid rgba(var(--nl-accent-rgb), 0.055);
+}
+
+
+.brand-panel::after {
+    content: "";
+    position: absolute;
+    width: 270px;
+    height: 270px;
+    border-radius: 50%;
+    right: -150px;
+    top: 160px;
+    border:
+        45px solid rgba(var(--nl-overlay-rgb), 0.025);
+}
+
+
+.brand-panel-shine {
+    position: absolute;
+    width: 500px;
+    height: 190px;
+    top: -115px;
+    left: 70px;
+    border-radius: 50%;
+    background:
+        rgba(var(--nl-overlay-rgb), 0.065);
+    filter: blur(25px);
+    transform: rotate(-10deg);
+}
+
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.brand-top {
+    position: relative;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+.brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+
+.brand-badge {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 11px;
+    border-radius: 30px;
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.09);
+    background:
+        rgba(var(--nl-overlay-rgb), 0.04);
+    color:
+        var(--text-muted);
+    font-size: 12.5px;
+}
+
+
+.badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgb(var(--nl-accent-rgb));
+    box-shadow:
+        0 0 10px rgb(var(--nl-accent-rgb));
+}
+
+
+/* =========================================================
+   TEXTO IZQUIERDO
+========================================================= */
+
+.brand-content {
+    position: relative;
+    z-index: 4;
+    max-width: 510px;
+    margin-top: 105px;
+}
+
+
+.brand-eyebrow {
+    display: block;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 2.2px;
+}
+
+
+.brand-content h1 {
+    color: var(--text-primary);
+    font-size: clamp(
+        38px,
+        4vw,
+        55px
+    );
+    line-height: 1.13;
+    font-weight: 300;
+    letter-spacing: -1.8px;
+}
+
+
+.brand-content h1 span {
+    display: block;
+    margin-top: 6px;
+    color: var(--accent-text);
+    font-weight: 600;
+}
+
+
+.brand-content > p {
+    max-width: 480px;
+    margin-top: 22px;
+    color:
+        var(--text-muted);
+    font-size: 14.5px;
+    line-height: 1.85;
+}
+
+
+/* =========================================================
+   FEATURES
+========================================================= */
+
+.brand-features {
+    display: flex;
+    gap: 10px;
+    margin-top: 32px;
+}
+
+
+.feature-glass {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 11px;
+    border-radius: 15px;
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.09);
+    background:
+        linear-gradient(
+            145deg,
+            rgba(var(--nl-overlay-rgb), 0.065),
+            rgba(var(--nl-overlay-rgb), 0.018)
+        );
+    backdrop-filter: blur(15px);
+    box-shadow:
+        inset 0 1px 0 rgba(var(--nl-highlight-rgb), 0.08);
+}
+
+
+.feature-icon {
+    min-width: 32px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background:
+        rgba(var(--nl-accent-strong-rgb), 0.1);
+    color: var(--accent-text);
+    font-size: 13.5px;
+}
+
+
+.feature-glass strong {
+    display: block;
+    color: var(--text-primary);
+    font-size: 12.5px;
+    font-weight: 500;
+}
+
+
+.feature-glass span {
+    display: block;
+    margin-top: 2px;
+    color:
+        var(--text-muted);
+    font-size: 7px;
+}
+
+
+/* =========================================================
+   ÓRBITA
+========================================================= */
+
+.nutrition-orbit {
+    position: absolute;
+    z-index: 2;
+    width: 300px;
+    height: 300px;
+    right: -55px;
+    bottom: -40px;
+}
+
+
+.orbit-ring {
+    position: absolute;
+    border-radius: 50%;
+    border:
+        1px solid rgba(var(--nl-accent-rgb), 0.07);
+}
+
+
+.orbit-ring-one {
+    width: 210px;
+    height: 210px;
+    left: 45px;
+    top: 45px;
+}
+
+
+.orbit-ring-two {
+    width: 290px;
+    height: 290px;
+    left: 5px;
+    top: 5px;
+}
+
+
+.orbit-main {
+    position: absolute;
+    width: 105px;
+    height: 105px;
+    left: 98px;
+    top: 98px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.1);
+    background:
+        rgba(var(--nl-overlay-rgb), 0.045);
+    backdrop-filter: blur(20px);
+    color:
+        rgba(var(--nl-accent-rgb), 0.35);
+    font-size: 48px;
+}
+
+
+.orbit-item {
+    position: absolute;
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.12);
+    background:
+        rgba(var(--nl-overlay-rgb), 0.06);
+    backdrop-filter: blur(15px);
+    font-size: 22px;
+    box-shadow:
+        0 12px 25px rgba(var(--nl-shadow-rgb), 0.12);
+}
+
+
+.orbit-item-one {
+    left: 28px;
+    top: 75px;
+    transform: rotate(-8deg);
+}
+
+
+.orbit-item-two {
+    right: 18px;
+    top: 90px;
+    transform: rotate(7deg);
+}
+
+
+.orbit-item-three {
+    left: 125px;
+    bottom: 5px;
+}
+
+
+/* =========================================================
+   FOOTER MARCA
+========================================================= */
+
+.brand-footer {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: auto;
+    color:
+        var(--text-faint);
+    font-size: 8px;
+}
+
+
+.footer-dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background:
+        rgba(var(--nl-accent-soft-rgb), 0.35);
+}
+
+
+/* =========================================================
+   PANEL FORMULARIO
+========================================================= */
+
+.form-panel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 55px;
+    background: var(--login-card-bg);
+}
+
+
+/* =========================================================
+   GLASS FORM
+========================================================= */
+
+.login-glass {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    max-width: 420px;
+    padding: 38px;
+    border-radius: 28px;
+    border:
+        1px solid var(--login-card-border);
+    background: var(--login-card-bg-soft);
+    backdrop-filter:
+        blur(28px)
+        saturate(140%);
+    -webkit-backdrop-filter:
+        blur(28px)
+        saturate(140%);
+    box-shadow:
+        inset 0 1px 0 rgba(var(--nl-highlight-rgb), 0.15),
+        inset 0 -1px 0 rgba(var(--nl-highlight-rgb), 0.025),
+        var(--login-shadow);
+}
+
+
+.login-glass-shine {
+    position: absolute;
+    width: 330px;
+    height: 120px;
+    top: -85px;
+    left: 30px;
+    border-radius: 50%;
+    background:
+        rgba(var(--nl-overlay-rgb), 0.075);
+    filter: blur(20px);
+}
+
+
+/* =========================================================
+   HEADER FORMULARIO
+========================================================= */
+
+.login-header {
+    position: relative;
+    z-index: 2;
+    margin-bottom: 30px;
+}
+
+
+.mobile-logo {
+    display: none;
+}
+
+
+.welcome-label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--login-muted-strong);
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 2px;
+}
+
+
+.login-header h2 {
+    color: var(--login-text);
+    font-size: 30px;
+    font-weight: 500;
+    letter-spacing: -.7px;
+}
+
+
+.login-header p {
+    margin-top: 8px;
+    color:
+        var(--login-muted);
+    font-size: 13.5px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.error-message {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    gap: 11px;
+    margin-bottom: 20px;
+    padding: 12px;
+    border-radius: 14px;
+    border:
+        1px solid rgba(229,130,130,.18);
+    background:
+        rgba(184, 74, 74, .08);
+}
+
+
+.error-icon {
+    min-width: 31px;
+    width: 31px;
+    height: 31px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    color: var(--nl-danger-text);
+    background:
+        rgba(209,103,103,.09);
+}
+
+
+.error-message strong {
+    display: block;
+    color: var(--nl-danger-text);
+    font-size: 12.5px;
+    font-weight: 500;
+}
+
+
+.error-message span {
+    display: block;
+    margin-top: 2px;
+    color:
+        var(--nl-danger-text);
+    font-size: 8px;
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.login-form {
+    position: relative;
+    z-index: 2;
+}
+
+
+.login-page .form-group {
+    margin-bottom: 18px;
+}
+
+
+.login-page .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color:
+        var(--login-muted-strong);
+    font-size: 12.5px;
+    font-weight: 400;
+}
+
+
+/* =========================================================
+   INPUT GLASS
+========================================================= */
+
+.input-glass {
+    position: relative;
+    height: 53px;
+    display: flex;
+    align-items: center;
+    border-radius: 16px;
+    border:
+        1px solid var(--login-card-border);
+    background:
+        var(--login-card-bg);
+    box-shadow:
+        inset 0 1px 0 rgba(var(--nl-highlight-rgb), 0.065);
+    transition:
+        border-color .25s ease,
+        background .25s ease,
+        box-shadow .25s ease;
+}
+
+
+.input-glass:focus-within {
+    border-color:
+        rgba(var(--nl-accent-rgb), 0.45);
+    background:
+        var(--login-card-bg-soft);
+    box-shadow:
+        inset 0 1px 0 rgba(var(--nl-highlight-rgb), 0.08),
+        0 0 0 4px rgba(var(--nl-accent-strong-rgb), 0.055);
+}
+
+
+.login-page .input-icon {
+    width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color:
+        var(--login-muted-strong);
+    font-size: 14.5px;
+}
+
+
+.input-glass input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    padding-right: 15px;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--login-text);
+    font-family: 'Poppins', sans-serif;
+    font-size: 13.5px;
+}
+
+
+.input-glass input::placeholder {
+    color:
+        var(--login-muted);
+}
+
+
+/* =========================================================
+   OJO PASSWORD
+========================================================= */
+
+.toggle-password {
+    width: 47px;
+    height: 100%;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    background: transparent;
+    color:
+        var(--login-muted-strong);
+    transition: .2s;
+}
+
+
+.toggle-password:hover {
+    color: var(--accent-text);
+}
+
+
+/* =========================================================
+   OPCIONES
+========================================================= */
+
+.login-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 4px;
+    margin-bottom: 24px;
+}
+
+
+.remember {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    margin: 0 !important;
+    cursor: pointer;
+    color:
+        var(--login-muted) !important;
+    font-size: 12.5px !important;
+}
+
+
+.remember input {
+    display: none;
+}
+
+
+.custom-checkbox {
+    width: 17px;
+    height: 17px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    border:
+        1px solid var(--login-card-border);
+    background:
+        var(--login-card-bg);
+    color: transparent;
+    font-size: 7px;
+    transition: .2s;
+}
+
+
+.remember input:checked
++
+.custom-checkbox {
+    border-color: rgb(var(--nl-accent-rgb));
+    background: rgb(var(--nl-accent-rgb));
+    color: rgb(var(--nl-on-accent-rgb));
+}
+
+
+.forgot-password {
+    color: var(--login-muted-strong);
+    font-size: 12.5px;
+    text-decoration: none;
+    transition: .2s;
+}
+
+
+.forgot-password:hover {
+    color: var(--text-primary);
+}
+
+
+/* =========================================================
+   BOTÓN LOGIN
+========================================================= */
+
+.btn-login {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 53px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(var(--nl-overlay-rgb), 0.26);
+    border-radius: 16px;
+    cursor: pointer;
+    background:
+        linear-gradient(
+            135deg,
+            rgb(var(--nl-accent-rgb)),
+            rgb(var(--nl-accent-strong-rgb))
+        );
+    color: rgb(var(--nl-on-accent-rgb));
+    font-family: 'Poppins', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    box-shadow:
+        inset 0 1px 1px rgba(var(--nl-highlight-rgb), 0.6),
+        0 15px 32px rgba(var(--nl-accent-deep-rgb), 0.22);
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease;
+}
+
+
+.btn-login::before {
+    content: "";
+    position: absolute;
+    width: 40%;
+    height: 220%;
+    left: -70%;
+    top: -60%;
+    transform: rotate(25deg);
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(var(--nl-overlay-rgb), 0.45),
+            transparent
+        );
+    transition: .5s;
+}
+
+
+.btn-login > span {
+    position: relative;
+    z-index: 2;
+}
+
+
+.login-arrow {
+    position: absolute;
+    z-index: 2;
+    right: 10px;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    background:
+        rgba(var(--nl-shadow-rgb), 0.1);
+    font-size: 12.5px;
+    transition:
+        transform .25s ease;
+}
+
+
+.btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        inset 0 1px 1px rgba(var(--nl-highlight-rgb), 0.65),
+        0 19px 38px rgba(var(--nl-accent-deep-rgb), 0.3);
+}
+
+
+.btn-login:hover::before {
+    left: 130%;
+}
+
+
+.btn-login:hover
+.login-arrow {
+    transform: translateX(2px);
+}
+
+
+/* =========================================================
+   SEGURIDAD
+========================================================= */
+
+.login-security {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    margin-top: 22px;
+    color:
+        var(--login-muted);
+    font-size: 8px;
+}
+
+
+.login-security i {
+    color:
+        rgba(var(--nl-accent-rgb), 0.46);
+}
+
+
+/* =========================================================
+   COPYRIGHT
+========================================================= */
+
+.copyright {
+    margin-top: 22px;
+    color:
+        var(--login-muted);
+    font-size: 8px;
+}
+
+
+.copyright span {
+    margin: 0 5px;
+}

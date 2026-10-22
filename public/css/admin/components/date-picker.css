@@ -1,0 +1,356 @@
+/* =========================================================
+   admin/components/date-picker.css
+   Calendario de fechas (resources/js/date-picker.js)
+   Parte de la hoja de la sección: el orden de carga está en
+   config/stylesheets.php. Los ajustes por tamaño de pantalla
+   viven en public/css/responsive/.
+   ========================================================= */
+
+/* =========================================================
+   CAMPOS DE FECHA Y CALENDARIO (resources/js/date-picker.js)
+   El <input type="date|datetime-local"> nativo se conserva;
+   solo se reemplaza el calendario desplegable.
+========================================================= */
+
+.nl-date-field {
+    position: relative;
+    display: block;
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+}
+
+.nl-date-field > .nl-date-input {
+    width: 100%;
+    padding-right: 52px !important;
+    cursor: pointer;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Se oculta el ícono nativo: lo sustituye el botón de NutriLife */
+.nl-date-input::-webkit-calendar-picker-indicator {
+    display: none;
+}
+
+.nl-date-input::-webkit-datetime-edit-fields-wrapper {
+    padding: 0;
+}
+
+.nl-date-input::-webkit-datetime-edit-text {
+    padding: 0 2px;
+    color: var(--text-muted);
+}
+
+.nl-date-input::-webkit-datetime-edit-day-field:focus,
+.nl-date-input::-webkit-datetime-edit-month-field:focus,
+.nl-date-input::-webkit-datetime-edit-year-field:focus,
+.nl-date-input::-webkit-datetime-edit-hour-field:focus,
+.nl-date-input::-webkit-datetime-edit-minute-field:focus,
+.nl-date-input::-webkit-datetime-edit-ampm-field:focus {
+    border-radius: 5px;
+    background: rgba(var(--nl-accent-rgb), .22);
+    color: var(--text-primary);
+}
+
+.nl-date-trigger {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border: 1px solid rgba(var(--nl-accent-rgb), .22);
+    border-radius: 11px;
+    background: rgba(var(--nl-accent-rgb), .1);
+    color: var(--accent);
+    font-size: 16px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    transition: background .18s ease, border-color .18s ease;
+}
+
+.nl-date-trigger:hover,
+.nl-date-trigger[aria-expanded="true"] {
+    border-color: rgba(var(--nl-accent-rgb), .45);
+    background: rgba(var(--nl-accent-rgb), .2);
+}
+
+.nl-date-trigger:focus-visible {
+    outline: 3px solid rgba(var(--nl-accent-rgb), .5);
+    outline-offset: 2px;
+}
+
+.nl-date-trigger:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+/* ---------- Panel del calendario ---------- */
+.nl-datepicker {
+    position: fixed;
+    z-index: 2050; /* sobre el encabezado y el menú de AdminLTE */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 352px;
+    max-width: calc(100vw - 16px);
+    max-height: calc(100dvh - 16px);
+    padding: 16px;
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    background: var(--surface-solid);
+    color: var(--text-primary);
+    box-shadow: 0 24px 60px rgba(var(--nl-shadow-rgb), .4);
+    font-family: var(--nl-font-family, inherit);
+    overflow: auto;
+    animation: nl-datepicker-in .16s ease-out;
+}
+
+@keyframes nl-datepicker-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: none; }
+}
+
+.nl-datepicker__head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nl-datepicker__selects {
+    display: flex;
+    flex: 1;
+    gap: 6px;
+    min-width: 0;
+}
+
+.nl-datepicker__selects select {
+    min-width: 0;
+    height: 40px;
+    padding: 0 8px;
+    border: 1px solid var(--input-border);
+    border-radius: 11px;
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.nl-datepicker__month {
+    flex: 1 1 auto;
+}
+
+.nl-datepicker__year {
+    flex: 0 0 80px;
+}
+
+.nl-datepicker__selects select option {
+    background: var(--surface-solid);
+    color: var(--text-primary);
+}
+
+.nl-datepicker__nav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid var(--card-border-soft);
+    border-radius: 11px;
+    background: rgba(var(--nl-overlay-rgb), .04);
+    color: var(--text-secondary);
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.nl-datepicker__nav:hover:not(:disabled) {
+    background: rgba(var(--nl-accent-rgb), .14);
+    color: var(--accent);
+}
+
+.nl-datepicker__nav:disabled {
+    opacity: .3;
+    cursor: not-allowed;
+}
+
+.nl-datepicker__weekdays,
+.nl-datepicker__row {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 4px;
+}
+
+.nl-datepicker__weekdays span {
+    padding: 4px 0;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.nl-datepicker__grid {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.nl-datepicker__day {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 11px;
+    background: transparent;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+    transition: background .12s ease, color .12s ease;
+}
+
+.nl-datepicker__day.is-empty {
+    cursor: default;
+}
+
+.nl-datepicker__day:hover:not(:disabled):not(.is-selected) {
+    background: rgba(var(--nl-accent-rgb), .14);
+}
+
+.nl-datepicker__day:focus-visible {
+    outline: 2px solid rgb(var(--nl-accent-rgb));
+    outline-offset: 1px;
+}
+
+/* Hoy: anillo y punto, sin competir con la fecha elegida */
+.nl-datepicker__day.is-today {
+    border-color: rgba(var(--nl-accent-rgb), .55);
+    color: var(--accent-text);
+    font-weight: 700;
+}
+
+.nl-datepicker__day.is-today::after {
+    content: "";
+    position: absolute;
+    bottom: 5px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.nl-datepicker__day.is-selected {
+    border-color: transparent;
+    background: linear-gradient(135deg, rgb(var(--nl-accent-rgb)), rgb(var(--nl-accent-strong-rgb)));
+    color: rgb(var(--nl-on-accent-rgb));
+    font-weight: 700;
+    box-shadow: 0 6px 16px rgba(var(--nl-accent-rgb), .3);
+}
+
+/* Fuera del rango permitido (min / max) */
+.nl-datepicker__day:disabled {
+    color: var(--text-faint);
+    text-decoration: line-through;
+    text-decoration-color: rgba(var(--nl-overlay-rgb), .25);
+    cursor: not-allowed;
+}
+
+.nl-datepicker__time {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 4px 0 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--card-border-soft);
+    color: var(--text-secondary);
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.nl-datepicker__time span i {
+    margin-right: 4px;
+    color: var(--accent);
+}
+
+.nl-datepicker__time input {
+    width: 140px;
+    height: 42px;
+    padding: 0 12px;
+    border: 1px solid var(--input-border);
+    border-radius: 11px;
+    background: var(--input-bg);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 16px;
+    color-scheme: var(--native-color-scheme, light);
+}
+
+.nl-datepicker__foot {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-top: 10px;
+    border-top: 1px solid var(--card-border-soft);
+}
+
+.nl-datepicker__link {
+    min-height: 38px;
+    padding: 6px 12px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--accent-text);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.nl-datepicker__link:hover:not(:disabled) {
+    background: rgba(var(--nl-accent-rgb), .12);
+}
+
+.nl-datepicker__link:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+.nl-datepicker__apply {
+    margin-left: auto;
+    min-height: 40px;
+    padding: 8px 18px;
+    border: 0;
+    border-radius: 11px;
+    background: linear-gradient(135deg, rgb(var(--nl-accent-rgb)), rgb(var(--nl-accent-strong-rgb)));
+    color: rgb(var(--nl-on-accent-rgb));
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.nl-datepicker__apply:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+.nl-datepicker-backdrop {
+    display: none;
+}
+
+@keyframes nl-datepicker-sheet {
+    from { transform: translateY(24px); opacity: .6; }
+    to   { transform: none; opacity: 1; }
+}

@@ -1,0 +1,364 @@
+/* =========================================================
+   admin/pages/patients-clinical.css
+   Pacientes: historial clínico
+   Parte de la hoja de la sección: el orden de carga está en
+   config/stylesheets.php. Los ajustes por tamaño de pantalla
+   viven en public/css/responsive/.
+   ========================================================= */
+
+/* =============================================================
+   PACIENTES · HISTORIAL CLÍNICO (crear / editar)
+   (patients/partials/clinical-fields.blade.php)
+============================================================= */
+
+.clinical-block + .clinical-block {
+    margin-top: 26px;
+}
+
+.clinical-block-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.clinical-block-head h5 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 3px;
+    color: var(--text-primary);
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.clinical-block-head h5 i {
+    color: var(--accent-text);
+}
+
+.clinical-block-head p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 14.5px;
+}
+
+.clinical-count {
+    padding: 4px 10px;
+    border-radius: 99px;
+    background: rgba(var(--nl-overlay-rgb), .06);
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.clinical-count.has-items {
+    background: rgba(var(--nl-accent-rgb), .14);
+    color: var(--accent-text);
+}
+
+.clinical-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    align-items: start;
+}
+
+.clinical-grid--compact {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.clinical-option {
+    border-radius: 14px;
+    border: 1px solid rgba(var(--nl-overlay-rgb), .08);
+    background: rgba(var(--nl-overlay-rgb), .025);
+    transition: border-color .2s ease, background .2s ease;
+}
+
+.clinical-option:hover {
+    border-color: rgba(var(--nl-accent-rgb), .30);
+}
+
+.clinical-option.is-selected {
+    border-color: rgba(var(--nl-accent-rgb), .45);
+    background: rgba(var(--nl-accent-rgb), .07);
+}
+
+.clinical-option.has-error {
+    border-color: rgba(var(--nl-danger-rgb), .55);
+}
+
+.clinical-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    margin: 0;
+    padding: 12px 14px;
+    cursor: pointer;
+}
+
+.clinical-check input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.clinical-check-box {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+    border-radius: 6px;
+    border: 1.5px solid rgba(var(--nl-overlay-rgb), .22);
+    color: transparent;
+    font-size: 12.5px;
+    transition: background .2s ease, border-color .2s ease, color .2s ease;
+}
+
+.clinical-check input:checked + .clinical-check-box {
+    border-color: rgb(var(--nl-accent-rgb));
+    background: rgb(var(--nl-accent-rgb));
+    color: rgb(var(--nl-on-accent-rgb));
+}
+
+.clinical-check input:focus-visible + .clinical-check-box {
+    box-shadow: 0 0 0 3px rgba(var(--nl-accent-rgb), .30);
+}
+
+.clinical-check-text {
+    min-width: 0;
+    display: grid;
+    gap: 2px;
+}
+
+.clinical-check-text strong {
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.clinical-check-text small {
+    color: var(--text-muted);
+    font-size: 12.5px;
+    line-height: 1.45;
+}
+
+.clinical-details {
+    padding: 0 14px 13px 45px;
+}
+
+.clinical-detail-row {
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr);
+    gap: 10px;
+}
+
+.clinical-detail label,
+.severity-group legend {
+    display: block;
+    margin-bottom: 5px;
+    padding: 0;
+    color: var(--text-muted);
+    font-size: 12.5px;
+    font-weight: 600;
+}
+
+.clinical-detail input {
+    width: 100%;
+    height: 36px;
+    padding: 0 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(var(--nl-overlay-rgb), .12);
+    background: rgba(var(--nl-overlay-rgb), .04);
+    color: var(--text-primary);
+    font-family: var(--nl-font-family);
+    font-size: 13.5px;
+    outline: none;
+    color-scheme: var(--native-color-scheme, dark);
+}
+
+.clinical-detail input:focus {
+    border-color: rgb(var(--nl-accent-rgb));
+    box-shadow: 0 0 0 3px rgba(var(--nl-accent-rgb), .14);
+}
+
+.clinical-detail input::placeholder {
+    color: var(--text-faint);
+}
+
+/* Severidad: control segmentado */
+.severity-group {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+}
+
+.severity-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.severity-group legend {
+    width: 100%;
+    float: left;
+}
+
+.severity-option {
+    position: relative;
+    margin: 0;
+    cursor: pointer;
+}
+
+.severity-option input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.severity-option span {
+    display: inline-block;
+    padding: 5px 11px;
+    border-radius: 99px;
+    border: 1px solid rgba(var(--nl-overlay-rgb), .14);
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 600;
+    transition: background .2s ease, border-color .2s ease, color .2s ease;
+}
+
+.severity-option input:focus-visible + span {
+    box-shadow: 0 0 0 3px rgba(var(--nl-accent-rgb), .30);
+}
+
+.severity-option--leve input:checked + span {
+    border-color: rgba(var(--nl-accent-rgb), .55);
+    background: rgba(var(--nl-accent-rgb), .16);
+    color: var(--accent-text);
+}
+
+.severity-option--moderada input:checked + span {
+    border-color: rgba(var(--nl-warning-rgb), .60);
+    background: rgba(var(--nl-warning-rgb), .16);
+    color: var(--nl-warning-text);
+}
+
+.severity-option--severa input:checked + span {
+    border-color: rgba(var(--nl-danger-rgb), .60);
+    background: rgba(var(--nl-danger-rgb), .14);
+    color: var(--nl-danger-text);
+}
+
+.clinical-empty {
+    display: flex;
+    gap: 9px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px dashed rgba(var(--nl-warning-rgb), .45);
+    background: rgba(var(--nl-warning-rgb), .07);
+    color: var(--text-secondary);
+    font-size: 14.5px;
+    line-height: 1.55;
+}
+
+.clinical-empty i {
+    margin-top: 2px;
+    color: var(--nl-warning-text);
+}
+
+.clinical-empty code {
+    color: var(--accent-text);
+    font-size: 13px;
+}
+
+.clinical-note {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 18px 0 0;
+    color: var(--text-muted);
+    font-size: 14.5px;
+}
+
+
+/* =============================================================
+   PACIENTES · FICHA: HISTORIAL CLÍNICO (show-clinical.blade.php)
+============================================================= */
+
+.clinical-show-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+.clinical-show-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 11px 0;
+    border-bottom: 1px solid rgba(var(--nl-overlay-rgb), .07);
+}
+
+.clinical-show-item:last-child {
+    border-bottom: 0;
+}
+
+.clinical-show-item strong {
+    color: var(--text-primary);
+    font-size: 14.5px;
+    font-weight: 600;
+}
+
+.clinical-show-item p {
+    margin: 3px 0 0;
+    color: var(--text-muted);
+    font-size: 14.5px;
+}
+
+.clinical-show-date {
+    flex-shrink: 0;
+    color: var(--text-muted);
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.clinical-show-empty {
+    margin: 0;
+    color: var(--text-faint);
+    font-size: 14px;
+}
+
+.severity-badge {
+    flex-shrink: 0;
+    padding: 3px 10px;
+    border-radius: 99px;
+    background: rgba(var(--nl-overlay-rgb), .07);
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.severity-badge--leve { background: rgba(var(--nl-accent-rgb), .15); color: var(--accent-text); }
+.severity-badge--moderada { background: rgba(var(--nl-warning-rgb), .16); color: var(--nl-warning-text); }
+.severity-badge--severa { background: rgba(var(--nl-danger-rgb), .14); color: var(--nl-danger-text); }
+
+
+/* Mensajes de error de formularios: algunas secciones los pintaban con el
+   color de acento (verde), así que un error parecía un mensaje correcto. */
+.field-error,
+.error-message {
+    color: var(--nl-danger-text);
+}
+
+.field-error i {
+    color: inherit;
+}

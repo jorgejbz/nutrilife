@@ -1,0 +1,260 @@
+/* =========================================================
+   app/hero-organic.css
+   Hero orgánico y fondo
+   Parte de la hoja de la sección: el orden de carga está en
+   config/stylesheets.php. Los ajustes por tamaño de pantalla
+   viven en public/css/responsive/.
+   ========================================================= */
+
+/* =========================================================
+   HERO ORGÁNICO / NUTRICIÓN — DISEÑO VISUAL
+   Mantiene las clases, enlaces y comportamiento existentes.
+========================================================= */
+
+/* NAVBAR: más limpia y flotante como en la referencia */
+.landing-navbar {
+    background: var(--landing-navbar-bg);
+    border-bottom: 1px solid var(--landing-card-border);
+    backdrop-filter: blur(20px) saturate(125%);
+    -webkit-backdrop-filter: blur(20px) saturate(125%);
+}
+
+.landing-navbar.scrolled {
+    background: var(--landing-navbar-bg-scrolled);
+    border-bottom-color: var(--landing-card-border);
+    box-shadow: var(--landing-shadow);
+}
+
+.landing-logo,
+.landing-nav-links a,
+.nav-login {
+    color: var(--landing-white);
+}
+
+.landing-logo span span {
+    color: var(--organic-accent);
+}
+
+
+.nav-trial {
+    background: linear-gradient(135deg, rgb(var(--nl-accent-rgb)), rgb(var(--nl-accent-soft-rgb)));
+    color: rgb(var(--nl-on-accent-rgb));
+    box-shadow: 0 10px 28px rgba(var(--nl-accent-rgb), 0.17);
+}
+
+.nav-trial:hover {
+    background: linear-gradient(135deg, rgb(var(--nl-accent-soft-rgb)), rgb(var(--nl-accent-soft-rgb)));
+}
+
+/* HERO — .hero-section base rule moved to the single consolidated
+   block at the end of this file to avoid conflicting declarations. */
+
+
+.hero-container {
+    /* Mismo ancho que la navegación y el resto de secciones (.landing-container) */
+    width: min(1180px, calc(100% - 40px));
+    grid-template-columns: minmax(0, .95fr) minmax(460px, 1.05fr);
+    gap: clamp(40px, 5vw, 80px);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 4;
+}
+
+.hero-badge {
+    border-color: var(--landing-card-border);
+    background: var(--landing-card-bg);
+    color: var(--landing-muted-strong);
+    box-shadow: inset 0 1px 0 rgba(var(--nl-highlight-rgb), 0.035);
+}
+
+.hero-content h1 {
+    max-width: 680px;
+    color: var(--landing-white);
+    font-size: clamp(52px, 5.1vw, 76px);
+    line-height: .98;
+    letter-spacing: -3.4px;
+    text-shadow: 0 16px 45px rgba(var(--nl-shadow-rgb), 0.18);
+}
+
+.hero-content h1 span {
+    background: linear-gradient(92deg, rgb(var(--nl-accent-rgb)) 0%, rgb(var(--nl-accent-rgb)) 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-description {
+    max-width: 630px;
+    color: var(--organic-muted);
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.hero-primary,
+.hero-secondary {
+    min-height: 52px;
+    border-radius: 14px;
+    transition: transform .22s ease, box-shadow .22s ease, background .22s ease;
+}
+
+.hero-primary {
+    background: linear-gradient(135deg, rgb(var(--nl-accent-rgb)), rgb(var(--nl-accent-rgb)));
+    color: rgb(var(--nl-on-accent-rgb));
+    box-shadow: 0 18px 45px rgba(var(--nl-accent-rgb), 0.2);
+}
+
+.hero-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 22px 48px rgba(var(--nl-accent-rgb), 0.27);
+}
+
+.hero-secondary {
+    border-color: var(--landing-card-border);
+    background: var(--landing-card-bg);
+    color: var(--landing-muted-strong);
+    backdrop-filter: blur(9px);
+}
+
+.hero-secondary:hover {
+    transform: translateY(-2px);
+    background: var(--landing-card-bg-soft);
+    color: var(--landing-white);
+}
+
+.hero-benefits {
+    margin-top: 27px;
+    gap: 22px;
+}
+
+.hero-benefits span {
+    color: var(--landing-muted);
+    font-size: 12px;
+}
+
+.hero-benefits i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(var(--nl-accent-rgb), 0.11);
+    color: var(--accent-text);
+    font-size: 10px;
+}
+
+/* MOCKUP: vidrio verde oscuro */
+.hero-visual {
+    z-index: 4;
+}
+
+.dashboard-preview {
+    border-color: rgba(var(--nl-accent-soft-rgb), 0.16);
+    background:
+        linear-gradient(145deg, rgba(var(--nl-accent-deep-rgb), 0.72), rgba(var(--nl-surface-rgb), 0.76));
+    backdrop-filter: blur(28px) saturate(118%);
+    -webkit-backdrop-filter: blur(28px) saturate(118%);
+    box-shadow:
+        inset 0 1px 0 rgba(var(--nl-highlight-rgb), 0.08),
+        0 35px 90px rgba(var(--nl-shadow-rgb), 0.34),
+        0 0 0 1px rgba(var(--nl-accent-strong-rgb), 0.035);
+    transform: perspective(1200px) rotateY(-3deg) rotateX(1deg);
+}
+
+.preview-content {
+    min-height: 410px;
+}
+
+.preview-sidebar {
+    background: rgba(var(--nl-shadow-rgb), 0.3);
+}
+
+.preview-stats > div,
+.preview-chart,
+.preview-patient {
+    border-color: rgba(var(--nl-surface-raised-rgb), 0.085);
+    background: rgba(var(--nl-overlay-rgb), 0.032);
+}
+
+.fake-chart div {
+    background: linear-gradient(180deg, rgb(var(--nl-accent-rgb)), rgb(var(--nl-accent-strong-rgb)));
+    box-shadow: inset 0 1px 0 rgba(var(--nl-highlight-rgb), 0.1);
+}
+
+.floating-card {
+    border-color: rgba(var(--nl-accent-soft-rgb), 0.16);
+    background: rgba(var(--nl-surface-rgb), 0.84);
+    backdrop-filter: blur(18px) saturate(115%);
+    -webkit-backdrop-filter: blur(18px) saturate(115%);
+    box-shadow: 0 18px 45px rgba(var(--nl-shadow-rgb), 0.27);
+}
+
+.growth-card {
+    right: -25px;
+}
+
+.patient-card {
+    left: -46px;
+}
+
+/* DECORACIÓN FOTOGRÁFICA DE FRUTAS / VERDURAS */
+
+
+/* Un poco de profundidad delante de las imágenes sin bloquear el contenido */
+.hero-content::before,
+.hero-visual::before {
+    content: "";
+    position: absolute;
+    inset: -45px;
+    z-index: -1;
+    border-radius: 45%;
+    background: radial-gradient(circle, rgba(var(--nl-shadow-rgb), 0.26), transparent 70%);
+    pointer-events: none;
+}
+
+/* =========================================================
+   HERO — DEFINICIÓN ÚNICA DEL FONDO
+   Esta es la ÚNICA regla .hero-section del archivo. Antes había
+   4 bloques distintos redefiniendo esta clase (uno de ellos sin
+   background-image), lo que causaba que la imagen del hero no
+   se mostrara de forma fiable. No agregar más reglas .hero-section
+   en otras partes de este archivo: edita esta.
+
+   La ruta de la imagen se define en el <section> del Blade vía
+   asset(), como fallback aquí usamos el mismo path directo por si
+   el inline-style llegara a faltar.
+========================================================= */
+.hero-section {
+    position: relative;
+    isolation: isolate;
+    z-index: 1;
+    overflow: hidden;
+    min-height: 100vh;
+    padding: 130px 0 80px;
+    background-color: rgb(var(--nl-surface-rgb));
+    background-image:
+        var(--hero-bg-image, url('../../images/landing/fondo-hero.png'));
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.hero-section::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 100px;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(180deg, transparent, rgba(var(--nl-shadow-rgb), 0.2));
+}
+
+/* Pertenecían al diseño anterior con imágenes recortadas por separado. */
+
+
+.hero-container {
+    position: relative;
+    z-index: 3;
+}

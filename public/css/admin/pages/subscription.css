@@ -1,0 +1,208 @@
+/* =========================================================
+   admin/pages/subscription.css
+   Contratación de paquetes
+   Parte de la hoja de la sección: el orden de carga está en
+   config/stylesheets.php. Los ajustes por tamaño de pantalla
+   viven en public/css/responsive/.
+   ========================================================= */
+
+/* =============================================================
+   CONTRATACIÓN DE PAQUETES (resources/views/subscription/plans)
+   Reutiliza consultations-header / diet-btn. Solo variables de tema.
+============================================================= */
+
+.nl-profile .nl-btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 22px;
+    padding: 10px 17px;
+    border-radius: 12px;
+    border: 1px solid rgba(var(--nl-accent-rgb), .3);
+    background: rgba(var(--nl-accent-rgb), .08);
+    color: var(--accent);
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.plans-lock {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 22px;
+    padding: 20px 22px;
+    border-radius: 20px;
+    border: 1px solid rgba(var(--nl-warning-rgb), .35);
+    background: rgba(var(--nl-warning-rgb), .1);
+}
+
+.plans-lock-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 15px;
+    background: rgba(var(--nl-warning-rgb), .18);
+    color: var(--nl-warning-text);
+    font-size: 20px;
+}
+
+.plans-lock h2 {
+    margin: 2px 0 6px;
+    color: var(--text-primary);
+    font-size: 19px;
+}
+
+.plans-lock p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.plans-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 18px;
+    align-items: stretch;
+}
+
+.plans-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 26px 24px 22px;
+    border-radius: 24px;
+    border: 1px solid rgba(var(--nl-overlay-rgb), .1);
+    background: rgba(var(--nl-overlay-rgb), .045);
+    backdrop-filter: blur(22px);
+}
+
+.plans-card.is-current {
+    border-color: rgba(var(--nl-accent-rgb), .55);
+    box-shadow: 0 0 0 3px rgba(var(--nl-accent-rgb), .12);
+}
+
+.plans-current {
+    position: absolute;
+    top: -12px;
+    left: 22px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 11px;
+    border-radius: 999px;
+    background: rgb(var(--nl-accent-rgb));
+    color: rgb(var(--nl-on-accent-rgb));
+    font-size: 13.5px;
+    font-weight: 600;
+}
+
+.plans-card h2 {
+    margin: 0 0 10px;
+    color: var(--text-primary);
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.plans-price {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.plans-price strong {
+    color: var(--text-primary);
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.plans-price span {
+    color: var(--text-muted);
+    font-size: 14.5px;
+}
+
+.plans-limit {
+    margin: 0 0 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(var(--nl-overlay-rgb), .08);
+    color: var(--text-secondary);
+    font-size: 14.5px;
+    font-weight: 500;
+}
+
+.plans-limit i {
+    margin-right: 6px;
+    color: var(--accent);
+}
+
+.plans-features {
+    flex: 1;
+    margin: 0 0 16px;
+    padding: 0;
+    list-style: none;
+}
+
+.plans-features li {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px 9px;
+    padding: 5px 0;
+    color: var(--text-secondary);
+    font-size: 14.5px;
+}
+
+.plans-features li i {
+    width: 14px;
+    color: var(--accent);
+    font-size: 13.5px;
+}
+
+.plans-features li.is-soon {
+    color: var(--text-muted);
+}
+
+.plans-features li.is-soon i {
+    color: var(--text-faint);
+}
+
+.plans-features li small {
+    padding: 1px 7px;
+    border-radius: 99px;
+    background: rgba(var(--nl-overlay-rgb), .08);
+    color: var(--text-muted);
+    font-size: 12.5px;
+}
+
+.plans-warning {
+    margin: 0 0 14px;
+    padding: 9px 11px;
+    border-radius: 11px;
+    background: rgba(var(--nl-warning-rgb), .1);
+    color: var(--nl-warning-text);
+    font-size: 13.5px;
+}
+
+.plans-action form,
+.plans-action .diet-btn {
+    width: 100%;
+    margin: 0;
+}
+
+.plans-note {
+    margin: 20px 0 0;
+    color: var(--text-muted);
+    font-size: 14.5px;
+    line-height: 1.6;
+}
+
+.plans-note i {
+    margin-right: 4px;
+    color: var(--accent);
+}

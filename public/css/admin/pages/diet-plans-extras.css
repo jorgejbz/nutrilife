@@ -1,0 +1,32 @@
+/* =========================================================
+   admin/pages/diet-plans-extras.css
+   Planes alimenticios: indicaciones, horarios (3.1)
+   Parte de la hoja de la sección: el orden de carga está en
+   config/stylesheets.php. Los ajustes por tamaño de pantalla
+   viven en public/css/responsive/.
+   ========================================================= */
+
+/* =============================================================
+   PLANES ALIMENTICIOS — mejoras 3.1 (indicaciones, horarios,
+   duplicar, contexto clínico, búsqueda)
+============================================================= */
+
+
+.diet-dialog--sm {
+    width: min(460px, calc(100vw - 24px));
+}
+
+.diet-dialog-body {
+    display: grid;
+    gap: 14px;
+    padding: 4px 22px 18px;
+}
+
+.diet-dialog-body .diet-muted {
+    margin: 0;
+}
+
+
+.diet-dialog-foot--simple {
+    display: block;
+}

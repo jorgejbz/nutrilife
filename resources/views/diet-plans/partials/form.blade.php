@@ -245,7 +245,7 @@
                 </div>
 
                 @if($isEdit)
-                    <div class="dp-field" style="margin-top: 19px;">
+                    <div class="dp-field nl-mt-19">
                         <input type="hidden" name="active" value="0">
                         <label class="dp-switch" for="planActive">
                             <input type="checkbox" name="active" value="1" id="planActive" @checked(old('active', $plan->active))>

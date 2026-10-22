@@ -295,7 +295,7 @@
             @else
                 <p class="dp-muted">
                     Sin indicaciones.
-                    <a href="{{ route('diet-plans.edit', $plan) }}#instructions" class="dp-link" style="margin: 0;">Agregarlas</a>
+                    <a href="{{ route('diet-plans.edit', $plan) }}#instructions" class="dp-link nl-m-0">Agregarlas</a>
                 </p>
             @endif
         </section>
@@ -499,7 +499,7 @@
                                 <label for="meal-time-{{ $meal->id }}">Horario</label>
                                 <input type="time" id="meal-time-{{ $meal->id }}" name="meal_time" value="{{ $mealEditOpen ? old('meal_time') : $meal->timeLabel() }}">
                             </div>
-                            <div class="dp-meal-form-field" style="flex-basis: 100%;">
+                            <div class="dp-meal-form-field nl-basis-full">
                                 <label for="meal-notes-{{ $meal->id }}">Indicación de esta comida</label>
                                 <input type="text" id="meal-notes-{{ $meal->id }}" name="notes" value="{{ $mealEditOpen ? old('notes') : $meal->notes }}" maxlength="255" placeholder="Ej. Sin sal añadida; preparar al vapor">
                             </div>
@@ -894,7 +894,7 @@
 
                     @if($foodGroups->count() > 1)
                         <label for="foodGroupSelect" class="visually-hidden">Grupo de alimentos</label>
-                        <select id="foodGroupSelect" class="dp-food-select" style="margin-top: 8px; height: 40px;">
+                        <select id="foodGroupSelect" class="dp-food-select nl-mt-8 nl-h-40">
                             <option value="">Todos los grupos</option>
                             @foreach($foodGroups as $group)
                                 <option value="{{ $group->id }}">{{ $group->name }}</option>
@@ -1184,7 +1184,7 @@
 
                 @if($plan->active)
                     <div class="dp-drawer-field">
-                        <label class="dp-switch" for="finishOriginal" style="justify-content: flex-start;">
+                        <label class="dp-switch nl-justify-start" for="finishOriginal">
                             <input type="checkbox" name="finish_original" value="1" id="finishOriginal">
                             <span class="dp-switch-track" aria-hidden="true"></span>
                             <span>Si es para el mismo paciente, finalizar el plan actual</span>

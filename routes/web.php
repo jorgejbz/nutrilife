@@ -20,6 +20,16 @@ use App\Http\Controllers\FoodCatalogController;
 use App\Http\Controllers\DishCatalogController;
 use App\Http\Controllers\DietPlanMealController;
 use App\Http\Controllers\DietPlanItemController;
+use App\Http\Controllers\Clinic\ClinicDashboardController;
+use App\Http\Controllers\Clinic\ClinicTeamController;
+use App\Http\Controllers\Clinic\ClinicPatientController;
+use App\Http\Controllers\Clinic\ClinicAgendaController;
+use App\Http\Controllers\Clinic\ClinicConsultationController;
+use App\Http\Controllers\Clinic\ClinicPaymentController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminAccountController;
+use App\Http\Controllers\Admin\AdminSubscriptionPaymentController;
+use App\Http\Controllers\Admin\AdminAuditLogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +50,49 @@ Route::get('/', [LandingController::class, 'index'])
 // PreventBackHistory: las páginas privadas no se guardan en caché del
 // navegador (después de cerrar sesión, "Atrás" no muestra datos).
 Route::middleware(['auth', EnsureAccountIsActive::class, EnsureTrialSubscription::class, PreventBackHistory::class])->group(function () {
+
+    /*
+    |----------------------------------------------------------------
+    | Perfil (todas las cuentas: nutriólogo, clínica, subperfil, admin)
+    |----------------------------------------------------------------
+    | Ruta principal en español: /perfil (route('perfil')). /profile se
+    | conserva solo como redirección permanente para enlaces antiguos.
+    */
+    Route::get('/perfil', [ProfileController::class, 'edit'])->name('perfil');
+    Route::patch('/perfil', [ProfileController::class, 'update'])->name('perfil.update');
+    Route::delete('/perfil', [ProfileController::class, 'destroy'])->name('perfil.destroy');
+    Route::permanentRedirect('/profile', '/perfil');
+
+    /*
+    |----------------------------------------------------------------
+    | Administrador global (role_id = Role::ADMIN)
+    |----------------------------------------------------------------
+    | Middleware 'admin' (EnsureAdmin): 403 para cualquier otra cuenta,
+    | aunque escriba la URL o mande la petición a mano.
+    */
+    Route::prefix('admin')
+        ->name('admin.')
+        ->middleware('admin')
+        ->group(function () {
+            Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+            Route::get('/cuentas', [AdminAccountController::class, 'index'])->name('accounts.index');
+            Route::get('/cuentas/{account}', [AdminAccountController::class, 'show'])->name('accounts.show');
+            Route::patch('/cuentas/{account}/estado', [AdminAccountController::class, 'updateStatus'])->name('accounts.status');
+            Route::post('/cuentas/{account}/plan', [AdminAccountController::class, 'assignPlan'])->name('accounts.plan');
+            Route::get('/cobros', [AdminSubscriptionPaymentController::class, 'index'])->name('payments.index');
+            Route::patch('/cobros/{subscriptionPayment}/completar', [AdminSubscriptionPaymentController::class, 'complete'])->name('payments.complete');
+            Route::get('/auditoria', [AdminAuditLogController::class, 'index'])->name('audit.index');
+        });
+
+    /*
+    |----------------------------------------------------------------
+    | Herramientas de consulta: solo cuentas de nutriólogo
+    |----------------------------------------------------------------
+    | 'nutritionist' (EnsureNutritionist) manda al administrador a su panel.
+    | Clínicas, subperfiles y nutriólogos individuales usan los MISMOS
+    | módulos; cada uno ve solo sus propios pacientes (patients.user_id).
+    */
+    Route::middleware('nutritionist')->group(function () {
 
     /*
     |----------------------------------------------------------------
@@ -101,8 +154,15 @@ Route::middleware(['auth', EnsureAccountIsActive::class, EnsureTrialSubscription
     | Pagos
     |----------------------------------------------------------------
     */
+    // Pagos de pacientes (manuales: efectivo, transferencia, tarjeta…; no
+    // hay pasarela). Solo el nutriólogo que registró el pago lo edita o
+    // cambia su estado (PaymentController::authorizeOwner).
     Route::resource('pagos', PaymentController::class)
-        ->only(['index', 'create', 'store']);
+        ->only(['index', 'create', 'store', 'show', 'edit', 'update']);
+    Route::patch('/pagos/{pago}/completar', [PaymentController::class, 'complete'])
+        ->name('pagos.complete');
+    Route::patch('/pagos/{pago}/cancelar', [PaymentController::class, 'cancel'])
+        ->name('pagos.cancel');
 
     /*
     |----------------------------------------------------------------
@@ -118,15 +178,28 @@ Route::middleware(['auth', EnsureAccountIsActive::class, EnsureTrialSubscription
 
     /*
     |----------------------------------------------------------------
-    | Perfil
+    | Consultorio (cuenta principal de la clínica)
     |----------------------------------------------------------------
+    | 'clinic' (EnsureClinicOwner): solo User::isClinic(). Cada consulta
+    | se limita a la clínica autenticada y sus subperfiles; el
+    | subperfil de otra clínica responde 404.
     */
-    Route::prefix('profile')
-        ->name('profile.')
+    Route::prefix('clinica')
+        ->name('clinic.')
+        ->middleware('clinic')
         ->group(function () {
-            Route::get('/', [ProfileController::class, 'edit'])->name('edit');
-            Route::patch('/', [ProfileController::class, 'update'])->name('update');
-            Route::delete('/', [ProfileController::class, 'destroy'])->name('destroy');
+            Route::get('/', [ClinicDashboardController::class, 'index'])->name('dashboard');
+            Route::get('/equipo', [ClinicTeamController::class, 'index'])->name('team.index');
+            Route::get('/equipo/nuevo', [ClinicTeamController::class, 'create'])->name('team.create');
+            Route::post('/equipo', [ClinicTeamController::class, 'store'])->name('team.store');
+            Route::get('/equipo/{member}', [ClinicTeamController::class, 'show'])->name('team.show');
+            Route::get('/equipo/{member}/editar', [ClinicTeamController::class, 'edit'])->name('team.edit');
+            Route::put('/equipo/{member}', [ClinicTeamController::class, 'update'])->name('team.update');
+            Route::patch('/equipo/{member}/estado', [ClinicTeamController::class, 'updateStatus'])->name('team.status');
+            Route::get('/pacientes', [ClinicPatientController::class, 'index'])->name('patients.index');
+            Route::get('/agenda', [ClinicAgendaController::class, 'index'])->name('agenda.index');
+            Route::get('/consultas', [ClinicConsultationController::class, 'index'])->name('consultations.index');
+            Route::get('/pagos', [ClinicPaymentController::class, 'index'])->name('payments.index');
         });
 
     /*
@@ -190,6 +263,7 @@ Route::middleware(['auth', EnsureAccountIsActive::class, EnsureTrialSubscription
             Route::post('/{plan}/comidas/{meal}/alimentos-personalizados', [DietPlanItemController::class, 'storeCustom'])->name('items.custom.store');
             Route::post('/{plan}/comidas/{meal}/platillos', [DietPlanItemController::class, 'storeDish'])->name('meals.dishes.store');
         });
+    }); // fin middleware('nutritionist')
 });
 
 require __DIR__.'/auth.php';

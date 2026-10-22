@@ -18,7 +18,7 @@
 
             <h1>Calendario</h1>
 
-            <p>Organiza y consulta las citas de tus pacientes.</p>
+            <p>{{ $isClinic ? 'Citas de todo el equipo de tu clínica, con el nutriólogo de cada una.' : 'Organiza y consulta las citas de tus pacientes.' }}</p>
         </div>
 
         <a href="{{ route('citas.create') }}" class="btn-liquid-primary">
@@ -42,9 +42,15 @@
         | Datos para el calendario (se serializan a JSON en @section('js'))
         |--------------------------------------------------------------------------
         */
-        $calendarAppointments = $appointments->map(function ($appointment) {
+        $calendarAppointments = $appointments->map(function ($appointment) use ($isClinic) {
+            $own = $appointment->user_id === auth()->id();
+
             return [
                 'id' => $appointment->id,
+                // Clínica: con qué nutriólogo es la cita (appointments.user_id)
+                'nutritionist_id' => $appointment->user_id,
+                'nutritionist' => $isClinic ? $appointment->user?->name : null,
+                'is_own' => $own,
                 'date' => $appointment->appointment_at->format('Y-m-d H:i:s'),
                 'patient' => trim(
                     ($appointment->patient->first_name ?? '') . ' ' .
@@ -52,10 +58,23 @@
                 ),
                 'reason' => $appointment->reason ?? 'Consulta nutricional',
                 'status' => $appointment->status ?? 'Pendiente',
+                'notes' => $appointment->notes,
+                // El expediente se abre solo si el paciente sigue vigente
+                // (patients usa borrado lógico).
+                'patient_url' => $appointment->patient && ! $appointment->patient->trashed()
+                    ? route('pacientes.show', $appointment->patient)
+                    : null,
+                // Mismo flujo de /consultas/create con la cita preseleccionada;
+                // solo para citas abiertas (las que acepta ConsultationController).
+                'consultation_url' => $own && in_array($appointment->status, ['Pendiente', 'Confirmada'], true)
+                    && $appointment->patient && ! $appointment->patient->trashed()
+                    ? route('consultas.create', ['cita' => $appointment->id])
+                    : null,
                 // La edición de citas no está implementada (el método edit del
                 // controlador estaba vacío), por eso ya no se envía edit_url.
-                'cancel_url' => route('citas.cancel', $appointment),
-                'delete_url' => route('citas.destroy', $appointment),
+                // Solo quien agendó la cita la cancela o elimina (AppointmentController).
+                'cancel_url' => $own ? route('citas.cancel', $appointment) : null,
+                'delete_url' => $own ? route('citas.destroy', $appointment) : null,
             ];
         })->values();
 
@@ -127,7 +146,7 @@
      ========================================================= --}}
 @section('css')
 
-    {{-- Estilos del panel: tokens + admin.css + admin-light/dark.css,
+    {{-- Estilos del panel: tokens + public/css/admin/* + temas + responsive (config/stylesheets.php),
          anti-parpadeo del tema, tipografía e iconos --}}
     @include('partials.theme-styles', ['section' => 'admin'])
 
@@ -144,6 +163,10 @@
     <script>
         window.appointmentsIndexData = {
             appointments: @json($calendarAppointments),
+            // Fechas en la zona horaria de NutriLife (config/app.php)
+            today: @json($today),
+            selectedDay: @json($selectedDay),
+            createUrl: @json(route('citas.create')),
             csrfToken: @json(csrf_token()),
         };
     </script>

@@ -54,7 +54,7 @@
      ========================================================= --}}
 @section('css')
 
-    {{-- Estilos del panel: tokens + admin.css + admin-light/dark.css,
+    {{-- Estilos del panel: tokens + public/css/admin/* + temas + responsive (config/stylesheets.php),
          anti-parpadeo del tema, tipografía e iconos --}}
     @include('partials.theme-styles', ['section' => 'admin'])
 

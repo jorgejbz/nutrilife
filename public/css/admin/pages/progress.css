@@ -1,0 +1,679 @@
+/* =========================================================
+   admin/pages/progress.css
+   Progreso: listado y detalle
+   Parte de la hoja de la sección: el orden de carga está en
+   config/stylesheets.php. Los ajustes por tamaño de pantalla
+   viven en public/css/responsive/.
+   ========================================================= */
+
+/* =============================================================
+   PROGRESO — INDEX (resources/views/progress/index.blade.php)
+============================================================= */
+
+
+/* =========================================================
+   FONDO
+========================================================= */
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+.progress-header h1 {
+    margin: 4px 0;
+    color: var(--text-primary);
+    font-size: 32px;
+}
+
+
+.progress-header p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 15px;
+}
+
+
+/* =========================================================
+   MÉTRICAS
+========================================================= */
+
+.progress-stats {
+    display: grid;
+    grid-template-columns:
+        repeat(3, minmax(0,1fr));
+    gap: 15px;
+    margin-bottom: 18px;
+}
+
+
+.progress-stat {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 95px;
+    padding: 18px;
+    border-radius: 21px;
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.1);
+    background:
+        rgba(var(--nl-overlay-rgb), 0.045);
+    backdrop-filter: blur(20px);
+}
+
+
+.progress-stat-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 16px;
+    background:
+        rgba(var(--nl-accent-rgb), 0.1);
+    color: var(--accent);
+}
+
+
+.progress-stat-icon.comparison {
+    color: var(--accent);
+}
+
+
+.progress-stat span {
+    color: var(--text-muted);
+    font-size: 14.5px;
+}
+
+
+.progress-stat h3 {
+    margin: 3px 0 0;
+    color: var(--text-primary);
+    font-size: 27px;
+}
+
+
+/* =========================================================
+   PANEL
+========================================================= */
+
+.progress-panel {
+    padding: 24px;
+    border-radius: 25px;
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.1);
+    background:
+        rgba(var(--nl-overlay-rgb), 0.04);
+    backdrop-filter: blur(22px);
+}
+
+
+.progress-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 18px;
+    margin-bottom: 18px;
+    border-bottom:
+        1px solid rgba(var(--nl-overlay-rgb), 0.06);
+}
+
+
+.progress-panel-header span {
+    color: var(--text-faint);
+    font-size: 14.5px;
+    letter-spacing: 1.5px;
+}
+
+
+.progress-panel-header h4 {
+    margin: 4px 0 0;
+    color: var(--text-primary);
+    font-size: 19px;
+}
+
+
+.panel-icon {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    background:
+        rgba(var(--nl-accent-rgb), 0.1);
+    color: var(--accent);
+}
+
+
+/* =========================================================
+   GRID
+========================================================= */
+
+.progress-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0,1fr));
+    gap: 15px;
+}
+
+
+.patient-progress-card {
+    padding: 19px;
+    border-radius: 20px;
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.085);
+    background:
+        rgba(var(--nl-overlay-rgb), 0.035);
+    transition: .2s;
+}
+
+
+.patient-progress-card:hover {
+    transform: translateY(-2px);
+    border-color:
+        rgba(var(--nl-accent-rgb), 0.18);
+}
+
+
+/* =========================================================
+   PACIENTE
+========================================================= */
+
+.progress-patient-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 15px;
+    border-bottom:
+        1px solid rgba(var(--nl-overlay-rgb), 0.055);
+}
+
+
+.patient-progress-avatar {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 14px;
+    background:
+        linear-gradient(
+            135deg,
+            rgb(var(--nl-accent-rgb)),
+            rgb(var(--nl-accent-strong-rgb))
+        );
+    color: rgb(var(--nl-on-accent-rgb));
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+
+.progress-patient-header h5 {
+    margin: 0 0 3px;
+    color: var(--text-primary);
+    font-size: 15px;
+}
+
+
+.progress-patient-header p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 14.5px;
+}
+
+
+.evaluation-counter {
+    margin-left: auto;
+    padding: 5px 9px;
+    border-radius: 11px;
+    background:
+        rgba(var(--nl-accent-rgb), 0.09);
+    color: var(--accent);
+    font-size: 14.5px;
+}
+
+
+/* =========================================================
+   DATOS
+========================================================= */
+
+.patient-progress-data {
+    display: grid;
+    grid-template-columns:
+        repeat(2,1fr);
+    gap: 12px;
+    padding: 16px 0;
+}
+
+
+.patient-progress-data > div {
+    padding: 11px;
+    border-radius: 14px;
+    background:
+        rgba(var(--nl-overlay-rgb), 0.025);
+}
+
+
+.patient-progress-data span {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--text-faint);
+    font-size: 14.5px;
+}
+
+
+.patient-progress-data strong {
+    color: var(--text-primary);
+    font-size: 15px;
+}
+
+
+.change-down {
+    color: var(--accent) !important;
+}
+
+
+.change-up {
+    color: var(--accent) !important;
+}
+
+
+/* =========================================================
+   AVISO
+========================================================= */
+
+.comparison-warning {
+    margin-bottom: 15px;
+    padding: 9px 11px;
+    border-radius: 12px;
+    background:
+        rgba(209,177,90,.07);
+    color: var(--accent);
+    font-size: 14.5px;
+}
+
+
+.no-progress {
+    padding: 28px 10px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 14.5px;
+}
+
+
+.no-progress i {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--accent);
+    font-size: 20px;
+}
+
+
+/* =========================================================
+   BOTONES
+========================================================= */
+
+.progress-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 13px;
+    border-top:
+        1px solid rgba(var(--nl-overlay-rgb), 0.055);
+}
+
+
+.progress-view-button,
+.progress-add-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 11px;
+    border-radius: 11px;
+    font-size: 14.5px;
+    font-weight: 600;
+    text-decoration: none !important;
+}
+
+
+.progress-view-button {
+    flex: 1;
+    background:
+        rgba(var(--nl-accent-rgb), 0.1);
+    color: var(--accent) !important;
+}
+
+
+.progress-view-button:hover {
+    background: rgb(var(--nl-accent-rgb));
+    color: rgb(var(--nl-on-accent-rgb)) !important;
+}
+
+
+.progress-add-button {
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.09);
+    color:
+        var(--text-muted) !important;
+}
+
+
+/* =========================================================
+   VACÍO
+========================================================= */
+
+.progress-empty {
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+
+.progress-empty i {
+    margin-bottom: 12px;
+    color: var(--accent);
+    font-size: 36px;
+}
+
+
+.progress-empty h5 {
+    color: var(--text-primary);
+}
+
+
+/* =============================================================
+   PROGRESO — SHOW (resources/views/progress/show.blade.php)
+============================================================= */
+
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--page-bg) !important;
+    background-attachment: fixed !important;
+}
+
+.content-wrapper {
+    background: transparent !important;
+}
+
+
+/* HEADER */
+
+.progress-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.progress-eyebrow {
+    color: var(--accent);
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.progress-detail-header h1 {
+    margin: 4px 0;
+    color: var(--text-primary);
+    font-size: 30px;
+}
+
+.progress-detail-header p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 14.5px;
+}
+
+
+/* BOTONES */
+
+.btn-progress-add,
+.btn-progress-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 14px;
+    border-radius: 13px;
+    font-size: 12.5px;
+    font-weight: 600;
+    text-decoration: none !important;
+}
+
+.btn-progress-add {
+    background: rgb(var(--nl-accent-rgb));
+    color: rgb(var(--nl-on-accent-rgb)) !important;
+}
+
+.btn-progress-back {
+    border: 1px solid rgba(var(--nl-overlay-rgb), 0.1);
+    background: rgba(var(--nl-overlay-rgb), 0.045);
+    color: var(--text-primary) !important;
+}
+
+
+/* MÉTRICAS */
+
+.detail-stats {
+    display: grid;
+    grid-template-columns:
+        repeat(4, minmax(0,1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.detail-stat {
+    padding: 18px;
+    border-radius: 19px;
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.09);
+    background:
+        rgba(var(--nl-overlay-rgb), 0.04);
+    backdrop-filter: blur(20px);
+}
+
+.detail-stat span {
+    display: block;
+    color: var(--text-muted);
+    font-size: 14.5px;
+}
+
+.detail-stat strong {
+    display: block;
+    margin: 5px 0;
+    color: var(--text-primary);
+    font-size: 25px;
+}
+
+.detail-stat small {
+    color: var(--accent);
+    font-size: 14.5px;
+}
+
+
+/* GRÁFICAS */
+
+.charts-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(2,minmax(0,1fr));
+    gap: 16px;
+}
+
+.progress-chart-card,
+.history-card {
+    padding: 22px;
+    border-radius: 23px;
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.1);
+    background:
+        rgba(var(--nl-overlay-rgb), 0.04);
+    backdrop-filter: blur(22px);
+}
+
+.chart-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.chart-title span {
+    color: var(--text-faint);
+    font-size: 14.5px;
+    letter-spacing: 1.4px;
+}
+
+.chart-title h4 {
+    margin: 3px 0 0;
+    color: var(--text-primary);
+    font-size: 17px;
+}
+
+.chart-title > i {
+    color: var(--accent);
+    font-size: 22px;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+
+/* HISTORIAL */
+
+.history-card {
+    margin-top: 16px;
+}
+
+.progress-history-table {
+    color: var(--text-secondary);
+}
+
+.progress-history-table th {
+    border: none !important;
+    color: var(--text-faint);
+    font-size: 14.5px;
+}
+
+.progress-history-table td {
+    border-top:
+        1px solid rgba(var(--nl-overlay-rgb), 0.055) !important;
+    font-size: 12.5px;
+}
+
+
+/* VACÍO */
+
+.progress-empty-detail {
+    padding: 80px 20px;
+    text-align: center;
+    border-radius: 24px;
+    background:
+        rgba(var(--nl-overlay-rgb), 0.04);
+    color:
+        var(--text-muted);
+}
+
+.progress-empty-detail i {
+    margin-bottom: 15px;
+    color: var(--accent);
+    font-size: 42px;
+}
+
+.progress-empty-detail h4 {
+    color: var(--text-primary);
+}
+
+.progress-empty-detail a {
+    display: inline-block;
+    margin-top: 12px;
+    color: var(--accent);
+}
+
+/* TRIAL ALERTS */
+
+.trial-alert {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 25px;
+    padding: 18px 20px;
+    border: 1px solid rgba(var(--nl-accent-rgb), 0.18);
+    border-radius: 18px;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(var(--nl-accent-rgb), 0.1),
+            rgba(var(--nl-overlay-rgb), 0.03)
+        );
+}
+
+.trial-alert-icon {
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 14px;
+    background: rgba(var(--nl-accent-rgb), 0.12);
+    color: var(--accent-text);
+    font-size: 18px;
+}
+
+.trial-alert-content {
+    flex: 1;
+}
+
+.trial-alert-label {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--accent-text);
+    font-size: 14.5px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+.trial-alert-content strong {
+    display: block;
+    color: var(--text-primary);
+    font-size: 16.5px;
+}
+
+.trial-alert-content p {
+    margin: 4px 0 0;
+    color: var(--text-muted);
+    font-size: 14.5px;
+}
+
+.trial-alert-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 14px;
+    border-radius: 11px;
+    background: rgb(var(--nl-accent-rgb));
+    color: rgb(var(--nl-on-accent-rgb));
+    font-size: 14.5px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.trial-alert-button:hover {
+    color: rgb(var(--nl-on-accent-rgb));
+    background: rgb(var(--nl-accent-rgb));
+}

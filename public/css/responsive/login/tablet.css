@@ -1,0 +1,29 @@
+/* =========================================================
+   RESPONSIVE · LOGIN · TABLET (max-width 768 px – 991.98 px)
+   Todas las @media de esta sección para este rango de
+   pantalla, agrupadas por el archivo de origen y en el mismo
+   orden en que estaban. Se cargan después de las hojas base y
+   de los temas (config/stylesheets.php), de mayor a menor ancho.
+   ========================================================= */
+/* ---------------------------------------------------------
+   login/register.css
+   --------------------------------------------------------- */
+
+@media (max-width: 850px) {
+    .register-page .register-wrapper {
+        grid-template-columns: 1fr;
+        max-width: 600px;
+    }
+    .register-page .register-info {
+        padding: 40px;
+    }
+    .register-page .register-info-content {
+        margin: 45px 0;
+    }
+    .register-page .register-info h1 {
+        font-size: 42px;
+    }
+    .register-page .register-form-side {
+        padding: 40px;
+    }
+}

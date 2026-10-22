@@ -20,7 +20,8 @@ class SubscriptionController extends Controller
     public function index()
     {
         $user = Auth::user();
-        abort_unless($user->isNutritionist(), 403);
+        // Los subperfiles de clínica no contratan: usan la licencia de su consultorio.
+        abort_unless($user->isNutritionist() && ! $user->isClinicMember(), 403, 'Tu clínica administra la suscripción de tu cuenta.');
 
         $subscription = $user->latestSubscription?->loadMissing('plan');
 
@@ -45,7 +46,8 @@ class SubscriptionController extends Controller
     public function checkout(Request $request, SubscriptionPlan $subscriptionPlan)
     {
         $user = Auth::user();
-        abort_unless($user->isNutritionist(), 403);
+        // Los subperfiles de clínica no contratan: usan la licencia de su consultorio.
+        abort_unless($user->isNutritionist() && ! $user->isClinicMember(), 403, 'Tu clínica administra la suscripción de tu cuenta.');
 
         // El precio y el periodo salen de la BD, nunca de la petición.
         $subscription = PlanCheckout::purchase($user, $subscriptionPlan);

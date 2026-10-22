@@ -1,0 +1,753 @@
+/* =========================================================
+   admin/pages/payments.css
+   Pagos: listado y alta/edición
+   Parte de la hoja de la sección: el orden de carga está en
+   config/stylesheets.php. Los ajustes por tamaño de pantalla
+   viven en public/css/responsive/.
+   ========================================================= */
+
+/* =============================================================
+   PAGOS — INDEX (resources/views/payments/index.blade.php)
+============================================================= */
+
+
+.payments-eyebrow {
+    color: var(--accent);
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+
+.btn-payment-primary {
+    color: rgb(var(--nl-on-accent-rgb)) !important;
+    text-decoration: none !important;
+}
+
+
+.payment-stats {
+    display: grid;
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+
+.payment-stat {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 18px;
+    border-radius: 20px;
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.1);
+    background:
+        rgba(var(--nl-overlay-rgb), 0.045);
+    backdrop-filter: blur(18px);
+}
+
+
+.stat-payment-icon {
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    background:
+        rgba(189,167,93,.10);
+    color: var(--accent);
+}
+
+
+.stat-payment-icon.green {
+    color: var(--accent);
+}
+
+
+.stat-payment-icon.yellow {
+    color: var(--accent);
+}
+
+
+.payment-stat span {
+    color: var(--text-muted);
+    font-size: 14.5px;
+}
+
+
+.payment-stat h3 {
+    margin: 3px 0 0;
+    color: var(--text-primary);
+    font-size: 24px;
+    font-weight: 600;
+}
+
+
+.payments-card {
+    padding: 24px;
+    border-radius: 24px;
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.1);
+    background:
+        rgba(var(--nl-overlay-rgb), 0.045);
+    backdrop-filter: blur(22px);
+}
+
+
+.payments-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 18px;
+    margin-bottom: 10px;
+    border-bottom:
+        1px solid rgba(var(--nl-overlay-rgb), 0.06);
+}
+
+
+.payments-card-header span {
+    color: var(--text-faint);
+    font-size: 14.5px;
+    letter-spacing: 1.5px;
+}
+
+
+.payments-card-header h4 {
+    margin: 4px 0 0;
+    color: var(--text-primary);
+    font-size: 19px;
+}
+
+
+.payments-card-header > i {
+    color: var(--accent);
+    font-size: 24px;
+}
+
+
+/* =========================================================
+   TABLA DE PAGOS - GLASS
+========================================================= */
+
+.table-responsive {
+    overflow-x: auto;
+    border-radius: 16px;
+}
+
+
+/* TABLA */
+
+.payment-table {
+    width: 100%;
+    margin: 0;
+    border-collapse: separate !important;
+    border-spacing: 0 8px;
+    background: transparent !important;
+    color: var(--text-secondary);
+}
+
+
+/* QUITAR FONDOS DE ADMINLTE */
+
+.payment-table,
+.payment-table thead,
+.payment-table tbody,
+.payment-table tr,
+.payment-table th,
+.payment-table td {
+    background-color: transparent !important;
+}
+
+
+/* ENCABEZADOS */
+
+.payment-table thead th {
+    padding: 5px 14px 9px;
+    border: none !important;
+    color: var(--text-muted);
+    font-size: 14.5px;
+    font-weight: 700;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+}
+
+
+/* FILAS */
+
+.payment-table tbody tr {
+    transition: .2s ease;
+}
+
+
+/* CELDAS */
+
+.payment-table tbody td {
+    padding: 14px;
+    vertical-align: middle;
+    border-top:
+        1px solid rgba(var(--nl-overlay-rgb), 0.075) !important;
+    border-bottom:
+        1px solid rgba(var(--nl-overlay-rgb), 0.045) !important;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(var(--nl-overlay-rgb), 0.055),
+            rgba(var(--nl-overlay-rgb), 0.022)
+        ) !important;
+    color: var(--text-secondary);
+    font-size: 12.5px;
+}
+
+
+/* BORDE IZQUIERDO */
+
+.payment-table tbody td:first-child {
+    border-left:
+        1px solid rgba(var(--nl-overlay-rgb), 0.07) !important;
+    border-radius:
+        13px 0 0 13px;
+}
+
+
+/* BORDE DERECHO */
+
+.payment-table tbody td:last-child {
+    border-right:
+        1px solid rgba(var(--nl-overlay-rgb), 0.07) !important;
+    border-radius:
+        0 13px 13px 0;
+}
+
+
+/* HOVER DE LA FILA */
+
+.payment-table tbody tr:hover td {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(var(--nl-accent-rgb), 0.11),
+            rgba(var(--nl-overlay-rgb), 0.035)
+        ) !important;
+    border-color:
+        rgba(var(--nl-accent-rgb), 0.15) !important;
+}
+
+
+/* FECHA */
+
+.payment-table tbody td:first-child {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+
+/* PACIENTE */
+
+.payment-table strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+
+/* MONTO */
+
+.payment-amount {
+    color: var(--accent) !important;
+    font-size: 13.5px !important;
+    font-weight: 700;
+    letter-spacing: .2px;
+}
+
+.payment-status {
+    display: inline-block;
+    padding: 4px 9px;
+    border-radius: 12px;
+    font-size: 14.5px;
+}
+
+
+.payment-status.paid {
+    background:
+        rgba(var(--nl-accent-strong-rgb), 0.12);
+    color: var(--accent);
+}
+
+
+.payment-status.pending {
+    background:
+        rgba(205,171,80,.10);
+    color: var(--accent);
+}
+
+
+.payment-status.cancelled {
+    background:
+        rgba(195,83,83,.10);
+    color: var(--accent);
+}
+
+
+.empty-payments {
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+
+.empty-payments > i {
+    margin-bottom: 15px;
+    color: var(--accent);
+    font-size: 38px;
+}
+
+
+.empty-payments h5 {
+    color: var(--text-primary);
+}
+
+
+.empty-payments a {
+    display: inline-block;
+    margin-top: 12px;
+    color: var(--accent);
+}
+
+
+/* =========================================================
+   FONDO GENERAL
+========================================================= */
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.payments-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding-top: 7px;
+}
+
+
+.payments-header h1 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 32px;
+    font-weight: 600;
+}
+
+
+.payments-header p {
+    margin: 6px 0 0;
+    color: var(--text-muted);
+    font-size: 15px;
+}
+
+
+/* =========================================================
+   BOTÓN REGRESAR
+========================================================= */
+
+.btn-back-glass {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 13px;
+    border: 1px solid rgba(var(--nl-overlay-rgb), 0.12);
+    background: rgba(var(--nl-overlay-rgb), 0.06);
+    backdrop-filter: blur(16px);
+    color: var(--accent) !important;
+    font-size: 14.5px;
+    font-weight: 600;
+    text-decoration: none !important;
+    transition: .2s;
+}
+
+
+.btn-back-glass:hover {
+    background: rgba(var(--nl-overlay-rgb), 0.11);
+    color: var(--text-primary) !important;
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   PÁGINA
+========================================================= */
+
+.payment-page {
+    position: relative;
+    min-height: 760px;
+    padding-bottom: 45px;
+}
+
+
+/* =========================================================
+   LUCES
+========================================================= */
+
+
+.ambient-one {
+    opacity: .18;
+}
+
+
+.ambient-two {
+    opacity: .22;
+}
+
+
+/* =========================================================
+   TARJETA
+========================================================= */
+
+.payment-glass-card {
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
+    max-width: 1050px;
+    margin: 0 auto;
+    border-radius: 28px;
+    border: 1px solid rgba(var(--nl-overlay-rgb), 0.12);
+    background:
+        linear-gradient(
+            145deg,
+            rgba(var(--nl-overlay-rgb), 0.09),
+            rgba(var(--nl-overlay-rgb), 0.025)
+        );
+    backdrop-filter:
+        blur(28px)
+        saturate(140%);
+    -webkit-backdrop-filter:
+        blur(28px)
+        saturate(140%);
+    box-shadow:
+        inset 0 1px 0 rgba(var(--nl-highlight-rgb), 0.14),
+        0 25px 60px rgba(var(--nl-shadow-rgb), 0.2);
+}
+
+
+.payment-glass-card::before {
+    content: "";
+    position: absolute;
+    width: 500px;
+    height: 150px;
+    top: -120px;
+    left: 15%;
+    border-radius: 50%;
+    background: rgba(var(--nl-overlay-rgb), 0.07);
+    filter: blur(20px);
+}
+
+
+/* =========================================================
+   CABECERA TARJETA
+========================================================= */
+
+.payment-card-header {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 29px 33px;
+    border-bottom:
+        1px solid rgba(var(--nl-overlay-rgb), 0.07);
+}
+
+
+.payment-icon {
+    width: 65px;
+    min-width: 65px;
+    height: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.15);
+    background:
+        linear-gradient(
+            145deg,
+            rgba(var(--nl-accent-rgb), 0.2),
+            rgba(var(--nl-overlay-rgb), 0.04)
+        );
+    color: var(--accent);
+    font-size: 25px;
+}
+
+
+.payment-eyebrow {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--accent);
+    font-size: 14.5px;
+    letter-spacing: 1.8px;
+}
+
+
+.payment-card-header h2 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 26px;
+    font-weight: 600;
+}
+
+
+.payment-card-header p {
+    margin: 6px 0 0;
+    color: var(--text-muted);
+    font-size: 14.5px;
+}
+
+
+/* =========================================================
+   CUERPO
+========================================================= */
+
+.payment-form-body {
+    position: relative;
+    z-index: 2;
+    padding: 32px 33px 20px;
+}
+
+
+/* =========================================================
+   CAMPOS
+========================================================= */
+
+.nutri-form-group {
+    margin-bottom: 24px;
+}
+
+
+.nutri-form-group label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+    font-size: 13.5px;
+    font-weight: 600;
+}
+
+
+.nutri-form-group label i {
+    width: 14px;
+    color: var(--accent);
+}
+
+
+.nutri-form-group label span {
+    color: var(--accent);
+}
+
+
+.nutri-input {
+    width: 100%;
+    height: 46px;
+    padding: 0 14px;
+    border-radius: 13px;
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.1);
+    background:
+        rgba(var(--nl-overlay-rgb), 0.055) !important;
+    color: var(--text-primary) !important;
+    font-size: 14.5px;
+    outline: none;
+    box-shadow: none !important;
+    transition: .2s;
+}
+
+
+.nutri-input:focus {
+    border-color:
+        rgba(var(--nl-accent-rgb), 0.45);
+    background:
+        rgba(var(--nl-overlay-rgb), 0.075) !important;
+    box-shadow:
+        0 0 0 3px rgba(var(--nl-accent-strong-rgb), 0.08) !important;
+}
+
+
+.nutri-input::placeholder {
+    color:
+        var(--text-faint);
+}
+
+
+/* SELECT */
+
+select.nutri-input {
+    cursor: pointer;
+}
+
+
+select.nutri-input option {
+    background: rgb(var(--nl-surface-rgb));
+    color: var(--text-primary);
+}
+
+
+/* DATE */
+
+
+/* TEXTAREA */
+
+.nutri-textarea {
+    min-height: 115px;
+    padding: 13px 14px;
+    resize: vertical;
+}
+
+
+/* =========================================================
+   MONTO
+========================================================= */
+
+.amount-wrapper {
+    position: relative;
+}
+
+
+.amount-symbol {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    left: 14px;
+    transform: translateY(-50%);
+    color: var(--accent);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+
+.amount-input {
+    padding-left: 31px;
+    padding-right: 55px;
+}
+
+
+.amount-currency {
+    position: absolute;
+    right: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color:
+        var(--text-faint);
+    font-size: 14.5px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   AYUDA / ERRORES
+========================================================= */
+
+.input-help {
+    display: block;
+    margin-top: 6px;
+    color:
+        var(--text-faint);
+    font-size: 14.5px;
+}
+
+
+.error-message {
+    display: block;
+    margin-top: 6px;
+    font-size: 14.5px;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.payment-footer {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 33px;
+    border-top:
+        1px solid rgba(var(--nl-overlay-rgb), 0.07);
+    background:
+        rgba(var(--nl-shadow-rgb), 0.07);
+}
+
+
+/* CANCELAR */
+
+.btn-cancel-glass {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 18px;
+    border-radius: 13px;
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.1);
+    background:
+        rgba(var(--nl-overlay-rgb), 0.045);
+    color:
+        var(--text-muted) !important;
+    font-size: 13.5px;
+    font-weight: 600;
+    text-decoration: none !important;
+    transition: .2s;
+}
+
+
+.btn-cancel-glass:hover {
+    background:
+        rgba(var(--nl-overlay-rgb), 0.09);
+    color: var(--text-primary) !important;
+}
+
+
+/* REGISTRAR */
+
+.btn-payment-primary {
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 0 20px;
+    border-radius: 13px;
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.22);
+    background:
+        linear-gradient(
+            135deg,
+            rgba(var(--nl-accent-rgb), 0.96),
+            rgba(var(--nl-accent-strong-rgb), 0.86)
+        );
+    font-size: 13.5px;
+    font-weight: 700;
+    box-shadow:
+        inset 0 1px 1px rgba(var(--nl-highlight-rgb), 0.55),
+        0 10px 25px rgba(var(--nl-accent-deep-rgb), 0.2);
+    cursor: pointer;
+    outline: none !important;
+    transition: .25s;
+}
+
+
+.btn-payment-primary:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        inset 0 1px 1px rgba(var(--nl-highlight-rgb), 0.55),
+        0 14px 30px rgba(var(--nl-accent-deep-rgb), 0.28);
+}

@@ -1,0 +1,387 @@
+/* =========================================================
+   diet-plans/index.css
+   Listado de planes
+   Parte de la hoja de la sección: el orden de carga está en
+   config/stylesheets.php. Los ajustes por tamaño de pantalla
+   viven en public/css/responsive/.
+   ========================================================= */
+
+/* =============================================================
+   INDEX — BANNER, MÉTRICAS Y LISTA
+   (reutiliza consultations-* de admin.css)
+============================================================= */
+
+.dp-welcome-banner {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    min-height: 210px;
+    padding: 34px 42px;
+    margin-bottom: 26px;
+    overflow: hidden;
+    border: 1px solid rgba(62, 123, 69, .10);
+    border-radius: 27px;
+    background: linear-gradient(115deg, #fff 0%, #fff 64%, #f5faf2 100%);
+    box-shadow: 0 12px 30px rgba(30, 77, 42, .07);
+}
+
+.dp-welcome-icon {
+    width: 76px;
+    height: 76px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    border: 1px solid rgba(56, 133, 73, .20);
+    border-radius: 24px;
+    background: linear-gradient(145deg, #dfefdf, #f5f8f3);
+    color: #469c53;
+    font-size: 29px;
+}
+
+.dp-welcome-copy {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+    padding-right: 150px;
+}
+
+.dp-welcome-eyebrow {
+    display: block;
+    margin-bottom: 9px;
+    color: #469c53;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.dp-welcome-copy h2 {
+    margin: 0 0 11px;
+    color: #234431;
+    font-size: clamp(21px, 2.4vw, 31px);
+    font-weight: 500;
+    line-height: 1.25;
+}
+
+.dp-welcome-copy h2 strong {
+    color: #4aa057;
+    font-weight: 700;
+}
+
+.dp-welcome-copy p {
+    margin: 0;
+    color: #6f8377;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.dp-welcome-art {
+    position: absolute;
+    right: 33px;
+    top: 50%;
+    width: 195px;
+    height: 160px;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.dp-welcome-art i {
+    position: absolute;
+}
+
+.dp-art-seedling {
+    right: 38px;
+    bottom: 4px;
+    color: #718c79;
+    font-size: 110px;
+    opacity: .92;
+}
+
+.dp-art-leaf {
+    color: #4b9f58;
+    font-size: 48px;
+}
+
+.dp-art-leaf-one {
+    left: 12px;
+    top: 19px;
+    transform: rotate(-30deg);
+}
+
+.dp-art-leaf-two {
+    right: 0;
+    top: 0;
+    transform: rotate(35deg);
+}
+
+:root:not([data-theme="light"]) .dp-welcome-banner {
+    background: linear-gradient(120deg, #16291f, #203a2a);
+    border-color: rgba(164, 211, 158, .15);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, .15);
+}
+
+:root:not([data-theme="light"]) .dp-welcome-icon {
+    background: rgba(159, 212, 154, .10);
+    color: #a3d69e;
+    border-color: rgba(159, 212, 154, .20);
+}
+
+:root:not([data-theme="light"]) .dp-welcome-eyebrow {
+    color: #a3d69e;
+}
+
+:root:not([data-theme="light"]) .dp-welcome-copy h2 {
+    color: #e7f3e8;
+}
+
+:root:not([data-theme="light"]) .dp-welcome-copy h2 strong {
+    color: #a3d69e;
+}
+
+:root:not([data-theme="light"]) .dp-welcome-copy p {
+    color: #b2c4b5;
+}
+
+:root:not([data-theme="light"]) .dp-art-seedling {
+    color: #8fb59a;
+}
+
+:root:not([data-theme="light"]) .dp-art-leaf {
+    color: #7cc488;
+}
+
+/* Filtros del listado */
+.dp-list-header {
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.dp-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 9px;
+    margin: 0;
+}
+
+.dp-filter-field {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.dp-filter-field > i {
+    position: absolute;
+    left: 12px;
+    color: var(--text-muted);
+    font-size: 12px;
+    pointer-events: none;
+}
+
+.dp-filter-field input,
+.dp-filter-field select {
+    height: 40px;
+    min-width: 0;
+    padding: 0 12px 0 34px;
+    border: 1px solid var(--input-border);
+    border-radius: 11px;
+    outline: none;
+    background: var(--input-bg);
+    color: var(--input-text);
+    font-size: 12px;
+    color-scheme: var(--native-color-scheme);
+}
+
+.dp-filter-field input {
+    width: 220px;
+}
+
+.dp-filter-field select option {
+    background: var(--surface-solid);
+    color: var(--text-primary);
+}
+
+.dp-filter-chips {
+    display: inline-flex;
+    gap: 4px;
+    padding: 4px;
+    border: 1px solid var(--dp-line);
+    border-radius: 12px;
+    background: var(--dp-layer);
+}
+
+.dp-filter-chips label {
+    margin: 0;
+    padding: 7px 11px;
+    border-radius: 9px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.dp-filter-chips input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.dp-filter-chips label.is-selected,
+.dp-filter-chips label:has(input:checked) {
+    background: var(--dp-green-soft);
+    color: var(--dp-green);
+}
+
+.dp-filter-chips label:has(input:focus-visible) {
+    outline: 2px solid var(--accent);
+}
+
+/* Elemento de la lista */
+.dp-plan-item {
+    align-items: center;
+    gap: 18px;
+}
+
+.dp-plan-item .consultation-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.dp-patient-heading {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 5px;
+}
+
+.dp-patient-heading h5 {
+    margin: 0;
+}
+
+.dp-plan-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.dp-plan-status i {
+    font-size: 6px;
+}
+
+.dp-plan-status.is-active {
+    background: rgba(102, 187, 106, .13);
+    color: var(--accent-text);
+}
+
+.dp-plan-status.is-finished {
+    background: rgba(148, 163, 184, .14);
+    color: var(--text-muted);
+}
+
+.dp-plan-goal {
+    margin: 2px 0 0;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.dp-plan-macros {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 0;
+}
+
+.dp-plan-macros span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 10px;
+    border: 1px solid rgba(150, 190, 145, .20);
+    border-radius: 9px;
+    background: rgba(150, 190, 145, .08);
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.dp-plan-macros span:nth-child(1) i { color: var(--dp-kcal); }
+.dp-plan-macros span:nth-child(2) i { color: var(--dp-protein); }
+.dp-plan-macros span:nth-child(3) i { color: var(--dp-carbs); }
+.dp-plan-macros span:nth-child(4) i { color: var(--dp-fats); }
+
+.dp-plan-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 420px;
+    margin-bottom: 10px;
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+.dp-plan-progress .dp-progress-track {
+    flex: 1;
+    margin: 0;
+}
+
+.dp-plan-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.dp-plan-actions form {
+    margin: 0;
+}
+
+.dp-plan-view,
+.dp-plan-delete {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 11px 15px;
+    border-radius: 11px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none !important;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+.dp-plan-view {
+    border: 1px solid rgba(168, 207, 160, .35);
+    background: rgba(151, 195, 145, .12);
+    color: var(--accent-text) !important;
+}
+
+.dp-plan-view:hover {
+    background: #a9ce9f;
+    color: #102417 !important;
+    transform: translateY(-2px);
+}
+
+.dp-plan-delete {
+    border: 1px solid rgba(220, 80, 80, .25);
+    background: rgba(220, 80, 80, .08);
+    color: var(--dp-danger);
+}
+
+.dp-plan-delete:hover {
+    background: #dc5050;
+    border-color: #dc5050;
+    color: #fff;
+    transform: translateY(-2px);
+}

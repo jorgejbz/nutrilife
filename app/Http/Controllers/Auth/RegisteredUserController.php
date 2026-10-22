@@ -98,14 +98,16 @@ class RegisteredUserController extends Controller
         ]);
 
         $user = DB::transaction(function () use ($request) {
-            $user = User::create([
+            // role_id no es asignable en masa: el registro público SIEMPRE
+            // crea nutriólogos (nunca administradores ni subperfiles).
+            $user = new User([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-                'role_id' => Role::NUTRITIONIST,
                 'professional_license' => $request->professional_license,
                 'degree_number' => $request->degree_number,
             ]);
+            $user->forceFill(['role_id' => Role::NUTRITIONIST, 'clinic_id' => null])->save();
 
             // La cuenta queda pendiente; se habilita sola cuando pasa el
             // tiempo configurado (AccountActivation). La prueba gratuita

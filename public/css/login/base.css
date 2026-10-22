@@ -1,0 +1,63 @@
+/* =========================================================
+   login/base.css
+   Autenticación: estructura y logotipo
+   Parte de la hoja de la sección: el orden de carga está en
+   config/stylesheets.php. Los ajustes por tamaño de pantalla
+   viven en public/css/responsive/.
+   ========================================================= */
+
+/* =============================================================
+   NUTRILIFE — LOGIN / AUTENTICACIÓN · ESTRUCTURA
+   -------------------------------------------------------------
+   Carga: nutrilife-tokens.css → login.css → login-light.css o
+          login-dark.css (solo uno activo; ver resources/js/theme.js)
+
+   Cubre todas las pantallas de acceso, que antes usaban tres
+   estilos distintos (login.css, un <style> inline en registro y
+   Tailwind/Breeze en recuperar contraseña):
+     1. Login           (resources/views/auth/login.blade.php)
+     2. Registro        (resources/views/auth/register.blade.php)
+     3. Páginas guest   (layouts/guest.blade.php: recuperar y
+                         restablecer contraseña, verificar correo,
+                         confirmar contraseña)
+
+   Sin colores propios: todo sale de login-light.css / login-dark.css.
+   No depende del CSS del panel administrativo.
+============================================================= */
+
+
+/* =============================================================
+   LOGOTIPO (se muestra la versión adecuada a cada modo)
+============================================================= */
+.nl-logo {
+    display: block;
+    height: auto;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+/* Panel de marca (escritorio) */
+.brand-logo .brand-logo-img {
+    height: 48px;
+    width: auto;
+}
+
+/* Cabecera del formulario (solo visible en tablet/celular) */
+.mobile-logo .mobile-logo-img {
+    height: 42px;
+    width: auto;
+}
+
+/* Registro */
+.register-page .register-logo-img {
+    height: 46px;
+    width: auto;
+}
+
+/* Emblema en la decoración central del panel de marca */
+.orbit-main .orbit-emblem {
+    width: 72%;
+    height: 72%;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 18px rgba(var(--nl-shadow-rgb), .25));
+}

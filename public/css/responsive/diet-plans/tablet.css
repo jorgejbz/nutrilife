@@ -1,0 +1,59 @@
+/* =========================================================
+   RESPONSIVE · DIET-PLANS · TABLET (max-width 768 px – 991.98 px)
+   Todas las @media de esta sección para este rango de
+   pantalla, agrupadas por el archivo de origen y en el mismo
+   orden en que estaban. Se cargan después de las hojas base y
+   de los temas (config/stylesheets.php), de mayor a menor ancho.
+   ========================================================= */
+/* ---------------------------------------------------------
+   diet-plans/dishes.css
+   --------------------------------------------------------- */
+
+@media (max-width: 991.98px) {
+    .dp-daily-summary {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .dp-daily-main {
+        padding: 0 0 20px;
+        border-right: 0;
+        border-bottom: 1px solid var(--dp-line);
+    }
+
+    .dp-context-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 850px) and (min-width: 521px) {
+    .dp-plan-item {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .dp-plan-item .consultation-info {
+        flex: 1 1 65%;
+    }
+
+    .dp-plan-actions {
+        width: 100%;
+        flex-direction: row;
+    }
+
+    .dp-plan-actions > * {
+        flex: 1;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 800px) {
+    .dp-form-footer {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .dp-footer-buttons {
+        justify-content: flex-end;
+    }
+}

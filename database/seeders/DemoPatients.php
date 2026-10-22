@@ -313,4 +313,40 @@ class DemoPatients
                 'pathologies' => [['Hipertensión arterial', '2022-02-22', null]], 'height' => 174, 'weight' => 86.0, 'fat' => 28.0, 'waist' => 98, 'hip_ratio' => 1.0, 'start' => -1, 'max_visits' => 0],
         ]);
     }
+
+    /* ==================================================================
+     | Subperfiles de la clínica consultorio@nutrilife.test (ClinicDemoSeeder)
+     * ================================================================== */
+
+    /** Lic. Andrea Solís (nutriologa.andrea@vidasana.test) */
+    public static function clinicAndrea(): array
+    {
+        $deficit = self::plan('Plan reducción 1,600 kcal', 1600, [25, 45, 30], 'Bajar de peso de forma gradual.', "Cenar ligero antes de las 21:00.\nCaminar 30 minutos al día.");
+        $gest = self::plan('Plan embarazo 2,100 kcal', 2100, [20, 50, 30], 'Cubrir requerimientos del segundo trimestre.', "Fraccionar en 5 tiempos.\nSuplemento de ácido fólico según indicación médica.");
+
+        return array_map([self::class, 'patient'], [
+            ['first' => 'Mónica', 'last' => 'Treviño Ruiz', 'sex' => 'Femenino', 'birth' => '1991-05-12', 'phone' => '5544100201', 'email' => 'monica.trevino@pacientes-vidasana.test', 'occupation' => 'Abogada', 'goal' => 'Bajar 5 kg y mejorar energía.',
+                'height' => 164, 'weight' => 72.0, 'fat' => 34.0, 'waist' => 86, 'start' => 40, 'plan' => $deficit],
+            ['first' => 'Sofía', 'last' => 'Garza Méndez', 'sex' => 'Femenino', 'birth' => '1995-09-03', 'phone' => '5544100202', 'email' => 'sofia.garza@pacientes-vidasana.test', 'occupation' => 'Arquitecta', 'goal' => 'Alimentación adecuada en el embarazo.',
+                'pathologies' => [['Anemia', '2026-06-06', null]], 'height' => 160, 'weight' => 63.0, 'weight_step' => 0.4, 'fat' => 29.0, 'fat_step' => 0.1, 'waist' => 82, 'waist_step' => 0.5, 'start' => 35, 'plan' => $gest],
+            ['first' => 'Ernesto', 'last' => 'Lugo Paredes', 'sex' => 'Masculino', 'birth' => '1975-02-27', 'phone' => '5544100203', 'email' => 'ernesto.lugo@pacientes-vidasana.test', 'occupation' => 'Gerente de ventas', 'goal' => 'Controlar triglicéridos.',
+                'pathologies' => [['Dislipidemia', '2025-11-11', null]], 'height' => 176, 'weight' => 95.0, 'fat' => 30.0, 'muscle' => 35.0, 'waist' => 104, 'hip_ratio' => 1.0, 'start' => 30, 'last_payment_pending' => true, 'plan' => $deficit],
+        ]);
+    }
+
+    /** Lic. Diego Navarro (nutriologo.diego@vidasana.test) */
+    public static function clinicDiego(): array
+    {
+        $sport = self::plan('Plan deportivo 2,600 kcal', 2600, [22, 55, 23], 'Mejorar rendimiento y recuperación.', "Colación con proteína después de entrenar.\nHidratación con electrolitos en sesiones largas.");
+        $renal = self::plan('Plan cuidado renal 1,800 kcal', 1800, [12, 58, 30], 'Cuidar la función renal.', "Limitar sodio y potasio según laboratorios.\nEvitar caldos concentrados.");
+
+        return array_map([self::class, 'patient'], [
+            ['first' => 'Rodrigo', 'last' => 'Ibáñez Coronado', 'sex' => 'Masculino', 'birth' => '1999-07-19', 'phone' => '5544100301', 'email' => 'rodrigo.ibanez@pacientes-vidasana.test', 'occupation' => 'Triatleta', 'goal' => 'Preparación para medio Ironman.',
+                'height' => 178, 'weight' => 72.0, 'weight_step' => 0.1, 'fat' => 13.0, 'fat_step' => -0.1, 'muscle' => 36.0, 'muscle_step' => 0.2, 'waist' => 78, 'waist_step' => 0.0, 'hip_ratio' => 1.12, 'start' => 32, 'plan' => $sport],
+            ['first' => 'Guadalupe', 'last' => 'Sandoval Mora', 'sex' => 'Femenino', 'birth' => '1958-12-08', 'phone' => '5544100302', 'email' => 'guadalupe.sandoval@pacientes-vidasana.test', 'occupation' => 'Jubilada', 'goal' => 'Cuidar los riñones.',
+                'pathologies' => [['Enfermedad renal crónica', '2022-04-04', 'Etapa 3a.'], ['Hipertensión arterial', '2010-01-01', null]], 'height' => 156, 'weight' => 66.0, 'fat' => 36.0, 'waist' => 90, 'start' => 28, 'cancel' => [1], 'plan' => $renal],
+            ['first' => 'Iván', 'last' => 'Robles Estrada', 'sex' => 'Masculino', 'birth' => '2004-03-15', 'phone' => '5544100303', 'email' => 'ivan.robles@pacientes-vidasana.test', 'occupation' => 'Estudiante', 'goal' => 'Ganar masa muscular.',
+                'allergens' => [['Cacahuate', 'moderada']], 'height' => 172, 'weight' => 61.0, 'weight_step' => 0.3, 'fat' => 15.0, 'fat_step' => 0.0, 'muscle' => 30.0, 'muscle_step' => 0.3, 'waist' => 72, 'waist_step' => 0.1, 'start' => 20, 'plan' => $sport],
+        ]);
+    }
 }

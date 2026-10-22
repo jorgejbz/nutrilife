@@ -60,9 +60,14 @@ class ConsultationController extends Controller
             ->orderBy('appointment_at')
             ->get();
 
+        // ?cita=<id> (desde el calendario de /citas): preselecciona esa cita
+        // y su paciente. Solo si es una de las citas abiertas propias de arriba.
+        $selectedAppointment = $appointments->firstWhere('id', request()->integer('cita'));
+
         return view('consultations.create', compact(
             'patients',
-            'appointments'
+            'appointments',
+            'selectedAppointment'
         ));
     }
 

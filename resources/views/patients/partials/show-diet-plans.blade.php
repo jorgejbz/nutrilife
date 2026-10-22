@@ -11,7 +11,7 @@
             <h4>Planes alimenticios</h4>
         </div>
 
-        @if(! $paciente->trashed() && $paciente->active)
+        @if(($canTreat ?? true) && ! $paciente->trashed() && $paciente->active)
             <a href="{{ route('diet-plans.create', ['paciente' => $paciente->id]) }}" class="diet-btn diet-btn--soft">
                 <i class="fas fa-plus" aria-hidden="true"></i>
                 Nuevo plan
@@ -22,7 +22,8 @@
     @forelse($dietPlans as $dietPlan)
         @php $kcal = $dietPlan->totals()['kcal']; @endphp
 
-        <a href="{{ route('diet-plans.show', $dietPlan) }}" class="diet-patient-plan">
+        {{-- El plan solo lo abre su dueño (el nutriólogo responsable) --}}
+        <{{ ($canTreat ?? true) ? 'a' : 'div' }} @if ($canTreat ?? true) href="{{ route('diet-plans.show', $dietPlan) }}" @endif class="diet-patient-plan">
             <div>
                 <strong>{{ $dietPlan->name }}</strong>
                 <small>
@@ -32,7 +33,7 @@
                 </small>
             </div>
             <span class="diet-status {{ $dietPlan->active ? 'is-active' : 'is-finished' }}">{{ $dietPlan->statusLabel() }}</span>
-        </a>
+        </{{ ($canTreat ?? true) ? 'a' : 'div' }}>
     @empty
         <p class="clinical-show-empty">
             Sin planes alimenticios.

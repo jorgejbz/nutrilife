@@ -228,4 +228,71 @@
         }
     });
 
+
+    /* ------------------------------------------------------
+     | Copiar al portapapeles: <button data-copy="texto">
+     | (referencias de pago, partials/payment-reference).
+     | navigator.clipboard necesita https o localhost; si no
+     | está disponible se usa una selección temporal.
+     * ------------------------------------------------------ */
+    function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+            return navigator.clipboard.writeText(text);
+        }
+
+        return new Promise(function (resolve, reject) {
+            const field = document.createElement('textarea');
+            field.value = text;
+            field.setAttribute('readonly', '');
+            field.style.position = 'fixed';
+            field.style.opacity = '0';
+            document.body.appendChild(field);
+            field.select();
+
+            try {
+                if (document.execCommand('copy')) {
+                    resolve();
+                } else {
+                    reject(new Error('copy'));
+                }
+            } catch (error) {
+                reject(error);
+            } finally {
+                field.remove();
+            }
+        });
+    }
+
+    document.addEventListener('click', function (event) {
+        const button = event.target.closest('[data-copy]');
+
+        if (!button) {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const label = button.dataset.copyLabel || button.getAttribute('aria-label');
+        button.dataset.copyLabel = label;
+        const icon = button.querySelector('i');
+
+        copyText(button.dataset.copy).then(function () {
+            button.classList.add('is-copied');
+            button.setAttribute('aria-label', 'Copiada: ' + button.dataset.copy);
+            button.title = 'Copiada';
+            if (icon) { icon.className = 'fas fa-check'; }
+        }).catch(function () {
+            button.title = 'No se pudo copiar; selecciona el texto';
+        }).finally(function () {
+            clearTimeout(button._copyTimer);
+            button._copyTimer = setTimeout(function () {
+                button.classList.remove('is-copied');
+                button.setAttribute('aria-label', label);
+                button.title = 'Copiar referencia';
+                if (icon) { icon.className = 'far fa-copy'; }
+            }, 1800);
+        });
+    });
+
 })();

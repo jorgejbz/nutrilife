@@ -50,17 +50,8 @@
 <div class="payments-page">
 
 
-    @if(session('success'))
-
-        <div class="payment-alert">
-
-            <i class="fas fa-check-circle"></i>
-
-            {{ session('success') }}
-
-        </div>
-
-    @endif
+    {{-- Éxito / error de la última acción (registrar, editar, completar) --}}
+    @include('partials.flash')
 
 
 
@@ -181,6 +172,49 @@
         </div>
 
 
+        {{-- FILTROS: estado y búsqueda por paciente, concepto o referencia --}}
+        <form method="get" action="{{ route('pagos.index') }}" class="nl-toolbar nl-p-0-4" role="search">
+            <div class="nl-field nl-field--wide">
+                <label for="q">Buscar</label>
+                <div class="nl-input">
+                    <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+                    <input id="q" name="q" type="search" value="{{ $search }}" placeholder="Referencia (p. ej. TRA-2026…), paciente o concepto">
+                </div>
+            </div>
+            <div class="nl-field">
+                <label for="estado">Estado</label>
+                <div class="nl-input">
+                    <i class="fas fa-toggle-on" aria-hidden="true"></i>
+                    <select id="estado" name="estado">
+                        <option value="">Todos</option>
+                        <option value="Pendiente" @selected($status === 'Pendiente')>Pendientes</option>
+                        <option value="Pagado" @selected($status === 'Pagado')>Completados (pagados)</option>
+                        <option value="Cancelado" @selected($status === 'Cancelado')>Cancelados</option>
+                    </select>
+                </div>
+            </div>
+            <div class="nl-field">
+                <label for="metodo">Método</label>
+                <div class="nl-input">
+                    <i class="fas fa-wallet" aria-hidden="true"></i>
+                    <select id="metodo" name="metodo">
+                        <option value="">Todos</option>
+                        @foreach (\App\Http\Controllers\PaymentController::METHODS as $option)
+                            <option value="{{ $option }}" @selected($method === $option)>{{ $option }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="nl-toolbar-actions">
+                <button type="submit" class="nl-btn nl-btn--primary" data-loading-text="Filtrando…"><i class="fas fa-filter" aria-hidden="true"></i> Filtrar</button>
+                @php $hasFilters = $status || $method || $search !== ''; @endphp
+                <a href="{{ route('pagos.index') }}" class="nl-btn nl-btn--ghost{{ $hasFilters ? '' : ' is-disabled' }}" @unless ($hasFilters) aria-disabled="true" @endunless>
+                    <i class="fas fa-eraser" aria-hidden="true"></i> Limpiar filtros
+                </a>
+            </div>
+        </form>
+
+
 
         @if($payments->isEmpty())
 
@@ -190,11 +224,11 @@
                 <i class="fas fa-wallet"></i>
 
                 <h5>
-                    Sin pagos registrados
+                    {{ $status || $method || $search ? 'Sin resultados' : 'Sin pagos registrados' }}
                 </h5>
 
                 <p>
-                    Los pagos de tus pacientes aparecerán aquí.
+                    {{ $status || $method || $search ? 'No hay pagos con esos filtros.' : 'Los pagos de tus pacientes aparecerán aquí.' }}
                 </p>
 
                 <a href="{{ route('pagos.create') }}">
@@ -218,9 +252,10 @@
                             <th>Fecha</th>
                             <th>Paciente</th>
                             <th>Concepto</th>
-                            <th>Método</th>
+                            <th>Referencia y método</th>
                             <th>Estado</th>
                             <th class="text-right">Monto</th>
+                            <th class="text-right">Acciones</th>
 
                         </tr>
 
@@ -236,6 +271,7 @@
                                 <td>
 
                                     {{ $payment->paid_at->format('d/m/Y') }}
+                                    <small class="d-block text-muted">Registrado {{ $payment->created_at?->format('d/m/Y') }}</small>
 
                                 </td>
 
@@ -259,9 +295,9 @@
                                 </td>
 
 
-                                <td>
+                                <td class="payment-reference-cell">
 
-                                    {{ $payment->payment_method }}
+                                    @include('partials.payment-reference', ['payment' => $payment, 'external' => true])
 
                                 </td>
 
@@ -297,6 +333,42 @@
 
                                 </td>
 
+
+                                {{-- Acciones: el estado solo cambia con estas acciones
+                                     (PaymentController@complete / @cancel), con confirmación --}}
+                                <td class="text-right">
+
+                                    <div class="nl-row-actions">
+
+                                        @if($payment->isPending())
+                                            <form method="POST" action="{{ route('pagos.complete', $payment) }}"
+                                                  data-confirm="¿Marcar como completado el pago de {{ $payment->patient->first_name }} {{ $payment->patient->last_name }} por ${{ number_format($payment->amount, 2) }}? La fecha de pago será hoy."
+                                                  data-confirm-title="Marcar pago como completado"
+                                                  data-confirm-accept="Marcar como completado"
+                                                  data-confirm-icon="fa-circle-check">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit" class="nl-btn nl-btn--ok nl-btn--sm">
+                                                    <i class="fas fa-check" aria-hidden="true"></i>
+                                                    Marcar como completado
+                                                </button>
+                                            </form>
+                                        @endif
+
+                                        <a href="{{ route('pagos.show', $payment) }}" class="nl-btn nl-btn--ghost nl-btn--sm" title="Ver detalle">
+                                            <i class="far fa-eye" aria-hidden="true"></i>
+                                            <span class="visually-hidden">Ver detalle</span>
+                                        </a>
+
+                                        <a href="{{ route('pagos.edit', $payment) }}" class="nl-btn nl-btn--ghost nl-btn--sm" title="Editar">
+                                            <i class="fas fa-pen" aria-hidden="true"></i>
+                                            <span class="visually-hidden">Editar</span>
+                                        </a>
+
+                                    </div>
+
+                                </td>
+
                             </tr>
 
                         @endforeach
@@ -309,6 +381,11 @@
 
 
         @endif
+
+
+        <div class="nl-p-0-4-6">
+            @include('partials.pager', ['paginator' => $payments])
+        </div>
 
 
     </div>
@@ -324,7 +401,7 @@
      ========================================================= --}}
 @section('css')
 
-    {{-- Estilos del panel: tokens + admin.css + admin-light/dark.css,
+    {{-- Estilos del panel: tokens + public/css/admin/* + temas + responsive (config/stylesheets.php),
          anti-parpadeo del tema, tipografía e iconos --}}
     @include('partials.theme-styles', ['section' => 'admin'])
 

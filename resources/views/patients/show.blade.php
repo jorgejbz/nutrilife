@@ -25,7 +25,7 @@
         </div>
 
         <div class="header-actions">
-            <a href="{{ route('pacientes.index') }}" class="btn-liquid-secondary">
+            <a href="{{ $canTreat ? route('pacientes.index') : route('clinic.patients.index') }}" class="btn-liquid-secondary">
                 <i class="fas fa-arrow-left"></i>
                 Regresar
             </a>
@@ -71,6 +71,18 @@
              HERO
              ================================================= --}}
         @include('patients.partials.show-hero')
+
+        @unless ($canTreat)
+            <div class="glass-alert glass-alert--info" role="note">
+                <div class="glass-alert-icon">
+                    <i class="fas fa-user-doctor"></i>
+                </div>
+                <div>
+                    <strong>Paciente de {{ $responsible?->name }}</strong>
+                    <span>Lo consultas como cuenta principal de la clínica. Evaluaciones, citas y planes alimenticios los registra su nutriólogo responsable; puedes cambiarlo desde «Editar paciente».</span>
+                </div>
+            </div>
+        @endunless
 
 
         {{-- =================================================
@@ -126,7 +138,7 @@
      ========================================================= --}}
 @section('css')
 
-    {{-- Estilos del panel: tokens + admin.css + admin-light/dark.css,
+    {{-- Estilos del panel: tokens + public/css/admin/* + temas + responsive (config/stylesheets.php),
          anti-parpadeo del tema, tipografía e iconos --}}
     @include('partials.theme-styles', ['section' => 'admin'])
 

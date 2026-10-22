@@ -1,0 +1,451 @@
+/* =========================================================
+   admin/components/interface.css
+   Interfaz: botones, iconos interactivos, selectores, filtros rápidos, calendario
+   Parte de la hoja de la sección: el orden de carga está en
+   config/stylesheets.php. Los ajustes por tamaño de pantalla
+   viven en public/css/responsive/.
+   ========================================================= */
+
+/* =============================================================
+   ACTUALIZACIÓN 5 · INTERFAZ, NAVEGACIÓN Y CALENDARIO
+   - Hover/foco de «Evaluación» en /progreso
+   - Iconos interactivos (dashboard y consultas)
+   - Selectores nativos en modo oscuro (/pagos, /clinica/*)
+   - Filtros rápidos por día en /clinica/agenda
+   - Día seleccionado y detalle en el calendario de /citas
+============================================================= */
+
+/* -------- /progreso: «Evaluación» --------
+   Solo «Ver progreso» tenía :hover y ninguno de los dos tenía
+   transición ni foco visible. Mismo efecto para ambos. */
+.progress-view-button,
+.progress-add-button {
+    transition: background-color .2s ease, border-color .2s ease, color .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+
+.progress-add-button:hover,
+.progress-add-button:focus-visible {
+    border-color: rgb(var(--nl-accent-rgb));
+    background: rgba(var(--nl-accent-rgb), 0.14);
+    color: var(--accent) !important;
+    transform: translateY(-1px);
+}
+
+.progress-view-button:hover,
+.progress-view-button:focus-visible {
+    transform: translateY(-1px);
+}
+
+.progress-view-button:focus-visible,
+.progress-add-button:focus-visible {
+    outline: 2px solid rgb(var(--nl-accent-rgb));
+    outline-offset: 2px;
+}
+
+.progress-view-button:focus-visible {
+    background: rgb(var(--nl-accent-rgb));
+    color: rgb(var(--nl-on-accent-rgb)) !important;
+}
+
+.progress-view-button:active,
+.progress-add-button:active {
+    transform: translateY(0);
+}
+
+/* -------- Iconos que son enlaces --------
+   Solo los que llevan a una acción real; el resto sigue siendo
+   decorativo (sin cursor ni hover). */
+a.dashboard-chart-card__icon.is-action,
+a.consultations-card-header__action {
+    text-decoration: none !important;
+    cursor: pointer;
+    transition: background-color .2s ease, color .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+
+a.dashboard-chart-card__icon.is-action:hover,
+a.dashboard-chart-card__icon.is-action:focus-visible {
+    background: rgb(var(--nl-accent-rgb));
+    color: rgb(var(--nl-on-accent-rgb));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(var(--nl-accent-deep-rgb), 0.25);
+}
+
+a.consultations-card-header__action {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: var(--accent-soft-bg);
+    color: var(--accent);
+    font-size: 21px;
+}
+
+a.consultations-card-header__action:hover,
+a.consultations-card-header__action:focus-visible {
+    background: rgb(var(--nl-accent-rgb));
+    color: rgb(var(--nl-on-accent-rgb));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(var(--nl-accent-deep-rgb), 0.25);
+}
+
+a.dashboard-chart-card__icon.is-action:focus-visible,
+a.consultations-card-header__action:focus-visible,
+a.nl-kpi:focus-visible {
+    outline: 2px solid rgb(var(--nl-accent-rgb));
+    outline-offset: 3px;
+}
+
+a.dashboard-chart-card__icon.is-action:active,
+a.consultations-card-header__action:active {
+    transform: translateY(0);
+}
+
+a.nl-kpi:focus-visible {
+    border-color: rgba(var(--nl-accent-rgb), .45);
+    transform: translateY(-2px);
+}
+
+/* -------- Selectores nativos (.nl-input select) --------
+   En modo oscuro el fondo del select es translúcido
+   (--input-bg: rgba(255,255,255,.04)). La lista desplegable
+   nativa no admite transparencia: Chrome/Edge la pintaban clara
+   con el texto crema del tema (casi ilegible). Las opciones
+   llevan un fondo sólido del tema y el select declara su
+   esquema de color para que el navegador dibuje la lista,
+   la flecha y la barra de desplazamiento en oscuro. */
+.nl-input select {
+    color-scheme: var(--native-color-scheme, light);
+    cursor: pointer;
+    transition: border-color .2s ease, background-color .2s ease;
+}
+
+.nl-input select:hover {
+    border-color: rgba(var(--nl-accent-rgb), .35);
+}
+
+.nl-input select:focus-visible {
+    border-color: rgba(var(--nl-accent-rgb), .6);
+    box-shadow: 0 0 0 3px rgba(var(--nl-accent-rgb), .18);
+}
+
+.nl-input select option,
+.nl-input select optgroup {
+    background-color: var(--surface-solid, rgb(var(--nl-surface-rgb)));
+    color: var(--text-primary);
+}
+
+.nl-input select option:checked {
+    background-color: rgba(var(--nl-accent-rgb), .28);
+    color: var(--text-primary);
+}
+
+.nl-input select option:disabled {
+    color: var(--text-faint);
+}
+
+.nl-input select:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+/* -------- Botón deshabilitado (enlace) -------- */
+a.nl-btn.is-disabled {
+    opacity: .5;
+    pointer-events: none;
+    cursor: default;
+}
+
+/* -------- /clinica/agenda: accesos rápidos por día -------- */
+.nl-quick-days {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 4px 0 12px;
+}
+
+.nl-quick-days__label {
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 600;
+    margin-right: 4px;
+}
+
+.nl-quick-days__label i {
+    color: var(--accent);
+    margin-right: 4px;
+}
+
+.nl-quick-day {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    min-height: 40px;
+    padding: 8px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(var(--nl-overlay-rgb), 0.12);
+    background: rgba(var(--nl-overlay-rgb), 0.035);
+    color: var(--text-secondary) !important;
+    font-size: 14.5px;
+    text-decoration: none !important;
+    transition: background-color .2s ease, border-color .2s ease, color .2s ease, transform .2s ease;
+}
+
+.nl-quick-day strong {
+    font-weight: 700;
+}
+
+.nl-quick-day small {
+    color: var(--text-muted);
+    font-size: 12.5px;
+}
+
+.nl-quick-day:hover,
+.nl-quick-day:focus-visible {
+    border-color: rgba(var(--nl-accent-rgb), .45);
+    background: rgba(var(--nl-accent-rgb), .10);
+    color: var(--accent) !important;
+    transform: translateY(-1px);
+}
+
+.nl-quick-day:focus-visible {
+    outline: 2px solid rgb(var(--nl-accent-rgb));
+    outline-offset: 2px;
+}
+
+.nl-quick-day.is-active {
+    border-color: rgb(var(--nl-accent-rgb));
+    background: rgb(var(--nl-accent-rgb));
+    color: rgb(var(--nl-on-accent-rgb)) !important;
+}
+
+.nl-quick-day.is-active small {
+    color: rgb(var(--nl-on-accent-rgb));
+    opacity: .8;
+}
+
+.nl-quick-day:active {
+    transform: translateY(0);
+}
+
+.nl-result-summary {
+    margin: 0 0 12px;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+/* -------- /citas: día seleccionado y detalle -------- */
+.calendar-day:focus-visible {
+    outline: 2px solid rgb(var(--nl-accent-rgb));
+    outline-offset: 1px;
+}
+
+.calendar-day.is-selected {
+    border-color: rgb(var(--nl-accent-rgb));
+    box-shadow:
+        inset 0 0 0 1px rgb(var(--nl-accent-rgb)),
+        0 8px 20px rgba(var(--nl-accent-deep-rgb), 0.18);
+}
+
+.calendar-day.is-selected .day-number {
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.calendar-day.today.is-selected .day-number {
+    color: rgb(var(--nl-on-accent-rgb));
+}
+
+.calendar-day:active {
+    transform: translateY(0);
+}
+
+.selected-day-panel {
+    scroll-margin-top: 80px;
+}
+
+.selected-day-count {
+    display: block;
+    margin-top: 3px;
+    color: var(--text-muted);
+    font-size: 13.5px;
+}
+
+.selected-appointment {
+    min-width: 0;
+}
+
+.selected-appointment h5 {
+    overflow-wrap: anywhere;
+}
+
+a.selected-appointment-patient {
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+a.selected-appointment-patient:hover,
+a.selected-appointment-patient:focus-visible {
+    color: var(--accent);
+    text-decoration: underline;
+}
+
+.selected-appointment p.selected-appointment-notes {
+    margin-top: 8px;
+    color: var(--text-secondary);
+    font-size: 13.5px;
+    overflow-wrap: anywhere;
+}
+
+.selected-appointment-notes i {
+    color: var(--accent);
+    margin-right: 4px;
+}
+
+/* El estado usa los colores de .mini-status (misma lista lateral) */
+.selected-status.mini-status.confirmed { background: rgba(var(--nl-accent-strong-rgb), 0.14); }
+.selected-status.mini-status.pending { background: rgba(205, 172, 85, .14); color: var(--nl-warning-text); }
+.selected-status.mini-status.completed { background: rgba(95, 166, 176, .14); color: var(--nl-info-text); }
+.selected-status.mini-status.cancelled { background: rgba(199, 93, 93, .14); color: var(--nl-danger-text); }
+
+.appointment-action:focus-visible {
+    outline: 2px solid rgb(var(--nl-accent-rgb)) !important;
+    outline-offset: 2px;
+}
+
+.select-day-message .appointment-action {
+    margin-top: 12px;
+}
+
+
+/* -------- /clinica/pacientes: nutriólogo responsable -------- */
+.nl-owner {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+}
+
+.nl-owner__avatar {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: rgba(var(--nl-accent-rgb), .14);
+    color: var(--accent);
+    font-size: 12.5px;
+    font-weight: 700;
+}
+
+.nl-owner.is-main .nl-owner__avatar {
+    background: rgb(var(--nl-accent-rgb));
+    color: rgb(var(--nl-on-accent-rgb));
+}
+
+.nl-owner__info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.25;
+}
+
+.nl-owner__info strong,
+.nl-owner__info a {
+    color: var(--text-primary);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.nl-owner__info a:hover,
+.nl-owner__info a:focus-visible {
+    color: var(--accent);
+}
+
+.nl-owner__info small {
+    color: var(--text-muted);
+    font-size: 12.5px;
+}
+
+
+/* -------- Nutriólogo responsable (ficha, edición y /citas) -------- */
+.contact-item--responsible strong {
+    overflow-wrap: anywhere;
+}
+
+.contact-item--responsible .responsible-note {
+    display: block;
+    margin-top: 2px;
+    color: var(--text-muted);
+    font-size: 12.5px;
+}
+
+.glass-alert--info .glass-alert-icon {
+    background: rgba(var(--nl-accent-rgb), .16);
+    color: var(--accent);
+}
+
+.field-help {
+    display: block;
+    margin-top: 6px;
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.field-static {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 8px;
+    min-height: 48px;
+    margin: 0;
+    padding: 10px 14px;
+    border-radius: 13px;
+    border: 1px dashed rgba(var(--nl-overlay-rgb), .16);
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.field-static i {
+    color: var(--accent);
+}
+
+.field-static small {
+    flex-basis: 100%;
+    color: var(--text-muted);
+    font-weight: 400;
+    font-size: 12.5px;
+}
+
+.upcoming-info p.upcoming-nutritionist,
+.selected-appointment p.selected-appointment-nutritionist {
+    margin-top: 4px;
+    color: var(--text-secondary);
+    font-size: 13.5px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.upcoming-nutritionist i,
+.selected-appointment-nutritionist i {
+    color: var(--accent);
+    margin-right: 4px;
+}
+
+.selected-appointment-owner-note {
+    display: block;
+    margin-top: 8px;
+    color: var(--text-faint);
+    font-size: 12.5px;
+}
+
+.calendar-nutritionist-filter {
+    max-width: 340px;
+    margin: 0 0 14px;
+}

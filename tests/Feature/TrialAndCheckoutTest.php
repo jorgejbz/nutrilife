@@ -101,7 +101,8 @@ class TrialAndCheckoutTest extends TestCase
         $payment = $subscription->payments()->firstOrFail();
         $this->assertEquals(399.00, (float) $payment->amount, 'El precio sale de la BD, no de la petición.');
         $this->assertSame('Simulado', $payment->payment_method);
-        $this->assertStringStartsWith('SIM-', $payment->reference);
+        $this->assertMatchesRegularExpression('/^SIM-'.now()->format('Ymd').'-\d{6}$/', $payment->internal_reference);
+        $this->assertNull($payment->reference, 'Sin pasarela no se inventa una referencia externa.');
 
         // Ya no aparece la pantalla de contratación
         $this->actingAs($user->fresh())->get('/dashboard')->assertOk();
@@ -155,8 +156,10 @@ class TrialAndCheckoutTest extends TestCase
     {
         $admin = User::factory()->create(['role_id' => Role::ADMIN]);
 
-        $this->actingAs($admin)->get('/dashboard')->assertOk();
-        $this->actingAs($admin)->get('/contratar')->assertForbidden();
+        // El administrador entra a su propio panel, nunca a la contratación.
+        $this->actingAs($admin)->get('/dashboard')->assertRedirect('/admin');
+        $this->actingAs($admin)->get('/admin')->assertOk();
+        $this->actingAs($admin)->get('/contratar')->assertRedirect('/admin');
     }
 
     public function test_simulated_checkout_can_be_disabled(): void

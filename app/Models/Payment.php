@@ -2,12 +2,19 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasInternalReference;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Pago de un paciente. internal_reference (referencia interna de NutriLife)
+ * la genera HasInternalReference; `reference` es la referencia externa
+ * opcional (clave de rastreo, folio de la terminal…).
+ */
 class Payment extends Model
 {
+    use HasInternalReference;
     use SoftDeletes;
 
     protected $fillable = [
@@ -31,7 +38,29 @@ class Payment extends Model
             'appointment_id' => 'integer',
             'paid_at' => 'datetime',
             'amount' => 'decimal:2',
+            'status_changed_at' => 'datetime',
         ];
+    }
+
+    /** payments.status (VARCHAR, por defecto 'Pagado'). */
+    public const STATUS_PAID = 'Pagado';
+
+    public const STATUS_PENDING = 'Pendiente';
+
+    public const STATUS_CANCELLED = 'Cancelado';
+
+    public function isPending(): bool
+    {
+        return $this->status === self::STATUS_PENDING;
+    }
+
+    /**
+     * Quién cambió el estado (status_changed_by / status_changed_at). No es
+     * asignable en masa: lo llena PaymentController con forceFill.
+     */
+    public function statusChangedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'status_changed_by');
     }
 
     public function user(): BelongsTo

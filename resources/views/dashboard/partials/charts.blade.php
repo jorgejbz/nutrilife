@@ -29,7 +29,8 @@
                 <h3 class="dashboard-chart-card__title">Pacientes registrados</h3>
                 <small class="dashboard-chart-card__hint">Total acumulado al cierre de cada mes · altas del mes en la etiqueta</small>
             </div>
-            <div class="dashboard-chart-card__icon"><i class="fas fa-user-plus"></i></div>
+            {{-- Atajo al mismo formulario de "Acciones rápidas" (pacientes.create) --}}
+            <a href="{{ route('pacientes.create') }}" class="dashboard-chart-card__icon is-action" title="Registrar paciente" aria-label="Registrar paciente nuevo"><i class="fas fa-user-plus" aria-hidden="true"></i></a>
         </div>
         <div class="dashboard-chart-card__body">
             @if(array_sum($charts['patients']['total']) === 0)

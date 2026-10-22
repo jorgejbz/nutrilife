@@ -1,0 +1,97 @@
+/* =========================================================
+   admin/components/global.css
+   Ajustes globales y tipografía del panel
+   Parte de la hoja de la sección: el orden de carga está en
+   config/stylesheets.php. Los ajustes por tamaño de pantalla
+   viven en public/css/responsive/.
+   ========================================================= */
+
+/* =========================================================
+   AJUSTES RESPONSIVE GLOBALES
+   Correcciones que aplican a varias pantallas del panel.
+========================================================= */
+
+/* Columnas que no se desbordan: 1fr solo no deja encoger
+   el contenido por debajo de su ancho mínimo. */
+.calendar-stats,
+.stats-grid,
+.consultation-stats,
+.payment-stats,
+.progress-stats {
+    min-width: 0;
+}
+
+.calendar-stats > *,
+.stats-grid > *,
+.consultation-stats > *,
+.payment-stats > *,
+.progress-stats > * {
+    min-width: 0;
+}
+
+/* Íconos flotantes del hero de Citas/Pacientes: heredaban el
+   font-size gigante de .hero-decoration y se salían del cristal. */
+.floating-glass,
+.leaf-orbit {
+    font-size: 19px;
+}
+
+.glass-clock,
+.orbit-two {
+    font-size: 16.5px;
+}
+
+
+/* Campos: 16px también evita que iOS haga zoom al enfocar. */
+.app-main :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea) {
+    font-size: 16px;
+}
+
+.app-main :is(input, textarea)::placeholder {
+    font-size: 15px;
+}
+
+/* Etiquetas de formulario (las de casillas tienen su propia clase). */
+.app-main label:not([class]),
+.app-main .form-label {
+    font-size: 15px;
+    line-height: 1.4;
+}
+
+/* Botones con texto. Los botones solo con ícono (…-icon-btn)
+   conservan su tamaño. */
+.app-main :is(button, a)[class*="btn"]:not([class*="icon-btn"]),
+.app-content-header :is(button, a)[class*="btn"]:not([class*="icon-btn"]) {
+    font-size: 15px;
+}
+
+/* Tablas */
+.app-main td {
+    font-size: 15px;
+}
+
+.app-main th {
+    font-size: 13px;
+}
+
+/* Mensajes de validación */
+.app-main :is(.field-error, .invalid-feedback, .form-error, .text-danger) {
+    font-size: 14px;
+}
+
+/* Descripciones y textos de apoyo: mínimo 14px. Insignias,
+   contadores y rótulos en mayúsculas pueden quedar menores. */
+.app-main :is(
+    .clinical-check-text small,
+    .section-label p,
+    .today-message span,
+    .diet-row-goal,
+    .diet-muted,
+    .diet-item-sub,
+    .food-portion,
+    .food-results-range,
+    .clinical-show-date,
+    .preview-status
+) {
+    font-size: 14px;
+}

@@ -1,0 +1,268 @@
+/* =========================================================
+   RESPONSIVE · DIET-PLANS · TELÉFONO (max-width < 768 px y pantallas bajas)
+   Todas las @media de esta sección para este rango de
+   pantalla, agrupadas por el archivo de origen y en el mismo
+   orden en que estaban. Se cargan después de las hojas base y
+   de los temas (config/stylesheets.php), de mayor a menor ancho.
+   ========================================================= */
+/* ---------------------------------------------------------
+   diet-plans/dishes.css
+   --------------------------------------------------------- */
+
+@media (max-width: 575.98px) {
+    .dish-card-media {
+        height: 130px;
+    }
+
+    .dish-detail-img {
+        width: 56px;
+        height: 56px;
+    }
+
+    .dish-detail-table {
+        font-size: 13px;
+    }
+
+    .dish-detail-table th,
+    .dish-detail-table td {
+        padding: 7px 4px;
+    }
+}
+
+@media (max-width: 750px) {
+    .dp-welcome-banner {
+        min-height: 0;
+        padding: 25px;
+        gap: 16px;
+    }
+
+    .dp-welcome-icon {
+        width: 55px;
+        height: 55px;
+        border-radius: 17px;
+        font-size: 23px;
+    }
+
+    .dp-welcome-copy {
+        padding-right: 0;
+    }
+
+    .dp-welcome-art {
+        display: none;
+    }
+
+    .dp-filters,
+    .dp-filter-field,
+    .dp-filter-field input,
+    .dp-filter-field select {
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .dp-intro,
+    .dp-section-heading,
+    .dp-section-body,
+    .dp-form-footer {
+        padding: 18px;
+    }
+
+    .dp-intro h2 {
+        font-size: 17px;
+    }
+
+    .dp-step-number {
+        display: none;
+    }
+
+    .dp-field-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .dp-macro-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .dp-macro-card {
+        padding: 13px;
+    }
+
+    .dp-footer-buttons {
+        width: 100%;
+    }
+
+    .dp-cancel-button,
+    .dp-save-button {
+        flex: 1;
+        padding: 0 10px;
+    }
+
+    .dp-daily-summary {
+        padding: 18px;
+    }
+
+    .dp-macro-progress-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dp-clinical-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dp-meal-header-right {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .dp-meal-header-kcal {
+        margin-right: auto;
+        text-align: left;
+    }
+
+    .dp-food-list {
+        padding: 6px 13px;
+    }
+
+    .dp-food-row {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .dp-food-row-values {
+        grid-column: 1;
+        grid-row: 2;
+        min-width: 0;
+        padding-left: 50px;
+        text-align: left;
+    }
+
+    .dp-food-row-actions {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+        flex-direction: column;
+    }
+
+    /* Deja ver una franja del fondo: se nota que es un panel y al tocarla se cierra */
+    .dp-drawer {
+        width: calc(100% - 28px);
+        padding: 0 16px;
+        border-radius: 18px 0 0 18px;
+    }
+
+    .dp-drawer-header,
+    .dp-drawer-actions {
+        margin: 0 -16px;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .dp-drawer-header {
+        padding-top: 16px;
+        padding-bottom: 14px;
+    }
+
+    .dp-drawer-header h3 {
+        font-size: 18px;
+    }
+
+    .dp-dish-card-item {
+        align-items: flex-start;
+        padding: 10px;
+    }
+
+    .dp-dish-card-thumb {
+        width: 46px;
+        height: 46px;
+    }
+
+    .dp-food-preview {
+        min-height: 0;
+    }
+
+    .dp-custom-macro-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dp-header-actions,
+    .dp-header-actions > * {
+        flex: 1 1 auto;
+    }
+}
+
+@media (max-width: 520px) {
+    .dp-welcome-banner {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .dp-plan-item {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .dp-plan-item .consultation-info {
+        flex-basis: 100%;
+    }
+
+    .dp-plan-actions {
+        width: 100%;
+        flex: 1 1 100%;
+    }
+
+    .dp-plan-macros {
+        gap: 6px;
+    }
+
+    .dp-plan-macros span {
+        padding: 7px 8px;
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 380px) {
+    .dp-macro-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dp-footer-buttons {
+        flex-direction: column;
+    }
+
+    .dp-cancel-button,
+    .dp-save-button {
+        width: 100%;
+    }
+}
+
+/* Celular horizontal / pantallas bajas: encabezado y pie más compactos */
+
+@media (max-height: 520px) {
+    .dp-drawer-header {
+        padding-top: 12px;
+        padding-bottom: 10px;
+    }
+
+    .dp-drawer-header h3 {
+        margin-top: 2px;
+        font-size: 16px;
+    }
+
+    .dp-drawer-actions {
+        padding-top: 10px;
+        padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .dp-drawer-form {
+        padding-top: 14px;
+    }
+
+    .dp-drawer-field {
+        margin-bottom: 14px;
+    }
+
+    .dp-food-preview {
+        min-height: 0;
+        padding: 12px 14px;
+    }
+}

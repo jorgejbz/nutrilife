@@ -1,0 +1,548 @@
+/* =========================================================
+   login/register.css
+   Registro
+   Parte de la hoja de la sección: el orden de carga está en
+   config/stylesheets.php. Los ajustes por tamaño de pantalla
+   viven en public/css/responsive/.
+   ========================================================= */
+
+/* =============================================================
+   2. REGISTRO (antes <style> inline en auth/register.blade.php)
+   Reglas acotadas a .register-page / body.auth-register para no
+   chocar con las clases del login (.form-group, .input-icon).
+============================================================= */
+
+body.auth-register * {
+    box-sizing: border-box;
+}
+
+body.auth-register {
+    margin: 0;
+    min-height: 100vh;
+    font-family: var(--nl-font-family);
+    color: var(--text-primary);
+    background: var(--login-bg);
+    background-attachment: fixed;
+}
+
+.register-page {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    overflow: hidden;
+}
+
+/* Decoraciones */
+.register-page::before {
+    content: "";
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    top: -260px;
+    left: -180px;
+    border-radius: 50%;
+    background: rgba(var(--nl-accent-rgb), 0.08);
+    filter: blur(10px);
+}
+
+.register-page::after {
+    content: "";
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    bottom: -300px;
+    right: -180px;
+    border-radius: 50%;
+    background: rgba(var(--nl-accent-rgb), 0.07);
+}
+
+.register-page .register-wrapper {
+    position: relative;
+    z-index: 2;
+    width: min(1100px, 100%);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    overflow: hidden;
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.1);
+    border-radius: 30px;
+    background:
+        rgba(var(--nl-surface-rgb), 0.72);
+    backdrop-filter: blur(24px);
+    box-shadow:
+        0 35px 90px rgba(var(--nl-shadow-rgb), 0.35);
+}
+
+/* =========================================
+   IZQUIERDA
+========================================= */
+
+.register-page .register-info {
+    position: relative;
+    padding: 55px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background:
+        radial-gradient(
+            circle at 20% 20%,
+            rgba(var(--nl-accent-rgb), 0.16),
+            transparent 35%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(var(--nl-surface-rgb), 0.72),
+            rgba(var(--nl-surface-rgb), 0.85)
+        );
+}
+
+.register-page .register-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: white;
+    text-decoration: none;
+    font-size: 23px;
+    font-weight: 800;
+}
+
+
+.register-page .register-logo span {
+    color: var(--accent-text);
+}
+
+.register-page .register-info-content {
+    margin: 70px 0;
+}
+
+.register-page .register-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 22px;
+    padding: 8px 13px;
+    border:
+        1px solid rgba(var(--nl-accent-rgb), 0.2);
+    border-radius: 30px;
+    background:
+        rgba(var(--nl-accent-rgb), 0.08);
+    color: var(--accent-text);
+    font-size: 13.5px;
+}
+
+.register-page .register-info h1 {
+    max-width: 470px;
+    margin: 0 0 20px;
+    font-size:
+        clamp(
+            38px,
+            5vw,
+            57px
+        );
+    line-height: 1.02;
+    letter-spacing: -2px;
+}
+
+.register-page .register-info h1 span {
+    display: block;
+    background:
+        linear-gradient(
+            90deg,
+            rgb(var(--nl-accent-rgb)),
+            rgb(var(--nl-accent-rgb))
+        );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.register-page .register-info-description {
+    max-width: 470px;
+    margin: 0;
+    color:
+        var(--text-secondary);
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.register-page .register-benefits {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+    margin-top: 30px;
+}
+
+.register-page .register-benefit {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    color:
+        var(--text-secondary);
+    font-size: 14.5px;
+}
+
+.register-page .benefit-check {
+    width: 27px;
+    height: 27px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background:
+        rgba(var(--nl-accent-rgb), 0.12);
+    color: var(--accent-text);
+    font-size: 14.5px;
+}
+
+.register-page .register-info-footer {
+    color:
+        var(--text-muted);
+    font-size: 12.5px;
+}
+
+/* =========================================
+   FORMULARIO
+========================================= */
+
+.register-page .register-form-side {
+    padding: 50px 55px;
+    background:
+        rgba(var(--nl-surface-rgb), 0.82);
+}
+
+.register-page .form-heading {
+    margin-bottom: 30px;
+}
+
+.register-page .form-heading span {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--accent-text);
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.register-page .form-heading h2 {
+    margin: 0 0 9px;
+    color: var(--text-primary);
+    font-size: 28px;
+    letter-spacing: -1px;
+}
+
+.register-page .form-heading p {
+    margin: 0;
+    color:
+        var(--text-muted);
+    font-size: 14.5px;
+    line-height: 1.6;
+}
+
+/* CAMPOS */
+
+.register-page .form-group {
+    margin-bottom: 18px;
+}
+
+.register-page .form-label {
+    display: block;
+    margin-bottom: 8px;
+    color:
+        var(--text-secondary);
+    font-size: 13.5px;
+    font-weight: 600;
+}
+
+.register-page .input-wrapper {
+    position: relative;
+}
+
+.register-page .input-icon {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color:
+        rgba(var(--nl-accent-rgb), 0.55);
+}
+
+.register-page .form-input {
+    width: 100%;
+    height: 52px;
+    padding:
+        0 15px
+        0 48px;
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.09);
+    border-radius: 14px;
+    outline: none;
+    background:
+        rgba(var(--nl-overlay-rgb), 0.035);
+    color: var(--text-primary);
+    font-size: 14.5px;
+    transition: .2s;
+}
+
+.register-page .form-input::placeholder {
+    color:
+        var(--text-faint);
+}
+
+.register-page .form-input:focus {
+    border-color:
+        rgba(var(--nl-accent-rgb), 0.45);
+    background:
+        rgba(var(--nl-accent-rgb), 0.06);
+    box-shadow:
+        0 0 0 4px
+        rgba(var(--nl-accent-rgb), 0.06);
+}
+
+/* ERRORES */
+
+.register-page .form-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin-top: 7px;
+    color: var(--nl-danger-text);
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.register-page .form-error::before {
+    content: "!";
+    flex-shrink: 0;
+    width: 15px;
+    height: 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(var(--nl-danger-rgb), .18);
+    font-size: 12.5px;
+    font-weight: 700;
+}
+
+/* Campo con error */
+.register-page .input-wrapper.has-error .form-input {
+    border-color: rgba(var(--nl-danger-rgb), .65);
+    background: rgba(var(--nl-danger-rgb), .05);
+}
+
+.register-page .input-wrapper.has-error .input-icon {
+    color: var(--nl-danger-text);
+}
+
+/* Indicadores de obligatorio y textos de ayuda */
+.register-page .required-mark {
+    color: var(--nl-danger-text);
+    font-weight: 700;
+}
+
+.register-page .form-required-note {
+    margin: 0 0 16px;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.register-page .form-hint {
+    display: block;
+    margin-top: 6px;
+    font-size: 13.5px;
+    line-height: 1.45;
+    color: var(--text-muted);
+}
+
+/* Mostrar / ocultar contraseña */
+.register-page .input-wrapper.has-toggle .form-input {
+    padding-right: 48px;
+}
+
+.register-page .password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(-50%);
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background .2s ease, color .2s ease;
+}
+
+.register-page .password-toggle:hover,
+.register-page .password-toggle:focus-visible {
+    background: rgba(var(--nl-overlay-rgb), .07);
+    color: var(--text-primary);
+    outline: none;
+}
+
+/* Indicador de seguridad de la contraseña */
+.register-page .password-strength {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 9px;
+}
+
+.register-page .password-strength-bar {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+}
+
+.register-page .password-strength-bar span {
+    height: 4px;
+    border-radius: 99px;
+    background: rgba(var(--nl-overlay-rgb), .10);
+    transition: background .25s ease;
+}
+
+.register-page .password-strength-label {
+    min-width: 72px;
+    text-align: right;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.register-page .password-strength[data-level="1"] .password-strength-bar span:nth-child(-n+1) { background: var(--nl-danger); }
+.register-page .password-strength[data-level="2"] .password-strength-bar span:nth-child(-n+2) { background: var(--nl-warning); }
+.register-page .password-strength[data-level="3"] .password-strength-bar span:nth-child(-n+3) { background: rgb(var(--nl-accent-rgb)); }
+.register-page .password-strength[data-level="4"] .password-strength-bar span { background: rgb(var(--nl-accent-strong-rgb)); }
+.register-page .password-strength[data-level="1"] .password-strength-label { color: var(--nl-danger-text); }
+.register-page .password-strength[data-level="2"] .password-strength-label { color: var(--nl-warning-text); }
+.register-page .password-strength[data-level="3"] .password-strength-label,
+.register-page .password-strength[data-level="4"] .password-strength-label { color: var(--accent-text); }
+
+.register-page .password-match[data-state="ok"] { color: var(--accent-text); }
+.register-page .password-match[data-state="pending"] { color: var(--nl-warning-text); }
+
+/* Qué ocurre al crear la cuenta */
+.register-page .register-next {
+    margin: 4px 0 20px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid rgba(var(--nl-accent-rgb), .22);
+    background: rgba(var(--nl-accent-rgb), .07);
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--text-secondary);
+}
+
+.register-page .register-next-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 6px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.register-page .register-next-title i {
+    color: var(--accent-text);
+}
+
+.register-page .register-next ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.register-page .register-next li + li {
+    margin-top: 3px;
+}
+
+.register-page .register-next strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* BOTÓN */
+
+.register-page .register-button {
+    width: 100%;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 24px;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    background:
+        linear-gradient(
+            135deg,
+            rgb(var(--nl-accent-rgb)),
+            rgb(var(--nl-accent-rgb))
+        );
+    color: rgb(var(--nl-on-accent-rgb));
+    font-size: 14.5px;
+    font-weight: 800;
+    box-shadow:
+        0 15px 40px
+        rgba(var(--nl-accent-strong-rgb), 0.17);
+    transition: .2s;
+}
+
+.register-page .register-button:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 20px 50px
+        rgba(var(--nl-accent-strong-rgb), 0.25);
+}
+
+.register-page .register-button svg {
+    width: 15px;
+    height: 15px;
+}
+
+/* LOGIN */
+
+.register-page .login-text {
+    margin-top: 22px;
+    text-align: center;
+    color:
+        var(--text-muted);
+    font-size: 13.5px;
+}
+
+.register-page .login-text a {
+    color: var(--accent-text);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.register-page .login-text a:hover {
+    color: var(--accent-text);
+}
+
+.register-page .register-security {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+    margin-top: 25px;
+    color:
+        var(--text-faint);
+    font-size: 12.5px;
+}
+
+.register-page .register-security svg {
+    width: 12px;
+    height: 12px;
+}

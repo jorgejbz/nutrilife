@@ -162,7 +162,10 @@
             </div>
 
 
-            <i class="fas fa-notes-medical"></i>
+            {{-- Segundo acceso al mismo flujo que "Nueva consulta" (consultas.create) --}}
+            <a href="{{ route('consultas.create') }}" class="consultations-card-header__action" title="Nueva consulta" aria-label="Registrar nueva consulta">
+                <i class="fas fa-notes-medical" aria-hidden="true"></i>
+            </a>
 
         </div>
 
@@ -316,7 +319,7 @@
      ========================================================= --}}
 @section('css')
 
-    {{-- Estilos del panel: tokens + admin.css + admin-light/dark.css,
+    {{-- Estilos del panel: tokens + public/css/admin/* + temas + responsive (config/stylesheets.php),
          anti-parpadeo del tema, tipografía e iconos --}}
     @include('partials.theme-styles', ['section' => 'admin'])
 

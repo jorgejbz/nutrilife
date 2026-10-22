@@ -5,7 +5,7 @@
      Datos del nutriólogo, tipo de cuenta (plan), suscripción,
      uso del plan, cobros de la plataforma y resumen de su consulta.
      Debajo, los formularios de Breeze para editar la cuenta.
-     Datos: ProfileController@edit. Estilos: admin.css → "4. PERFIL".
+     Datos: ProfileController@edit. Estilos: public/css/admin/pages/account.css.
      ========================================================= --}}
 
 @section('title', 'Mi perfil | NutriLife')
@@ -33,13 +33,15 @@
         <div>
             <span class="header-eyebrow">
                 <i class="fas fa-leaf me-1"></i>
-                NUTRILIFE · CUENTA
+                NUTRILIFE · {{ $isClinic ? 'CLÍNICA' : 'CUENTA' }}
             </span>
 
-            <h1>Mi perfil</h1>
+            <h1>{{ $isClinic ? 'Perfil de la clínica' : 'Mi perfil' }}</h1>
 
             <p>
-                Tu información, tu plan y la configuración de tu cuenta.
+                {{ $isClinic
+                    ? 'La información de tu clínica, su plan Consultorio y la configuración de la cuenta principal.'
+                    : 'Tu información, tu plan y la configuración de tu cuenta.' }}
             </p>
         </div>
     </div>
@@ -71,22 +73,25 @@
                             </span>
                         @endif
 
-                        <span class="nl-chip">
-                            <i class="fas fa-user-doctor" aria-hidden="true"></i>
-                            {{ $user->role?->label() ?? 'Nutriólogo' }}
+                        {{-- Tipo de perfil: "Clínica" solo en la cuenta principal de
+                             Consultorio (User::profileTypeLabel) --}}
+                        <span class="nl-chip {{ $isClinic ? 'nl-chip--clinic' : '' }}">
+                            <i class="fas {{ $isClinic ? 'fa-hospital' : ($user->isAdmin() ? 'fa-user-shield' : 'fa-user-doctor') }}" aria-hidden="true"></i>
+                            {{ $profileType }}
                         </span>
 
-                        @if ($user->email_verified_at)
-                            <span class="nl-chip nl-chip--ok">
-                                <i class="fas fa-circle-check" aria-hidden="true"></i>
-                                Correo verificado
-                            </span>
-                        @else
-                            <span class="nl-chip nl-chip--warn">
-                                <i class="fas fa-circle-exclamation" aria-hidden="true"></i>
-                                Correo sin verificar
+                        @if ($clinic)
+                            <span class="nl-chip nl-chip--member">
+                                <i class="fas fa-hospital" aria-hidden="true"></i>
+                                {{ $clinic->name }}
                             </span>
                         @endif
+
+                        {{-- Correo: real (email_verified_at) o simulado solo en pruebas --}}
+                        <span class="nl-chip {{ $emailState['state'] === 'unverified' ? 'nl-chip--warn' : 'nl-chip--ok' }}">
+                            <i class="fas {{ $emailState['state'] === 'unverified' ? 'fa-circle-exclamation' : 'fa-circle-check' }}" aria-hidden="true"></i>
+                            Correo {{ mb_strtolower($emailState['label']) }}
+                        </span>
                     </div>
                 </div>
             </div>
@@ -96,18 +101,99 @@
                     <dt>En NutriLife desde</dt>
                     <dd>{{ $fecha($user->created_at) }}</dd>
                 </div>
-                <div>
-                    <dt>Cliente desde</dt>
-                    <dd>{{ $customerSince ? $fecha($customerSince) : 'Aún no contratas un plan' }}</dd>
-                </div>
-                <div class="nl-facts-code">
-                    <dt>Código de acceso para tus pacientes</dt>
-                    <dd>
-                        <span class="nl-access-code">{{ $user->access_code }}</span>
-                        <small>Tus pacientes lo usan, junto con su correo, para entrar a la app móvil.</small>
-                    </dd>
-                </div>
+                @if ($clinic)
+                    <div>
+                        <dt>Clínica</dt>
+                        <dd>{{ $clinic->name }} <small>· licencia del consultorio</small></dd>
+                    </div>
+                @elseif (! $user->isAdmin())
+                    <div>
+                        <dt>Cliente desde</dt>
+                        <dd>{{ $customerSince ? $fecha($customerSince) : 'Aún no contratas un plan' }}</dd>
+                    </div>
+                @endif
+                @unless ($user->isAdmin())
+                    <div class="nl-facts-code">
+                        <dt>Código de acceso para tus pacientes</dt>
+                        <dd>
+                            <span class="nl-access-code">{{ $user->access_code }}</span>
+                            <small>Tus pacientes lo usan, junto con su correo, para entrar a la app móvil.</small>
+                        </dd>
+                    </div>
+                @endunless
             </dl>
+
+            {{-- Información profesional y estado de la cuenta.
+                 Son cuatro estados distintos: la activación de la cuenta, la
+                 cédula y el título CAPTURADOS (no verificados ante la SEP) y
+                 la verificación del correo. Datos: users.account_status,
+                 professional_license, degree_number, email_verified_at. --}}
+            @unless ($user->isAdmin())
+                <div class="nl-checks" aria-label="Estado de la cuenta e información profesional">
+                    <div class="nl-check {{ $user->account_status === 'activa' ? '' : 'is-warn' }}">
+                        <i class="fas {{ $user->account_status === 'activa' ? 'fa-user-check' : 'fa-user-clock' }}" aria-hidden="true"></i>
+                        <div>
+                            <span>Cuenta</span>
+                            <strong>{{ $user->account_status === 'activa' ? 'Activa' : $user->accountStatusLabel() }}</strong>
+                            @if ($user->activated_at)
+                                <small>Desde el {{ $fecha($user->activated_at) }}</small>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="nl-check {{ $user->professional_license ? '' : 'is-warn' }}">
+                        <i class="fas fa-id-card" aria-hidden="true"></i>
+                        <div>
+                            <span>{{ $isClinic ? 'Cédula profesional del responsable' : 'Cédula profesional' }}</span>
+                            <strong>{{ $user->professional_license ? 'Registrada' : 'No registrado' }}</strong>
+                            @if ($user->professional_license)
+                                <small>N.º {{ $user->professional_license }}</small>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="nl-check {{ $user->degree_number ? '' : 'is-warn' }}">
+                        <i class="fas fa-graduation-cap" aria-hidden="true"></i>
+                        <div>
+                            <span>{{ $isClinic ? 'Título profesional del responsable' : 'Título profesional' }}</span>
+                            <strong>{{ $user->degree_number ? 'Registrado' : 'No registrado' }}</strong>
+                            @if ($user->degree_number)
+                                <small>N.º {{ $user->degree_number }}</small>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="nl-check {{ $emailState['state'] === 'unverified' ? 'is-warn' : ($emailState['state'] === 'simulated' ? 'is-info' : '') }}">
+                        <i class="fas fa-envelope-circle-check" aria-hidden="true"></i>
+                        <div>
+                            <span>Correo electrónico</span>
+                            <strong>{{ $emailState['state'] === 'simulated' ? 'Verificado' : $emailState['label'] }}</strong>
+                            @if ($emailState['state'] === 'verified')
+                                <small>El {{ $fecha($user->email_verified_at) }}</small>
+                            @elseif ($emailState['state'] === 'simulated')
+                                <small>Simulado (entorno de pruebas)</small>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <p class="nl-field-hint nl-mt-12">
+                    <i class="fas fa-circle-info" aria-hidden="true"></i>
+                    @if ($user->isProfessionallyVerified())
+                        Cédula y título verificados el {{ $fecha($user->professional_verified_at) }}.
+                    @else
+                        La cédula y el título están capturados, pero todavía no se validan contra el Registro Nacional de Profesionistas (SEP).
+                    @endif
+                </p>
+
+                @if ($isClinic)
+                    <p class="nl-field-hint">
+                        <i class="fas fa-user-doctor" aria-hidden="true"></i>
+                        Tu clínica tiene {{ $clinicMembersCount }} {{ $clinicMembersCount === 1 ? 'nutriólogo' : 'nutriólogos' }} en el equipo.
+                        <a href="{{ route('clinic.team.index') }}">Administrar equipo</a>
+                    </p>
+                @endif
+            @endunless
 
         </section>
 
@@ -115,6 +201,40 @@
         {{-- =====================================================
              2. SUSCRIPCIÓN
              ===================================================== --}}
+        @if ($clinic)
+        {{-- Subperfil: sin suscripción propia, usa la licencia de su clínica --}}
+        <section class="nl-profile-card nl-subscription">
+            <header class="nl-section-head">
+                <div>
+                    <span class="nl-eyebrow">Licencia</span>
+                    <h2>Funciones {{ $accountType['plan'] ?? 'Pro' }} de {{ $clinic->name }}</h2>
+                </div>
+                <span class="nl-status nl-status--{{ ($accountType['license_active'] ?? false) ? 'activa' : 'vencida' }}">
+                    {{ ($accountType['license_active'] ?? false) ? 'Vigente' : 'Sin licencia vigente' }}
+                </span>
+            </header>
+            <p class="nl-muted">
+                Tu cuenta forma parte del consultorio {{ $clinic->name }}. La clínica administra la
+                suscripción y tu acceso: no se te cobra nada de forma individual.
+            </p>
+            @if (count($memberFeatures = config('nutrilife.plan_features.'.config('nutrilife.clinic.member_plan'), [])))
+                <div class="nl-features">
+                    <span class="nl-eyebrow">Tu acceso incluye</span>
+                    <ul>
+                        @foreach ($memberFeatures as $feature)
+                            <li class="{{ $feature['available'] ? '' : 'is-soon' }}">
+                                <i class="fas {{ $feature['available'] ? 'fa-check' : 'fa-clock' }}" aria-hidden="true"></i>
+                                {{ $feature['label'] }}
+                                @unless ($feature['available'])
+                                    <small>Próximamente</small>
+                                @endunless
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+        </section>
+        @elseif (! $user->isAdmin())
         <section class="nl-profile-card nl-subscription">
 
             <header class="nl-section-head">
@@ -260,17 +380,25 @@
             @endif
 
         </section>
+        @endif
 
 
         {{-- =====================================================
-             3. RESUMEN DE TU CONSULTA
+             3. RESUMEN DE TU CONSULTA (no aplica al administrador)
              ===================================================== --}}
+        @unless ($user->isAdmin())
         <section class="nl-profile-card">
             <header class="nl-section-head">
                 <div>
-                    <span class="nl-eyebrow">Tu consulta</span>
+                    <span class="nl-eyebrow">{{ $isClinic ? 'Tus pacientes como nutriólogo de la clínica' : 'Tu consulta' }}</span>
                     <h2>Resumen</h2>
                 </div>
+                @if ($isClinic)
+                    <a href="{{ route('clinic.dashboard') }}" class="nl-btn-ghost">
+                        Panel de la clínica
+                        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                    </a>
+                @endif
             </header>
 
             <div class="nl-stats">
@@ -291,11 +419,14 @@
                 </a>
             </div>
         </section>
+        @endunless
 
 
         {{-- =====================================================
              4. COBROS DE NUTRILIFE (subscription_payments)
+             Solo cuentas con suscripción propia (no subperfiles ni admin).
              ===================================================== --}}
+        @if (! $clinic && ! $user->isAdmin())
         <section class="nl-profile-card">
             <header class="nl-section-head">
                 <div>
@@ -319,8 +450,7 @@
                                 <th scope="col">Fecha</th>
                                 <th scope="col">Plan</th>
                                 <th scope="col">Monto</th>
-                                <th scope="col">Método</th>
-                                <th scope="col">Referencia</th>
+                                <th scope="col">Referencia y método</th>
                                 <th scope="col">Estado</th>
                             </tr>
                         </thead>
@@ -330,8 +460,7 @@
                                     <td data-label="Fecha">{{ $fecha($payment->paid_at) }}</td>
                                     <td data-label="Plan">{{ $payment->subscription?->plan?->name ?? '—' }}</td>
                                     <td data-label="Monto">{{ $dinero($payment->amount) }}</td>
-                                    <td data-label="Método">{{ $payment->payment_method }}</td>
-                                    <td data-label="Referencia">{{ $payment->reference ?: '—' }}</td>
+                                    <td data-label="Referencia" class="payment-reference-cell">@include('partials.payment-reference', ['payment' => $payment, 'external' => true, 'externalLabel' => 'Código de origen'])</td>
                                     <td data-label="Estado">
                                         <span class="nl-status nl-status--{{ $payment->status === 'pagado' ? 'activa' : 'vencida' }}">
                                             {{ ucfirst($payment->status) }}
@@ -344,6 +473,7 @@
                 </div>
             @endif
         </section>
+        @endif
 
 
         {{-- =====================================================
@@ -365,9 +495,12 @@
             </div>
         </div>
 
-        <div class="nl-profile-card nl-profile-card--danger">
-            @include('profile.partials.delete-user-form')
-        </div>
+        {{-- Subperfiles (los administra su clínica) y administradores no se eliminan aquí --}}
+        @if (! $clinic && ! $user->isAdmin())
+            <div class="nl-profile-card nl-profile-card--danger">
+                @include('profile.partials.delete-user-form')
+            </div>
+        @endif
 
     </div>
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -13,14 +14,52 @@ class AppointmentController extends Controller
     /** Valores de appointments.status (VARCHAR, por defecto 'Pendiente'). */
     public const STATUSES = ['Pendiente', 'Confirmada', 'Completada', 'Cancelada'];
 
-    public function index()
+    public function index(Request $request)
     {
-        $appointments = Appointment::where('user_id', Auth::id())
-            ->with('patient')
+        // La cuenta principal de una clínica ve en su calendario las citas de
+        // todo su equipo (con el nutriólogo de cada una); cancelar o eliminar
+        // sigue siendo solo de quien agendó la cita. Los demás, solo las suyas.
+        $user = Auth::user();
+        $isClinic = $user->isClinic();
+        $nutritionistIds = $isClinic ? $user->clinicNutritionistIds() : [$user->id];
+
+        $appointments = Appointment::whereIn('user_id', $nutritionistIds)
+            ->with(['patient', 'user:id,name,clinic_id'])
             ->orderBy('appointment_at')
             ->get();
 
-        return view('appointments.index', compact('appointments'));
+        $nutritionists = $isClinic
+            ? User::whereIn('id', $nutritionistIds)
+                ->orderByRaw('id = ? desc', [$user->id])
+                ->orderBy('name')
+                ->get(['id', 'name', 'clinic_id'])
+            : collect();
+
+        // Día abierto en el panel "Detalle del día" (?dia=AAAA-MM-DD; lo
+        // usan las redirecciones de cancelar/eliminar). Por defecto, hoy en
+        // la zona horaria de la app (config/app.php), no la del navegador.
+        $today = today()->toDateString();
+        $selectedDay = self::validDay($request->query('dia')) ?? $today;
+
+        return view('appointments.index', compact('appointments', 'today', 'selectedDay', 'isClinic', 'nutritionists'));
+    }
+
+    /** AAAA-MM-DD válido o null. */
+    private static function validDay(mixed $value): ?string
+    {
+        if (! is_string($value) || ! preg_match('/^\d{4}-\d{2}-\d{2}$/', $value)) {
+            return null;
+        }
+
+        [$year, $month, $day] = array_map('intval', explode('-', $value));
+
+        return checkdate($month, $day, $year) ? $value : null;
+    }
+
+    /** Vuelve al calendario con el día de la cita abierto. */
+    private function backToDay(Appointment $cita)
+    {
+        return redirect()->route('citas.index', ['dia' => $cita->appointment_at->toDateString()]);
     }
 
     public function create()
@@ -77,10 +116,9 @@ class AppointmentController extends Controller
     $validated['user_id'] = Auth::id();
     $validated['patient_id'] = $patient->id;
 
-    Appointment::create($validated);
+    $appointment = Appointment::create($validated);
 
-    return redirect()
-        ->route('citas.index')
+    return $this->backToDay($appointment)
         ->with('success', 'Cita registrada correctamente.');
 }
 
@@ -92,8 +130,7 @@ class AppointmentController extends Controller
 
     // Igual que en el calendario: solo se cancelan citas abiertas.
     if (! in_array($cita->status, ['Pendiente', 'Confirmada'], true)) {
-        return redirect()
-            ->route('citas.index')
+        return $this->backToDay($cita)
             ->with('error', 'Solo se pueden cancelar citas pendientes o confirmadas.');
     }
 
@@ -101,8 +138,7 @@ class AppointmentController extends Controller
         'status' => 'Cancelada',
     ]);
 
-    return redirect()
-        ->route('citas.index')
+    return $this->backToDay($cita)
         ->with('success', 'Cita cancelada correctamente.');
 }
 
@@ -118,15 +154,14 @@ class AppointmentController extends Controller
         || $cita->consultations()->withTrashed()->exists();
 
     if ($hasLinkedRecords) {
-        return redirect()
-            ->route('citas.index')
+        return $this->backToDay($cita)
             ->with('error', 'No se puede eliminar la cita porque tiene consultas o pagos registrados. Puedes cancelarla en su lugar.');
     }
 
+    $back = $this->backToDay($cita);
     $cita->delete();
 
-    return redirect()
-        ->route('citas.index')
+    return $back
         ->with('success', 'Cita eliminada definitivamente.');
 }
 }

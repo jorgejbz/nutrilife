@@ -1,0 +1,458 @@
+/* =========================================================
+   admin/pages/diet-plans.css
+   Planes alimenticios: piezas del panel fuera de .dp
+   Parte de la hoja de la sección: el orden de carga está en
+   config/stylesheets.php. Los ajustes por tamaño de pantalla
+   viven en public/css/responsive/.
+   ========================================================= */
+
+/* =============================================================
+   PLANES ALIMENTICIOS (resources/views/diet-plans/*)
+   -------------------------------------------------------------
+   Reutiliza los componentes de Consultas (consultations-header,
+   consultation-stats, consultations-card, consultation-item) y los
+   del formulario "glass" (form-glass-card, liquid-input…). Aquí
+   solo van las piezas propias del módulo. Colores: solo variables
+   de tema, así funciona igual en claro y oscuro.
+   Macros: proteína = acento, carbohidratos = warning, grasas = info.
+============================================================= */
+
+.diet-page {
+    --diet-protein-rgb: var(--nl-accent-rgb);
+    --diet-carbs-rgb: var(--nl-warning-rgb);
+    --diet-lipids-rgb: var(--nl-info-rgb);
+}
+
+
+.diet-muted {
+    color: var(--text-faint);
+    font-size: 13.5px;
+}
+
+/* ---------- Botones ---------- */
+.diet-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 38px;
+    padding: 8px 15px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    font-size: 14.5px;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none !important;
+    cursor: pointer;
+    transition: background .18s ease, border-color .18s ease, transform .18s ease;
+    white-space: nowrap;
+}
+
+.diet-btn:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.diet-btn--primary {
+    background: linear-gradient(135deg, rgb(var(--nl-accent-rgb)), rgb(var(--nl-accent-strong-rgb)));
+    color: rgb(var(--nl-on-accent-rgb)) !important;
+}
+
+.diet-btn--primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.diet-btn--soft {
+    border-color: rgba(var(--nl-accent-rgb), .22);
+    background: rgba(var(--nl-accent-rgb), .1);
+    color: var(--accent) !important;
+}
+
+.diet-btn--soft:hover:not(:disabled) {
+    background: rgba(var(--nl-accent-rgb), .18);
+}
+
+.diet-btn--ghost {
+    border-color: rgba(var(--nl-overlay-rgb), .14);
+    background: rgba(var(--nl-overlay-rgb), .04);
+    color: var(--text-secondary) !important;
+}
+
+.diet-btn--ghost:hover {
+    background: rgba(var(--nl-overlay-rgb), .08);
+}
+
+.diet-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    border-radius: 11px;
+    border: 1px solid rgba(var(--nl-overlay-rgb), .1);
+    background: rgba(var(--nl-overlay-rgb), .04);
+    color: var(--text-secondary) !important;
+    font-size: 15px;
+    cursor: pointer;
+    text-decoration: none !important;
+    transition: background .18s ease, color .18s ease, border-color .18s ease;
+}
+
+.diet-icon-btn:hover {
+    border-color: rgba(var(--nl-accent-rgb), .3);
+    color: var(--accent) !important;
+}
+
+
+.diet-btn:focus-visible,
+.diet-icon-btn:focus-visible,
+.diet-chip:focus-within {
+    outline: 2px solid rgba(var(--nl-accent-rgb), .7);
+    outline-offset: 2px;
+}
+
+/* ---------- Estado del plan ---------- */
+.diet-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.diet-status::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.diet-status.is-active {
+    background: rgba(var(--nl-accent-rgb), .14);
+    color: var(--accent);
+}
+
+.diet-status.is-finished {
+    background: rgba(var(--nl-overlay-rgb), .08);
+    color: var(--text-muted);
+}
+
+/* ---------- Alertas y notas ---------- */
+.diet-form-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 17px;
+    padding: 13px 16px;
+    border-radius: 14px;
+    font-size: 14.5px;
+}
+
+.diet-form-alert {
+    border: 1px solid rgba(var(--nl-danger-rgb), .3);
+    background: rgba(var(--nl-danger-rgb), .1);
+    color: var(--nl-danger-text);
+}
+
+.diet-form-alert strong {
+    display: block;
+}
+
+
+.diet-form-alert > i {
+    margin-top: 2px;
+}
+
+/* ---------- Barras de progreso ---------- */
+
+
+/* =============================================================
+   INDEX
+============================================================= */
+
+
+.diet-filter-select {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.diet-filter-select > i {
+    position: absolute;
+    left: 12px;
+    color: var(--accent);
+    font-size: 14.5px;
+    pointer-events: none;
+}
+
+.diet-filter-select select {
+    min-width: 210px;
+    max-width: 100%;
+    height: 38px;
+    padding: 0 34px 0 34px;
+    border-radius: 12px;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='none' stroke='%238F958B' stroke-width='1.5' d='M1 1l4 4 4-4'/%3E%3C/svg%3E") no-repeat right 12px center;
+    color: var(--input-text);
+    font-size: 14.5px;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.diet-filter-select select option {
+    background: rgb(var(--nl-surface-rgb));
+    color: var(--text-primary);
+}
+
+
+.diet-chip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    margin: 0;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(var(--nl-overlay-rgb), .12);
+    background: rgba(var(--nl-overlay-rgb), .04);
+    color: var(--text-secondary);
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.diet-chip input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.diet-chip.is-selected {
+    border-color: rgba(var(--nl-accent-rgb), .45);
+    background: rgba(var(--nl-accent-rgb), .15);
+    color: var(--accent);
+}
+
+
+.consultation-info p i {
+    margin-right: 4px;
+    color: var(--accent);
+}
+
+
+/* =============================================================
+   CREAR / EDITAR
+============================================================= */
+
+
+/* =============================================================
+   CONSTRUCTOR (show)
+============================================================= */
+
+
+/* ---------- Tarjeta del paciente ---------- */
+
+
+/* ---------- Comidas ---------- */
+
+
+.diet-filter-select select:focus,
+.diet-search input:focus {
+    outline: none;
+    border-color: rgba(var(--nl-accent-rgb), .55);
+    background: var(--input-bg-focus);
+    box-shadow: 0 0 0 3px rgba(var(--nl-accent-rgb), .14);
+}
+
+
+/* ---------- Diálogo de alimentos ---------- */
+.diet-dialog {
+    width: min(620px, calc(100vw - 24px));
+    max-height: min(760px, calc(100vh - 32px));
+    max-height: min(760px, calc(100dvh - 32px));
+    padding: 0;
+    /* Solo la lista interna se desplaza: antes el <dialog> completo tenía
+       scroll propio y el título, el buscador y los botones se iban fuera
+       de la vista, dejando un hueco en blanco al final. */
+    overflow: hidden;
+    overscroll-behavior: contain;
+    border: 1px solid var(--card-border);
+    border-radius: 22px;
+    background: rgb(var(--nl-surface-rgb));
+    color: var(--text-primary);
+    box-shadow: 0 30px 80px rgba(var(--nl-shadow-rgb), .45);
+}
+
+.diet-dialog::backdrop {
+    background: rgba(var(--nl-shadow-rgb), .55);
+    backdrop-filter: blur(3px);
+}
+
+.diet-dialog[open] {
+    display: flex;
+}
+
+.diet-dialog-inner {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 0;
+    max-height: inherit;
+    font-family: var(--nl-font-family);
+}
+
+.diet-dialog-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 20px 22px 12px;
+}
+
+.diet-dialog-head h2 {
+    margin: 4px 0 0;
+    color: var(--text-primary);
+    font-size: 19px;
+}
+
+
+.diet-search {
+    position: relative;
+}
+
+.diet-search i {
+    position: absolute;
+    top: 50%;
+    left: 14px;
+    transform: translateY(-50%);
+    color: var(--text-faint);
+    font-size: 14.5px;
+}
+
+.diet-search input {
+    width: 100%;
+    height: 42px;
+    padding: 0 14px 0 38px;
+    border-radius: 12px;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    color: var(--input-text);
+    font-size: 15px;
+}
+
+
+.diet-dialog-foot {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: end;
+    gap: 12px 16px;
+    padding: 14px 22px 20px;
+    border-top: 1px solid rgba(var(--nl-overlay-rgb), .08);
+}
+
+
+.diet-dialog-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* ---------- Ficha del paciente: sus planes ---------- */
+.diet-patient-plans {
+    margin-bottom: 18px;
+}
+
+.diet-patient-plans .card-heading {
+    align-items: center;
+}
+
+.diet-patient-plan {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 4px;
+    border-bottom: 1px solid rgba(var(--nl-overlay-rgb), .06);
+    text-decoration: none !important;
+}
+
+.diet-patient-plan:last-child {
+    border-bottom: 0;
+}
+
+.diet-patient-plan strong {
+    display: block;
+    color: var(--text-primary);
+    font-size: 15px;
+}
+
+.diet-patient-plan small {
+    color: var(--text-muted);
+    font-size: 13.5px;
+}
+
+.diet-patient-plan:hover strong {
+    color: var(--accent);
+}
+
+/* ---------- Función bloqueada por plan ---------- */
+.feature-locked {
+    max-width: 640px;
+    margin: 20px auto 0;
+    padding: 42px 28px;
+    text-align: center;
+}
+
+.feature-locked-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+    border-radius: 20px;
+    background: rgba(var(--nl-accent-rgb), .12);
+    color: var(--accent);
+    font-size: 26px;
+}
+
+.feature-locked h2 {
+    margin: 0 0 10px;
+    color: var(--text-primary);
+    font-size: 24px;
+}
+
+.feature-locked p {
+    color: var(--text-secondary);
+    font-size: 15px;
+}
+
+.feature-locked-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* Sin flechas nativas: chocaban con la unidad (kcal / g) */
+
+
+/* Menú lateral: "Planes alimenticios" se parte en dos líneas en lugar
+   de cortarse con "…" (config/adminlte.php → classes nl-nav-wrap) */
+.app-sidebar .nav-link.nl-nav-wrap {
+    align-items: center;
+}
+
+.app-sidebar .nav-link.nl-nav-wrap p {
+    white-space: normal;
+    text-overflow: clip;
+    line-height: 1.2;
+}

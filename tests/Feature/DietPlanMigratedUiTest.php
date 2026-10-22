@@ -77,7 +77,8 @@ class DietPlanMigratedUiTest extends TestCase
             ->assertSee('Planes finalizados')
             ->assertSee('Ver / editar plan')
             ->assertSee('Plan migrado')
-            ->assertSee('css/diet-plans.css', false);
+            ->assertSee('css/diet-plans/common.css', false)
+            ->assertSee('css/responsive/diet-plans/mobile.css', false);
     }
 
     public function test_create_and_edit_use_the_step_form(): void

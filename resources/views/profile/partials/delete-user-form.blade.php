@@ -1,6 +1,6 @@
 {{-- =========================================================
      ELIMINAR CUENTA
-     Ruta: DELETE profile.destroy → ProfileController@destroy
+     Ruta: DELETE perfil.destroy → ProfileController@destroy
      Errores en la bolsa "userDeletion".
      Una cuenta con pacientes, citas, consultas o pagos NO se puede
      eliminar (FK sin cascada; ver User::hasClinicalData): se avisa
@@ -54,7 +54,7 @@
         aria-labelledby="deleteAccountTitle"
         @if ($errors->userDeletion->isNotEmpty()) data-open-on-load @endif
     >
-        <form method="post" action="{{ route('profile.destroy') }}" class="nl-dialog-body" novalidate>
+        <form method="post" action="{{ route('perfil.destroy') }}" class="nl-dialog-body" novalidate>
             @csrf
             @method('delete')
 

@@ -46,7 +46,7 @@
                 @endif
 
                 <div class="feature-locked-actions">
-                    <a href="{{ route('profile.edit') }}" class="btn-consultation-primary">
+                    <a href="{{ route('perfil') }}" class="btn-consultation-primary">
                         <i class="fas fa-user-circle" aria-hidden="true"></i>
                         Ver mi plan
                     </a>

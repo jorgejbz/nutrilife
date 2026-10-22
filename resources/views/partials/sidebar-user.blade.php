@@ -14,13 +14,13 @@
             ->implode('');
     @endphp
 
-    <a href="{{ route('profile.edit') }}" class="nl-sidebar-user" title="Mi perfil">
+    <a href="{{ route('perfil') }}" class="nl-sidebar-user" title="{{ $nlSideUser->name }} · Mi perfil">
         <span class="nl-sidebar-avatar" aria-hidden="true">{{ $nlSideInitials ?: 'N' }}</span>
         <span class="nl-sidebar-user-info">
             <strong>{{ $nlSideUser->name }}</strong>
             @if ($nlSideAccount)
                 <small class="nl-sidebar-plan nl-sidebar-plan--{{ $nlSideAccount['type'] }}">
-                    {{ $nlSideAccount['label'] }}
+                    {{ $nlSideUser->isClinic() ? 'Clínica · ' : '' }}{{ $nlSideAccount['label'] }}
                 </small>
             @endif
         </span>

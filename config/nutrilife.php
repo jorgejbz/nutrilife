@@ -47,8 +47,47 @@ return [
     | Ojo: esto NO verifica la cédula ni el título. La verificación
     | profesional real se guarda aparte (users.professional_verified_at).
     */
+    // Cambia NUTRILIFE_ACTIVATION_DELAY_MINUTES en .env (1 = un minuto,
+    // 5 = cinco, 10 = diez…) y, si usas `php artisan config:cache`, vuelve a
+    // ejecutarlo. Lo lee SOLO App\Services\AccountActivation::delayMinutes().
+    // El tiempo se calcula al registrarse (users.activates_at): cambiar el
+    // valor afecta a los registros NUEVOS, no a cuentas que ya esperan.
     'account_activation' => [
         'delay_minutes' => (int) env('NUTRILIFE_ACTIVATION_DELAY_MINUTES', 5),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Verificación de correo simulada (solo entorno de pruebas)
+    |--------------------------------------------------------------------------
+    | NutriLife todavía no envía correos de verificación reales
+    | (MAIL_MAILER=log). Con true, "Mi perfil" muestra el correo como
+    | "Verificado (simulado)" aunque users.email_verified_at esté vacío.
+    | Es SOLO visual: no llena email_verified_at y nunca aplica en
+    | APP_ENV=production (ver User::emailVerificationState()).
+    */
+    'simulated_email_verification' => (bool) env('NUTRILIFE_SIMULATED_EMAIL_VERIFICATION', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Consultorios (clínica con varios nutriólogos)
+    |--------------------------------------------------------------------------
+    | 'plan'        → subscription_plans.name que convierte una cuenta en
+    |                 clínica (puede crear subperfiles de nutriólogo).
+    | 'member_plan' → plan cuyas funciones reciben los subperfiles. Se reutiliza
+    |                 la misma regla de 'features' (no hay otra implementación).
+    |                 Los subperfiles NO tienen suscripción ni cobro propio:
+    |                 usan la licencia de su clínica mientras esté vigente.
+    | 'max_members' → límite de subperfiles por clínica (null = sin límite).
+    |                 El negocio aún no define uno; se cambia aquí o con
+    |                 NUTRILIFE_CLINIC_MAX_MEMBERS en .env.
+    */
+    'clinic' => [
+        'plan' => 'Consultorio',
+        'member_plan' => 'Pro',
+        'max_members' => env('NUTRILIFE_CLINIC_MAX_MEMBERS') !== null && env('NUTRILIFE_CLINIC_MAX_MEMBERS') !== ''
+            ? max((int) env('NUTRILIFE_CLINIC_MAX_MEMBERS'), 0)
+            : null,
     ],
 
     /*
@@ -105,8 +144,8 @@ return [
         'Consultorio' => [
             ['label' => 'Todo lo incluido en Pro', 'available' => true],
             ['label' => 'Pacientes sin límite', 'available' => true],
-            ['label' => 'Varios profesionales', 'available' => false],
-            ['label' => 'Gestión centralizada', 'available' => false],
+            ['label' => 'Varios profesionales (subperfiles con funciones Pro)', 'available' => true],
+            ['label' => 'Gestión centralizada de pacientes y agenda', 'available' => true],
             ['label' => 'Soporte prioritario', 'available' => true],
         ],
     ],

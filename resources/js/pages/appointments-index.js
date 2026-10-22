@@ -48,19 +48,50 @@ document.addEventListener('DOMContentLoaded', function () {
 
         document.getElementById('selectedAppointments');
 
+    const selectedDayPanel =
 
+        document.getElementById('selectedDayPanel');
+
+    const selectedDayCount =
+
+        document.getElementById('selectedDayCount');
+
+    // Solo existe para la cuenta principal de una clínica.
+    const nutritionistSelect =
+
+        document.getElementById('calendarNutritionist');
+
+    let nutritionistFilter = '';
+
+
+    /** 'AAAA-MM-DD' → Date local (sin desfase por zona horaria). */
+    function parseDay(value) {
+        const parts = String(value || '').split('-').map(Number);
+        return parts.length === 3 && parts.every(Boolean)
+            ? new Date(parts[0], parts[1] - 1, parts[2])
+            : null;
+    }
+
+    // "Hoy" lo decide el servidor (zona horaria de NutriLife), no el reloj
+    // del navegador: así una cita no aparece en el día equivocado.
     const today =
 
-        new Date();
+        parseDay(data.today) || new Date();
+
+
+    // Día abierto en "Detalle del día" (?dia=… o hoy).
+    let selectedDate =
+
+        parseDay(data.selectedDay) || today;
 
 
     let currentDate =
 
         new Date(
 
-            today.getFullYear(),
+            selectedDate.getFullYear(),
 
-            today.getMonth(),
+            selectedDate.getMonth(),
 
             1
 
@@ -183,6 +214,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
         return appointments.filter(function (appointment) {
+
+            // Clínica: filtro "Nutriólogo" de la cabecera del calendario
+            if (nutritionistFilter && String(appointment.nutritionist_id) !== nutritionistFilter) {
+                return false;
+            }
 
             return appointment.date
 
@@ -359,6 +395,31 @@ document.addEventListener('DOMContentLoaded', function () {
 
         }
 
+
+        // Si el día elegido no está en esta cuadrícula (se cambió de mes
+        // con las flechas), el primer día del mes recibe el foco de teclado.
+        if (!calendarGrid.querySelector('[tabindex="0"]')) {
+            const first = calendarGrid.querySelector('.calendar-day:not(.other-month)');
+            if (first) { first.setAttribute('tabindex', '0'); }
+        }
+
+
+        showDayAppointments(
+
+            selectedDate,
+
+            getAppointmentsForDay(
+
+                selectedDate.getFullYear(),
+
+                selectedDate.getMonth(),
+
+                selectedDate.getDate()
+
+            )
+
+        );
+
     }
 
 
@@ -520,23 +581,52 @@ document.addEventListener('DOMContentLoaded', function () {
         element.innerHTML = html;
 
 
-        element.addEventListener(
+        // Cada día es un botón accesible (clic, Enter o Espacio; flechas
+        // para moverse entre días).
+        const isSelected = sameDay(realDate, selectedDate);
 
-            'click',
+        element.dataset.date = dateKey(realYear, realMonth, realDay);
+        element.setAttribute('role', 'button');
+        element.setAttribute('tabindex', isSelected ? '0' : '-1');
+        element.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+        element.setAttribute(
+            'aria-label',
+            days[realDate.getDay()] + ' ' + realDay + ' de ' + months[realMonth] + ' de ' + realYear +
+            ' · ' + (dayAppointments.length === 0
+                ? 'sin citas'
+                : dayAppointments.length + (dayAppointments.length === 1 ? ' cita' : ' citas'))
+        );
 
-            function () {
+        if (isSelected) {
+            element.classList.add('is-selected');
+        }
 
-                showDayAppointments(
+        element.addEventListener('click', function () {
+            selectDay(realDate, true);
+        });
 
-                    realDate,
-
-                    dayAppointments
-
-                );
-
+        element.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                selectDay(realDate, true);
+                // renderCalendar() rehízo la cuadrícula: devolver el foco.
+                const current = calendarGrid.querySelector('[data-date="' + element.dataset.date + '"]');
+                if (current) { current.focus(); }
+                return;
             }
 
-        );
+            const moves = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 };
+
+            if (moves[event.key]) {
+                event.preventDefault();
+                const target = new Date(realYear, realMonth, realDay + moves[event.key]);
+                selectDay(target, false);
+                const cell = calendarGrid.querySelector(
+                    '[data-date="' + dateKey(target.getFullYear(), target.getMonth(), target.getDate()) + '"]'
+                );
+                if (cell) { cell.focus(); }
+            }
+        });
 
 
         calendarGrid.appendChild(
@@ -548,20 +638,77 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
+    function sameDay(a, b) {
+        return a.getFullYear() === b.getFullYear() &&
+            a.getMonth() === b.getMonth() &&
+            a.getDate() === b.getDate();
+    }
+
+
+    /**
+     * Marca el día, cambia de mes si hace falta y actualiza el panel.
+     * Con `reveal` (clic del usuario) desplaza la vista al panel cuando
+     * quedó fuera de pantalla (tablet / celular).
+     */
+    function selectDay(date, reveal) {
+
+        selectedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+        if (
+            selectedDate.getMonth() !== currentDate.getMonth() ||
+            selectedDate.getFullYear() !== currentDate.getFullYear()
+        ) {
+            currentDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+        }
+
+        renderCalendar();
+
+        if (reveal && selectedDayPanel) {
+            const rect = selectedDayPanel.getBoundingClientRect();
+
+            if (rect.top > window.innerHeight - 80 || rect.bottom < 0) {
+                selectedDayPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    }
+
+
+    function statusClass(status) {
+        return {
+            'Pendiente': 'pending',
+            'Confirmada': 'confirmed',
+            'Completada': 'completed',
+            'Cancelada': 'cancelled'
+        }[status] || 'pending';
+    }
+
+
     function showDayAppointments(date, dayAppointments) {
 
         selectedDayTitle.textContent =
+            days[date.getDay()] +
+            ' ' +
             date.getDate() +
             ' de ' +
             months[date.getMonth()] +
             ' de ' +
             date.getFullYear();
 
+        if (selectedDayCount) {
+            selectedDayCount.textContent = dayAppointments.length === 0
+                ? 'Sin citas'
+                : dayAppointments.length + (dayAppointments.length === 1 ? ' cita' : ' citas');
+        }
+
         if (dayAppointments.length === 0) {
             selectedAppointments.innerHTML = `
                 <div class="select-day-message">
-                    <i class="far fa-calendar"></i>
+                    <i class="far fa-calendar" aria-hidden="true"></i>
                     <p>No hay citas programadas para este día.</p>
+                    <a href="${escapeHtml(data.createUrl)}" class="appointment-action edit">
+                        <i class="fas fa-plus" aria-hidden="true"></i>
+                        Programar cita
+                    </a>
                 </div>
             `;
             return;
@@ -576,6 +723,7 @@ document.addEventListener('DOMContentLoaded', function () {
             let cancelButton = '';
 
             if (
+                appointment.cancel_url &&
                 appointment.status !== 'Cancelada' &&
                 appointment.status !== 'Completada'
             ) {
@@ -606,29 +754,54 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             html += `
-                <div class="selected-appointment">
+                <article class="selected-appointment">
                     <span class="selected-appointment-time">${time}</span>
 
-                    <h5>${escapeHtml(appointment.patient)}</h5>
+                    <h5>
+                        ${appointment.patient_url
+                            ? `<a href="${escapeHtml(appointment.patient_url)}" class="selected-appointment-patient">${escapeHtml(appointment.patient)}</a>`
+                            : escapeHtml(appointment.patient)}
+                    </h5>
                     <p>${escapeHtml(appointment.reason)}</p>
 
-                    <span class="selected-status">
+                    ${appointment.nutritionist ? `
+                    <p class="selected-appointment-nutritionist">
+                        <i class="fas fa-user-doctor" aria-hidden="true"></i>
+                        Con ${escapeHtml(appointment.nutritionist)}${appointment.is_own ? ' (tú)' : ''}
+                    </p>` : ''}
+
+                    ${appointment.notes ? `
+                    <p class="selected-appointment-notes">
+                        <i class="far fa-note-sticky" aria-hidden="true"></i>
+                        ${escapeHtml(appointment.notes)}
+                    </p>` : ''}
+
+                    <span class="selected-status mini-status ${statusClass(appointment.status)}">
                         ${escapeHtml(appointment.status)}
                     </span>
 
                     <div class="appointment-actions">
-                        ${appointment.edit_url ? `
+                        ${appointment.patient_url ? `
                         <a
-                            href="${escapeHtml(appointment.edit_url)}"
+                            href="${escapeHtml(appointment.patient_url)}"
                             class="appointment-action edit"
                         >
-                            <i class="fas fa-pen"></i>
-                            Editar
+                            <i class="fas fa-user" aria-hidden="true"></i>
+                            Ver paciente
+                        </a>` : ''}
+
+                        ${appointment.consultation_url ? `
+                        <a
+                            href="${escapeHtml(appointment.consultation_url)}"
+                            class="appointment-action edit"
+                        >
+                            <i class="fas fa-notes-medical" aria-hidden="true"></i>
+                            Registrar consulta
                         </a>` : ''}
 
                         ${cancelButton}
 
-                        <form
+                        ${appointment.delete_url ? `<form
                             method="POST"
                             action="${appointment.delete_url}"
                             class="appointment-action-form"
@@ -646,9 +819,14 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <i class="fas fa-trash"></i>
                                 Eliminar
                             </button>
-                        </form>
+                        </form>` : ''}
                     </div>
-                </div>
+
+                    ${appointment.is_own === false ? `
+                    <small class="selected-appointment-owner-note">
+                        Solo ${escapeHtml(appointment.nutritionist)} puede cancelar o eliminar esta cita.
+                    </small>` : ''}
+                </article>
             `;
         });
 
@@ -729,24 +907,19 @@ document.addEventListener('DOMContentLoaded', function () {
             function () {
 
 
-                currentDate =
-
-                    new Date(
-
-                        today.getFullYear(),
-
-                        today.getMonth(),
-
-                        1
-
-                    );
-
-
-                renderCalendar();
+                selectDay(today, false);
 
             }
 
         );
+
+
+    if (nutritionistSelect) {
+        nutritionistSelect.addEventListener('change', function () {
+            nutritionistFilter = nutritionistSelect.value;
+            renderCalendar();
+        });
+    }
 
 
     renderCalendar();

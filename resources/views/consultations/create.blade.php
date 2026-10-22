@@ -100,7 +100,7 @@
                                 @foreach($patients as $patient)
                                     <option
                                         value="{{ $patient->id }}"
-                                        {{ old('patient_id') == $patient->id ? 'selected' : '' }}
+                                        {{ old('patient_id', $selectedAppointment?->patient_id) == $patient->id ? 'selected' : '' }}
                                     >
                                         {{ $patient->first_name }} {{ $patient->last_name }}
                                     </option>
@@ -153,7 +153,7 @@
                                     <option
                                         value="{{ $appointment->id }}"
                                         data-patient-id="{{ $appointment->patient_id }}"
-                                        {{ old('appointment_id') == $appointment->id ? 'selected' : '' }}
+                                        {{ old('appointment_id', $selectedAppointment?->id) == $appointment->id ? 'selected' : '' }}
                                     >
                                         {{ $appointment->patient->first_name }}
                                         {{ $appointment->patient->last_name }}
@@ -354,7 +354,7 @@
      ========================================================= --}}
 @section('css')
 
-    {{-- Estilos del panel: tokens + admin.css + admin-light/dark.css,
+    {{-- Estilos del panel: tokens + public/css/admin/* + temas + responsive (config/stylesheets.php),
          anti-parpadeo del tema, tipografía e iconos --}}
     @include('partials.theme-styles', ['section' => 'admin'])
 

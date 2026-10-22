@@ -25,6 +25,13 @@ use Illuminate\Support\Facades\DB;
  */
 class AccountActivation
 {
+    public const DISABLED_MESSAGE = 'Tu cuenta está desactivada. Comunícate con el administrador de NutriLife o con tu clínica.';
+
+    /**
+     * Minutos de espera para habilitar una cuenta nueva. ÚNICA lectura del
+     * valor: config/nutrilife.php → account_activation.delay_minutes, que
+     * sale de NUTRILIFE_ACTIVATION_DELAY_MINUTES en .env.
+     */
     public static function delayMinutes(): int
     {
         return max((int) config('nutrilife.account_activation.delay_minutes', 5), 0);
@@ -59,7 +66,11 @@ class AccountActivation
         return true;
     }
 
-    /** Activa la cuenta y arranca la prueba gratuita desde este momento. */
+    /**
+     * Activa la cuenta y arranca la prueba gratuita desde este momento.
+     * Los subperfiles de clínica no tienen prueba propia: usan la licencia
+     * de su consultorio.
+     */
     public static function activate(User $user): void
     {
         DB::transaction(function () use ($user) {
@@ -68,11 +79,35 @@ class AccountActivation
                 'activated_at' => now(),
             ])->save();
 
-            if ($user->isNutritionist() && ! $user->subscriptions()->exists()) {
+            if ($user->isNutritionist() && ! $user->isClinicMember() && ! $user->subscriptions()->exists()) {
                 Subscription::startTrialFor($user);
             }
         });
 
         $user->unsetRelation('latestSubscription');
+    }
+
+    /**
+     * Desactiva el acceso (administrador global o clínica dueña del
+     * subperfil). No borra nada: pacientes, citas y pagos se conservan.
+     */
+    public static function deactivate(User $user): void
+    {
+        $user->forceFill(['account_status' => User::ACCOUNT_DISABLED])->save();
+    }
+
+    /**
+     * Devuelve el acceso a una cuenta desactivada. Si nunca llegó a
+     * activarse (seguía pendiente), se activa como en activate().
+     */
+    public static function reactivate(User $user): void
+    {
+        if ($user->activated_at === null) {
+            self::activate($user);
+
+            return;
+        }
+
+        $user->forceFill(['account_status' => User::ACCOUNT_ACTIVE])->save();
     }
 }

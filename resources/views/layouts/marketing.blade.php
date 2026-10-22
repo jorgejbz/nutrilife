@@ -18,7 +18,7 @@
         content="NutriLife te ayuda a gestionar pacientes, citas, progreso, pagos y planes nutricionales desde un solo lugar."
     >
 
-    {{-- Estilos del sitio público: tokens + app.css + app-light/dark.css,
+    {{-- Estilos del sitio público: tokens + public/css/app/* + temas + responsive (config/stylesheets.php),
          anti-parpadeo del tema, iconos y botón de tema --}}
     @include('partials.theme-styles', ['section' => 'app'])
 
@@ -216,7 +216,7 @@
                     <ul>
                         @auth
                             <li><a href="{{ route('dashboard.index') }}">Ir al panel</a></li>
-                            <li><a href="{{ route('profile.edit') }}">Mi perfil</a></li>
+                            <li><a href="{{ route('perfil') }}">Mi perfil</a></li>
                         @else
                             <li><a href="{{ route('login') }}">Iniciar sesión</a></li>
                             <li><a href="{{ route('register') }}">Crear cuenta</a></li>

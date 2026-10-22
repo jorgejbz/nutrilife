@@ -37,6 +37,7 @@
             </div>
 
 
+            @if ($canTreat ?? true)
             <a
                 href="{{ route('evaluaciones.create', $paciente) }}"
                 class="btn-liquid-primary"
@@ -47,6 +48,7 @@
                 Nueva evaluación
 
             </a>
+            @endif
 
 
         </div>

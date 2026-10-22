@@ -1,6 +1,6 @@
 {{-- =========================================================
      Pantalla de aviso de autenticación (una tarjeta centrada)
-     Reutiliza login.css (ambientes, login-glass). La usan:
+     Reutiliza public/css/login/login.css (ambientes, login-glass). La usan:
      register-thanks (después de registrarse) y account-pending
      (cuenta todavía no habilitada).
      Variables: $title, $slot (contenido), $icon

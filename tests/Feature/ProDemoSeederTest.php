@@ -77,8 +77,9 @@ class ProDemoSeederTest extends TestCase
 
         // Planes: activos y finalizados, con platillos y alimento personalizado
         $this->assertTrue(DietPlan::where('user_id', $user->id)->where('active', false)->exists());
-        $this->assertSame(1, DietPlanDish::where('user_id', $user->id)->count());
-        $this->assertSame(4, DietPlanItem::whereNotNull('diet_plan_dish_id')->distinct()->count('diet_plan_meal_id'));
+        // Sin platillos propios: el de ejemplo (Ensalada de Nopales) se retiró.
+        $this->assertSame(0, DietPlanDish::where('user_id', $user->id)->count());
+        $this->assertSame(3, DietPlanItem::whereNotNull('diet_plan_dish_id')->distinct()->count('diet_plan_meal_id'));
         $this->assertTrue(DietPlanItem::where('custom_name', 'Barra de proteína comercial')->exists());
     }
 
@@ -90,7 +91,7 @@ class ProDemoSeederTest extends TestCase
         $patient = Patient::where('user_id', $user->id)->where('email', 'fernanda.lozano@pacientes-pro.test')->firstOrFail();
         $plan = DietPlan::where('patient_id', $patient->id)->where('active', true)->firstOrFail();
 
-        foreach (['/dashboard', '/pacientes', "/pacientes/{$patient->id}", '/citas', '/consultas', '/pagos', '/progreso', "/progreso/{$patient->id}", '/planes-alimenticios', '/alimentos', '/platillos', '/profile'] as $url) {
+        foreach (['/dashboard', '/pacientes', "/pacientes/{$patient->id}", '/citas', '/consultas', '/pagos', '/progreso', "/progreso/{$patient->id}", '/planes-alimenticios', '/alimentos', '/platillos', '/perfil'] as $url) {
             $this->actingAs($user)->get($url)->assertOk();
         }
 
@@ -100,9 +101,11 @@ class ProDemoSeederTest extends TestCase
             ->assertSee('Tostadas de Aguacate con Huevo Pochado')
             ->assertSee('alergia severa');
 
-        $this->actingAs($user)->get('/platillos?origen=propios')
-            ->assertSee('Ensalada de Nopales con Queso Panela')
-            ->assertDontSee('Molletes Integrales con Pico de Gallo');
+        // El platillo de ejemplo «Ensalada de Nopales con Queso Panela» ya no se crea;
+        // los platillos del sistema siguen en el catálogo.
+        $this->actingAs($user)->get('/platillos')
+            ->assertOk()
+            ->assertDontSee('Ensalada de Nopales con Queso Panela');
     }
 
     public function test_does_nothing_if_the_pro_account_does_not_exist(): void

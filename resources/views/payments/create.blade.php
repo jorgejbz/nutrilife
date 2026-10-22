@@ -1,6 +1,15 @@
 @extends('adminlte::page')
 
-@section('title', 'Registrar pago | NutriLife')
+{{-- Alta (PaymentController@create) y edición (@edit, con $payment).
+     Al editar, el paciente queda fijo y el estado no se cambia aquí:
+     tiene sus propias acciones (Marcar como completado / Cancelar). --}}
+@php
+    $payment = $payment ?? null;
+    $editing = $payment !== null;
+    $val = fn (string $field, $default = null) => old($field, $editing ? $payment->{$field} : $default);
+@endphp
+
+@section('title', ($editing ? 'Editar pago' : 'Registrar pago').' | NutriLife')
 
 
 {{-- =========================================================
@@ -18,17 +27,17 @@
         </span>
 
         <h1>
-            Registrar pago
+            {{ $editing ? 'Editar pago' : 'Registrar pago' }}
         </h1>
 
         <p>
-            Registra un nuevo ingreso de tus pacientes.
+            {{ $editing ? 'Corrige los datos del pago. El estado se cambia desde el listado o el detalle.' : 'Registra un nuevo ingreso de tus pacientes.' }}
         </p>
 
     </div>
 
 
-    <a href="{{ route('pagos.index') }}"
+    <a href="{{ $editing ? route('pagos.show', $payment) : route('pagos.index') }}"
        class="btn-back-glass">
 
         <i class="fas fa-arrow-left"></i>
@@ -57,9 +66,12 @@
 
 
     <form method="POST"
-          action="{{ route('pagos.store') }}">
+          action="{{ $editing ? route('pagos.update', $payment) : route('pagos.store') }}">
 
         @csrf
+        @if($editing)
+            @method('PUT')
+        @endif
 
 
         <div class="payment-glass-card">
@@ -78,7 +90,7 @@
                 <div>
 
                     <span class="payment-eyebrow">
-                        NUEVO INGRESO
+                        {{ $editing ? 'EDICIÓN · ESTADO: '.mb_strtoupper($payment->status) : 'NUEVO INGRESO' }}
                     </span>
 
                     <h2>
@@ -112,6 +124,13 @@
                                 <span>*</span>
                             </label>
 
+                            @if($editing)
+                            {{-- id="patient_id" (sin name): payments-create.js filtra las citas por este paciente --}}
+                            <input type="hidden" id="patient_id" value="{{ $payment->patient_id }}">
+                            <input type="text" class="nutri-input" readonly aria-label="Paciente"
+                                   value="{{ $payment->patient?->first_name }} {{ $payment->patient?->last_name }}">
+                            <small class="input-help">El paciente de un pago no se cambia.</small>
+                            @else
                             <select
                                 id="patient_id"
                                 name="patient_id"
@@ -138,6 +157,7 @@
                                 @endforeach
 
                             </select>
+                            @endif
 
 
                             @error('patient_id')
@@ -177,7 +197,7 @@
                                     min="0.01"
                                     id="amount"
                                 name="amount"
-                                    value="{{ old('amount') }}"
+                                    value="{{ $val('amount') }}"
                                     class="nutri-input amount-input @error('amount') input-error @enderror"
                                     placeholder="600.00"
                                     required
@@ -217,7 +237,7 @@
                                 type="datetime-local"
                                 id="paid_at"
                                 name="paid_at"
-                                value="{{ old('paid_at', now()->format('Y-m-d\TH:i')) }}"
+                                value="{{ old('paid_at', $editing ? $payment->paid_at?->format('Y-m-d\TH:i') : now()->format('Y-m-d\TH:i')) }}"
                                 max="{{ now()->format('Y-m-d') }}T23:59"
                                 class="nutri-input @error('paid_at') input-error @enderror"
                                 required
@@ -251,7 +271,7 @@
                                 id="concept"
                                 name="concept"
                                 maxlength="255"
-                                value="{{ old('concept') }}"
+                                value="{{ $val('concept') }}"
                                 class="nutri-input @error('concept') input-error @enderror"
                                 placeholder="Ej. Consulta nutricional"
                                 required
@@ -289,33 +309,59 @@
 
                                 <option
                                     value="Efectivo"
-                                    {{ old('payment_method', 'Efectivo') === 'Efectivo' ? 'selected' : '' }}
+                                    data-prefix="{{ \App\Services\PaymentReferenceService::prefixFor('Efectivo') }}"
+                                    {{ $val('payment_method', 'Efectivo') === 'Efectivo' ? 'selected' : '' }}
                                 >
                                     Efectivo
                                 </option>
 
                                 <option
                                     value="Transferencia"
-                                    {{ old('payment_method') === 'Transferencia' ? 'selected' : '' }}
+                                    data-prefix="{{ \App\Services\PaymentReferenceService::prefixFor('Transferencia') }}"
+                                    {{ $val('payment_method') === 'Transferencia' ? 'selected' : '' }}
                                 >
                                     Transferencia
                                 </option>
 
                                 <option
                                     value="Tarjeta"
-                                    {{ old('payment_method') === 'Tarjeta' ? 'selected' : '' }}
+                                    data-prefix="{{ \App\Services\PaymentReferenceService::prefixFor('Tarjeta') }}"
+                                    {{ $val('payment_method') === 'Tarjeta' ? 'selected' : '' }}
                                 >
                                     Tarjeta
                                 </option>
 
                                 <option
                                     value="Otro"
-                                    {{ old('payment_method') === 'Otro' ? 'selected' : '' }}
+                                    data-prefix="{{ \App\Services\PaymentReferenceService::prefixFor('Otro') }}"
+                                    {{ $val('payment_method') === 'Otro' ? 'selected' : '' }}
                                 >
                                     Otro
                                 </option>
 
                             </select>
+
+                            {{-- Solo informativo: la referencia definitiva la genera
+                                 el servidor al guardar (PaymentReferenceService). --}}
+                            @if ($editing)
+                                <div class="payment-ref-preview" id="paymentRefPreview"
+                                     data-current-prefix="{{ $payment->referencePrefix() }}"
+                                     data-pending="{{ $payment->isPending() ? '1' : '0' }}">
+                                    <span>Referencia NutriLife</span>
+                                    @include('partials.payment-reference', ['payment' => $payment, 'method' => false])
+                                    <small id="paymentRefPreviewNote">
+                                        {{ $payment->isPending()
+                                            ? 'Si cambias a un método con otro prefijo, al guardar se genera una referencia nueva; la anterior queda en el historial.'
+                                            : 'El pago ya no está pendiente: su referencia se conserva aunque corrijas el método.' }}
+                                    </small>
+                                </div>
+                            @else
+                                <div class="payment-ref-preview" id="paymentRefPreview" aria-live="polite">
+                                    <span>Referencia NutriLife (automática)</span>
+                                    <code id="paymentRefPreviewCode" translate="no">{{ \App\Services\PaymentReferenceService::prefixFor($val('payment_method', 'Efectivo')) }}-{{ now()->format('Ymd') }}-······</code>
+                                    <small>Se genera al guardar según el método. El número final lo asigna el sistema.</small>
+                                </div>
+                            @endif
 
                         </div>
 
@@ -324,6 +370,7 @@
 
 
                     {{-- ESTADO --}}
+                    @unless($editing)
                     <div class="col-md-6">
 
                         <div class="nutri-form-group">
@@ -367,6 +414,7 @@
                         </div>
 
                     </div>
+                    @endunless
 
 
 
@@ -397,7 +445,7 @@
                                     <option
                                         value="{{ $appointment->id }}"
                                         data-patient-id="{{ $appointment->patient_id }}"
-                                        {{ old('appointment_id') == $appointment->id ? 'selected' : '' }}
+                                        {{ $val('appointment_id') == $appointment->id ? 'selected' : '' }}
                                     >
                                         {{ $appointment->appointment_at->format('d/m/Y H:i') }}
                                         — {{ $appointment->reason ?: 'Sin motivo' }}
@@ -431,21 +479,21 @@
 
                             <label for="reference">
                                 <i class="fas fa-hashtag"></i>
-                                Referencia
+                                Referencia externa
                             </label>
 
                             <input
                                 type="text"
                                 id="reference"
                                 name="reference"
-                                value="{{ old('reference') }}"
+                                value="{{ $val('reference') }}"
                                 maxlength="255"
                                 class="nutri-input @error('reference') input-error @enderror"
-                                placeholder="Ej. SPEI, folio, número de operación..."
+                                placeholder="Ej. clave de rastreo SPEI, folio de la terminal..."
                             >
 
                             <small class="input-help">
-                                Opcional. Útil para transferencias o pagos con tarjeta.
+                                Opcional. La que te da el banco o la terminal; no sustituye a la referencia de NutriLife.
                             </small>
 
                             @error('reference')
@@ -477,7 +525,7 @@
                                 maxlength="2000"
                                 class="nutri-input nutri-textarea @error('notes') input-error @enderror"
                                 placeholder="Agrega alguna observación relacionada con el pago..."
-                            >{{ old('notes') }}</textarea>
+                            >{{ $val('notes') }}</textarea>
 
                             @error('notes')
                                 <span class="error-message">
@@ -500,7 +548,7 @@
             <div class="payment-footer">
 
 
-                <a href="{{ route('pagos.index') }}"
+                <a href="{{ $editing ? route('pagos.show', $payment) : route('pagos.index') }}"
                    class="btn-cancel-glass">
 
                     Cancelar
@@ -515,7 +563,7 @@
 
                     <i class="fas fa-check"></i>
 
-                    Registrar pago
+                    {{ $editing ? 'Guardar cambios' : 'Registrar pago' }}
 
                 </button>
 
@@ -536,7 +584,7 @@
      ========================================================= --}}
 @section('css')
 
-    {{-- Estilos del panel: tokens + admin.css + admin-light/dark.css,
+    {{-- Estilos del panel: tokens + public/css/admin/* + temas + responsive (config/stylesheets.php),
          anti-parpadeo del tema, tipografía e iconos --}}
     @include('partials.theme-styles', ['section' => 'admin'])
 

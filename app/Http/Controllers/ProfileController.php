@@ -70,7 +70,16 @@ class ProfileController extends Controller
             'planFeatures' => config('nutrilife.plan_features.'.($subscription?->plan?->name ?? ''), []),
             'stats' => $stats,
             // Para avisar antes de intentar eliminar la cuenta
-            'canDeleteAccount' => ! $user->hasClinicalData(),
+            'canDeleteAccount' => ! $user->hasClinicalData() && ! $user->isClinicMember() && ! $user->isAdmin(),
+            // Tipo de perfil: "Clínica" solo para la cuenta principal de
+            // Consultorio; individuales y subperfiles siguen como "Nutriólogo".
+            'profileType' => $user->profileTypeLabel(),
+            'isClinic' => $user->isClinic(),
+            'clinic' => $user->isClinicMember() ? $user->clinic : null,
+            'clinicMembersCount' => $user->isClinic() ? $user->clinicMembers()->count() : 0,
+            // Estado del correo: verificación real (email_verified_at) o
+            // simulada solo en pruebas (User::emailVerificationState).
+            'emailState' => $user->emailVerificationState(),
         ]);
     }
 
@@ -87,7 +96,7 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return Redirect::route('perfil')->with('status', 'profile-updated');
     }
 
     /**
@@ -104,13 +113,23 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
+        // El subperfil lo administra su clínica y el administrador se
+        // gestiona desde la terminal: ninguno se elimina desde aquí.
+        if ($user->isClinicMember() || $user->isAdmin()) {
+            return Redirect::route('perfil')->withErrors([
+                'password' => $user->isAdmin()
+                    ? 'La cuenta de administrador no se elimina desde el perfil.'
+                    : 'Tu cuenta la administra tu clínica: pídele que la desactive.',
+            ], 'userDeletion');
+        }
+
         // Nueva BD: los datos clínicos referencian a users sin borrado en
         // cascada; ver User::hasClinicalData().
         $hasClinicalData = $user->hasClinicalData();
 
         if ($hasClinicalData) {
-            return Redirect::route('profile.edit')->withErrors([
-                'password' => 'No es posible eliminar la cuenta porque tiene pacientes, citas, consultas o pagos registrados.',
+            return Redirect::route('perfil')->withErrors([
+                'password' => 'No es posible eliminar la cuenta porque tiene pacientes, citas, consultas, pagos o subperfiles registrados.',
             ], 'userDeletion');
         }
 

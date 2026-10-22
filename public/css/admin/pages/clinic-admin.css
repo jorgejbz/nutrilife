@@ -1,0 +1,585 @@
+/* =========================================================
+   admin/pages/clinic-admin.css
+   Consultorio, administrador global y pagos (nl-*)
+   Parte de la hoja de la sección: el orden de carga está en
+   config/stylesheets.php. Los ajustes por tamaño de pantalla
+   viven en public/css/responsive/.
+   ========================================================= */
+
+/* =============================================================
+   ACTUALIZACIÓN 4 · CONSULTORIO, ADMINISTRADOR GLOBAL Y PAGOS
+   (clinic/*, admin/*, payments/index|show, Mi perfil)
+   Reutiliza el sistema del perfil (.nl-profile, .nl-profile-card,
+   .nl-table, .nl-chip, .nl-status, .nl-btn, .nl-field…). Solo usa
+   variables de tema, así funciona igual en modo claro y oscuro.
+============================================================= */
+
+.nl-page-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.nl-page-actions .nl-btn,
+a.nl-btn {
+    text-decoration: none;
+}
+
+a.nl-btn--primary:hover {
+    color: rgb(var(--nl-on-accent-rgb));
+}
+
+a.nl-btn--ghost:hover {
+    color: var(--text-primary);
+}
+
+.nl-btn--sm {
+    min-height: 36px;
+    padding: 0 12px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.nl-btn--ok {
+    background: rgba(var(--nl-accent-rgb), .14);
+    border-color: rgba(var(--nl-accent-rgb), .40);
+    color: var(--accent-text);
+}
+
+
+.nl-btn--danger-soft {
+    background: rgba(var(--nl-danger-rgb), .10);
+    border-color: rgba(var(--nl-danger-rgb), .40);
+    color: var(--nl-danger-text);
+}
+
+/* ---------- Avisos ---------- */
+.nl-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 13px 16px;
+    border-radius: 14px;
+    border: 1px solid rgba(var(--nl-accent-rgb), .35);
+    background: rgba(var(--nl-accent-rgb), .10);
+    color: var(--accent-text);
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.nl-alert--error {
+    border-color: rgba(var(--nl-danger-rgb), .40);
+    background: rgba(var(--nl-danger-rgb), .10);
+    color: var(--nl-danger-text);
+}
+
+.nl-alert--info {
+    border-color: rgba(var(--nl-info-rgb), .40);
+    background: rgba(var(--nl-info-rgb), .10);
+    color: var(--nl-info-text);
+}
+
+.nl-alert ul {
+    margin: 4px 0 0;
+    padding-left: 18px;
+    font-weight: 500;
+}
+
+/* ---------- Indicadores ---------- */
+.nl-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.nl-kpi {
+    display: grid;
+    gap: 2px;
+    padding: 18px 20px;
+    border-radius: 18px;
+    border: 1px solid var(--card-border);
+    background: var(--card-bg);
+    box-shadow: var(--card-shadow), var(--card-inset-highlight);
+    color: var(--text-secondary);
+    text-decoration: none;
+}
+
+a.nl-kpi {
+    transition: border-color .2s ease, transform .2s ease;
+}
+
+a.nl-kpi:hover {
+    border-color: rgba(var(--nl-accent-rgb), .45);
+    color: var(--text-secondary);
+    transform: translateY(-2px);
+}
+
+.nl-kpi i {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+    border-radius: 11px;
+    background: rgba(var(--nl-accent-rgb), .14);
+    color: var(--accent-text);
+}
+
+.nl-kpi.is-warn i {
+    background: rgba(var(--nl-warning-rgb), .16);
+    color: var(--nl-warning-text);
+}
+
+.nl-kpi.is-info i {
+    background: rgba(var(--nl-info-rgb), .14);
+    color: var(--nl-info-text);
+}
+
+.nl-kpi.is-danger i {
+    background: rgba(var(--nl-danger-rgb), .12);
+    color: var(--nl-danger-text);
+}
+
+.nl-kpi strong {
+    color: var(--text-primary);
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.nl-kpi span {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.nl-kpi small {
+    color: var(--text-muted);
+    font-size: 13.5px;
+}
+
+/* ---------- Barra de filtros ---------- */
+.nl-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.nl-toolbar .nl-field {
+    flex: 1 1 180px;
+    min-width: 0;
+}
+
+.nl-toolbar .nl-field--wide {
+    flex: 2 1 260px;
+}
+
+.nl-toolbar .nl-field label {
+    font-size: 14px;
+}
+
+.nl-toolbar-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.nl-input select,
+.nl-input textarea {
+    width: 100%;
+    min-height: 48px;
+    padding: 0 14px 0 42px;
+    border-radius: 13px;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    color: var(--input-text);
+    font: inherit;
+    font-size: 16px;
+    outline: none;
+}
+
+.nl-input textarea {
+    padding: 12px 14px 12px 42px;
+    min-height: 96px;
+    resize: vertical;
+}
+
+.nl-input > i.is-top {
+    top: 24px;
+}
+
+.nl-input select:focus,
+.nl-input textarea:focus {
+    border-color: rgba(var(--nl-accent-rgb), .6);
+    background: var(--input-bg-focus);
+}
+
+.nl-input.has-error select,
+.nl-input.has-error textarea {
+    border-color: var(--nl-danger);
+}
+
+.nl-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.nl-form-grid .is-full {
+    grid-column: 1 / -1;
+}
+
+/* ---------- Tablas con acciones ---------- */
+.nl-table td strong {
+    color: var(--text-primary);
+}
+
+.nl-table td small {
+    display: block;
+    color: var(--text-muted);
+    font-size: 13.5px;
+}
+
+.nl-table a {
+    color: var(--accent-text);
+    font-weight: 600;
+}
+
+.nl-table a.nl-btn--primary {
+    color: rgb(var(--nl-on-accent-rgb));
+}
+
+.nl-row-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.nl-row-actions form {
+    margin: 0;
+}
+
+.nl-table .is-num {
+    text-align: right;
+    white-space: nowrap;
+}
+
+/* Estados (pagos, citas y cuentas) */
+.nl-status--pagado,
+.nl-status--completada,
+.nl-status--confirmada {
+    background: rgba(var(--nl-accent-rgb), .15);
+    color: var(--accent-text);
+}
+
+.nl-status--pendiente {
+    background: rgba(var(--nl-warning-rgb), .16);
+    color: var(--nl-warning-text);
+}
+
+.nl-status--cancelado,
+.nl-status--desactivada {
+    background: rgba(var(--nl-danger-rgb), .14);
+    color: var(--nl-danger-text);
+}
+
+.nl-status--member,
+.nl-status--clinic,
+.nl-status--admin {
+    background: rgba(var(--nl-info-rgb), .14);
+    color: var(--nl-info-text);
+}
+
+.nl-chip--member,
+.nl-chip--clinic {
+    border-color: rgba(var(--nl-info-rgb), .40);
+    background: rgba(var(--nl-info-rgb), .12);
+    color: var(--nl-info-text);
+}
+
+/* ---------- Paginación ---------- */
+.nl-pager {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 18px;
+    color: var(--text-muted);
+    font-size: 14.5px;
+}
+
+.nl-pager-links {
+    display: flex;
+    gap: 8px;
+}
+
+.nl-pager .is-disabled {
+    opacity: .45;
+    pointer-events: none;
+}
+
+/* ---------- Barras (pacientes por nutriólogo) ---------- */
+.nl-bars {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.nl-bars li {
+    display: grid;
+    grid-template-columns: minmax(0, 220px) minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    font-size: 15px;
+}
+
+.nl-bars li > span:first-child {
+    overflow: hidden;
+    color: var(--text-primary);
+    font-weight: 600;
+    text-overflow: ellipsis;
+}
+
+.nl-bars li strong {
+    color: var(--text-primary);
+}
+
+.nl-split {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: 22px;
+}
+
+.nl-empty {
+    padding: 26px 10px;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.nl-empty i {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 26px;
+}
+
+.nl-list-plain {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.nl-list-plain li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid var(--card-border-soft);
+    background: rgba(var(--nl-overlay-rgb), .03);
+    font-size: 15px;
+}
+
+.nl-list-plain li strong {
+    color: var(--text-primary);
+}
+
+.nl-list-plain li small {
+    display: block;
+    color: var(--text-muted);
+}
+
+/* Perfil: estados de la cuenta */
+.nl-checks {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.nl-check {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid var(--card-border-soft);
+    background: rgba(var(--nl-overlay-rgb), .03);
+}
+
+.nl-check > i {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(var(--nl-accent-rgb), .14);
+    color: var(--accent-text);
+}
+
+.nl-check.is-warn > i {
+    background: rgba(var(--nl-warning-rgb), .16);
+    color: var(--nl-warning-text);
+}
+
+.nl-check.is-info > i {
+    background: rgba(var(--nl-info-rgb), .14);
+    color: var(--nl-info-text);
+}
+
+.nl-check span {
+    display: block;
+    color: var(--text-muted);
+    font-size: 13.5px;
+}
+
+.nl-check strong {
+    color: var(--text-primary);
+    font-size: 15.5px;
+}
+
+.nl-check small {
+    display: block;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.nl-inline-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.nl-inline-form .nl-field {
+    flex: 1 1 200px;
+}
+
+
+/* ---------- Sidebar: tarjeta del usuario ---------- */
+.nl-sidebar-user-info {
+    flex: 1 1 auto;
+}
+
+.nl-sidebar-user-info strong {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    line-height: 1.25;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.nl-sidebar-plan {
+    width: auto;
+    line-height: 1.3;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.nl-sidebar-plan--member {
+    background: rgba(var(--nl-info-rgb), .14);
+    color: var(--nl-info-text);
+}
+
+/* ---------- Menú de usuario (barra superior) ---------- */
+.nl-user-dropdown {
+    max-width: min(320px, calc(100vw - 24px));
+}
+
+.nl-user-dropdown__header strong {
+    line-height: 1.3;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.nl-user-dropdown__header small {
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.nl-user-dropdown__plan {
+    max-width: 100%;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+/* Indicador del subperfil en la barra superior: nunca empuja la barra */
+.nl-trial-badge {
+    max-width: 100%;
+}
+
+/* ---------- Encabezados de página ---------- */
+.patients-header > div:first-child {
+    min-width: 0;
+}
+
+.patients-header h1,
+.patients-header p {
+    overflow-wrap: anywhere;
+}
+
+.patients-header .nl-page-actions {
+    flex-shrink: 0;
+}
+
+/* ---------- Chips, datos y estados ---------- */
+.nl-chip {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.nl-facts dd,
+.nl-facts dt,
+.nl-check strong,
+.nl-check small,
+.nl-kpi span,
+.nl-kpi small {
+    overflow-wrap: anywhere;
+}
+
+.nl-check > div {
+    min-width: 0;
+}
+
+/* ---------- Tablas (escritorio) ---------- */
+.nl-table td {
+    overflow-wrap: break-word;
+}
+
+.nl-table td small {
+    overflow-wrap: anywhere;
+}
+
+/* ---------- Pacientes por nutriólogo ---------- */
+.nl-bars li > span:first-child {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.3;
+}
+
+.nl-bars li > span:first-child small {
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* ---------- Listas (citas, actividad, bitácora) ---------- */
+.nl-list-plain li > div {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.nl-list-plain li > small {
+    flex-shrink: 0;
+    text-align: right;
+}

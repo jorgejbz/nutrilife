@@ -1,0 +1,304 @@
+/* =========================================================
+   admin/pages/consultations.css
+   Consultas: listado y alta
+   Parte de la hoja de la sección: el orden de carga está en
+   config/stylesheets.php. Los ajustes por tamaño de pantalla
+   viven en public/css/responsive/.
+   ========================================================= */
+
+/* =============================================================
+   CONSULTAS — INDEX (resources/views/consultations/index.blade.php)
+============================================================= */
+
+
+/* HEADER */
+
+.consultations-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.consultation-eyebrow {
+    color: var(--accent);
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.consultations-header h1 {
+    margin: 4px 0;
+    color: var(--text-primary);
+    font-size: 32px;
+}
+
+.consultations-header p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 15px;
+}
+
+
+/* BOTÓN */
+
+.btn-consultation-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 18px;
+    border-radius: 14px;
+    background:
+        linear-gradient(
+            135deg,
+            rgb(var(--nl-accent-rgb)),
+            rgb(var(--nl-accent-strong-rgb))
+        );
+    color: rgb(var(--nl-on-accent-rgb)) !important;
+    font-size: 14.5px;
+    font-weight: 700;
+    text-decoration: none !important;
+}
+
+
+/* ALERT */
+
+.consultation-alert {
+    margin-bottom: 17px;
+    padding: 13px 16px;
+    border-radius: 14px;
+    border:
+        1px solid rgba(var(--nl-accent-strong-rgb), 0.18);
+    background:
+        rgba(var(--nl-accent-strong-rgb), 0.11);
+    color: var(--accent);
+}
+
+
+/* STATS */
+
+.consultation-stats {
+    display: grid;
+    grid-template-columns:
+        repeat(3,minmax(0,1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.consultation-stat {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px;
+    min-height: 94px;
+    border-radius: 20px;
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.1);
+    background:
+        rgba(var(--nl-overlay-rgb), 0.045);
+    backdrop-filter:
+        blur(20px);
+}
+
+.consultation-stat-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    background:
+        rgba(var(--nl-accent-rgb), 0.1);
+    color: var(--accent);
+}
+
+.consultation-stat-icon.today {
+    color: var(--accent);
+}
+
+.consultation-stat-icon.patients {
+    color: var(--accent);
+}
+
+.consultation-stat span {
+    color:
+        var(--text-muted);
+    font-size: 14.5px;
+}
+
+.consultation-stat h3 {
+    margin: 3px 0 0;
+    color: var(--text-primary);
+    font-size: 27px;
+}
+
+
+/* CONTENEDOR */
+
+.consultations-card {
+    padding: 24px;
+    border-radius: 24px;
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.1);
+    background:
+        rgba(var(--nl-overlay-rgb), 0.04);
+    backdrop-filter:
+        blur(22px);
+}
+
+.consultations-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 18px;
+    border-bottom:
+        1px solid rgba(var(--nl-overlay-rgb), 0.06);
+}
+
+.consultations-card-header span {
+    color:
+        var(--text-faint);
+    font-size: 14.5px;
+    letter-spacing: 1.5px;
+}
+
+.consultations-card-header h4 {
+    margin: 4px 0 0;
+    color: var(--text-primary);
+    font-size: 19px;
+}
+
+.consultations-card-header > i {
+    color: var(--accent);
+    font-size: 25px;
+}
+
+
+/* CONSULTA */
+
+.consultation-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 17px 2px;
+    border-bottom:
+        1px solid rgba(var(--nl-overlay-rgb), 0.055);
+}
+
+.consultation-date {
+    width: 53px;
+    height: 58px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    background:
+        rgba(var(--nl-accent-rgb), 0.09);
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.07);
+}
+
+.consultation-date strong {
+    color: var(--accent);
+    font-size: 18px;
+}
+
+.consultation-date span {
+    color:
+        var(--text-faint);
+    font-size: 13.5px;
+}
+
+.consultation-info {
+    flex: 1;
+}
+
+.consultation-info h5 {
+    margin: 0 0 4px;
+    color: var(--text-primary);
+    font-size: 15px;
+}
+
+.consultation-info p {
+    margin: 0 0 6px;
+    color:
+        var(--text-muted);
+    font-size: 14.5px;
+}
+
+.consultation-meta {
+    display: flex;
+    gap: 15px;
+}
+
+.consultation-meta span {
+    color:
+        var(--text-faint);
+    font-size: 14.5px;
+}
+
+.consultation-meta i {
+    margin-right: 3px;
+    color: var(--accent);
+}
+
+
+/* ACCIONES */
+
+.consultation-view-disabled {
+    padding: 8px 12px;
+    border-radius: 11px;
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.08);
+    background:
+        rgba(var(--nl-accent-rgb), 0.09);
+    color: var(--accent);
+    font-size: 14.5px;
+}
+
+
+/* VACÍO */
+
+.empty-consultations {
+    padding: 65px 20px;
+    text-align: center;
+    color:
+        var(--text-muted);
+}
+
+.empty-consultations > i {
+    margin-bottom: 13px;
+    color: var(--accent);
+    font-size: 37px;
+}
+
+.empty-consultations h5 {
+    color: var(--text-primary);
+}
+
+.empty-consultations a {
+    display: inline-block;
+    margin-top: 12px;
+    color: var(--accent);
+}
+
+
+/* Esta vista reutiliza los componentes "glass" ya definidos en la
+   sección de PACIENTES — CREATE (form-glass-card, liquid-input,
+   liquid-select, liquid-textarea, section-label, form-actions, etc.)
+   Solo se agregan aquí las clases propias de esta página. */
+
+.consultation-form-page {
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.field-hint {
+    display: block;
+    margin-top: 8px;
+    color: var(--text-faint);
+    font-size: 14.5px;
+}

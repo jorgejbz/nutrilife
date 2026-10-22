@@ -1,0 +1,205 @@
+/* =========================================================
+   admin/pages/dashboard-data.css
+   Dashboard: piezas de datos reales
+   Parte de la hoja de la sección: el orden de carga está en
+   config/stylesheets.php. Los ajustes por tamaño de pantalla
+   viven en public/css/responsive/.
+   ========================================================= */
+
+/* =============================================================
+   DASHBOARD — piezas agregadas al conectar los datos reales
+============================================================= */
+.dashboard-charts-head {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.dashboard-period {
+    display: flex;
+    gap: 6px;
+}
+
+.dashboard-chart-card__hint {
+    display: block;
+    margin-top: 4px;
+    color: var(--text-faint);
+    font-size: 14.5px;
+}
+
+.dashboard-chart-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    margin: 0;
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px dashed rgba(var(--nl-overlay-rgb), .14);
+    color: var(--text-muted);
+    font-size: 14.5px;
+    text-align: center;
+}
+
+.dashboard-chart-card__body--donut {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.dashboard-chart-card__body--donut canvas {
+    flex: 1;
+    min-height: 0;
+}
+
+.dashboard-legend {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--text-secondary);
+    font-size: 13.5px;
+}
+
+.dashboard-legend span {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    margin-right: 5px;
+    border-radius: 50%;
+}
+
+.dashboard-legend .is-active { background: var(--chart-primary, var(--accent)); }
+.dashboard-legend .is-inactive { background: var(--chart-label, var(--text-muted)); }
+
+.dashboard-legend strong {
+    margin-left: 3px;
+    color: var(--text-primary);
+}
+
+.dashboard-header__status i {
+    color: var(--accent);
+}
+
+/* Próximas citas */
+.dashboard-upcoming {
+    position: relative;
+    z-index: 2;
+    margin: 0 0 16px;
+    padding: 0;
+    list-style: none;
+}
+
+.dashboard-upcoming li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(var(--nl-overlay-rgb), .06);
+}
+
+.dashboard-upcoming__date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 46px;
+    flex-shrink: 0;
+    border-radius: 13px;
+    background: rgba(var(--nl-accent-rgb), .1);
+    color: var(--text-faint);
+    font-size: 14.5px;
+    font-weight: 600;
+}
+
+.dashboard-upcoming__date strong {
+    color: var(--accent);
+    font-size: 16.5px;
+    line-height: 1;
+}
+
+.dashboard-upcoming__info {
+    flex: 1;
+    min-width: 0;
+}
+
+.dashboard-upcoming__info strong {
+    display: block;
+    overflow: hidden;
+    color: var(--text-primary);
+    font-size: 14.5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dashboard-upcoming__info small {
+    color: var(--text-muted);
+    font-size: 12.5px;
+}
+
+.dashboard-upcoming__status {
+    padding: 3px 9px;
+    border-radius: 99px;
+    font-size: 12.5px;
+    font-weight: 600;
+}
+
+.dashboard-upcoming__status.is-confirmada {
+    background: rgba(var(--nl-accent-rgb), .14);
+    color: var(--accent);
+}
+
+.dashboard-upcoming__status.is-pendiente {
+    background: rgba(var(--nl-warning-rgb), .14);
+    color: var(--nl-warning-text);
+}
+
+.dashboard-upcoming-empty {
+    position: relative;
+    z-index: 2;
+    margin: 0 0 16px;
+    color: var(--text-muted);
+    font-size: 14.5px;
+}
+
+a.dashboard-summary__item {
+    text-decoration: none !important;
+}
+
+a.dashboard-summary__item:hover strong {
+    color: var(--accent);
+}
+
+/* Resumen: 3 indicadores en fila (antes el icono heredaba los estilos
+   del texto y quedaba desalineado) */
+.dashboard-summary .dashboard-summary__items {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 10px;
+}
+
+.dashboard-summary .dashboard-summary__item {
+    padding: 12px;
+    border: 1px solid var(--card-border-soft);
+    border-radius: 15px;
+    background: rgba(var(--nl-overlay-rgb), .03);
+}
+
+.dashboard-summary .dashboard-summary__item:first-child {
+    padding-top: 12px;
+    border-top: 1px solid var(--card-border-soft);
+}
+
+.dashboard-summary .dashboard-summary__item .dashboard-summary__item-icon {
+    display: flex;
+    margin-top: 0;
+    font-size: 16px;
+}

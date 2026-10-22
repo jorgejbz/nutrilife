@@ -91,6 +91,36 @@
                     </div>
 
 
+                    {{-- Clínicas: quién atiende al paciente (patients.user_id) --}}
+                    @if ($inClinic && $responsible)
+
+                        <div class="contact-item contact-item--responsible">
+
+                            <div class="contact-icon">
+                                <i class="fas fa-user-doctor" aria-hidden="true"></i>
+                            </div>
+
+                            <div>
+
+                                <span>
+                                    Nutriólogo responsable
+                                </span>
+
+                                <strong>
+                                    {{ $responsible->name }}
+                                </strong>
+
+                                <small class="responsible-note">
+                                    {{ $responsibleIsMain ? 'Cuenta principal de la clínica' : 'Subperfil de la clínica' }}{{ $canTreat ? ' · tú' : '' }}
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    @endif
+
+
                 </div>
 
             </div>

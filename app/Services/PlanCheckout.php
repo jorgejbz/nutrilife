@@ -8,7 +8,6 @@ use App\Models\SubscriptionPlan;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -57,12 +56,57 @@ class PlanCheckout
             ]);
         }
 
-        return self::activate($user, $plan, $current);
+        $now = now();
+
+        return self::activate($user, $plan, $current, self::periodEnd($plan, $now), [
+            'payment_method' => (string) config('nutrilife.checkout.payment_method', 'Simulado'),
+            'status' => SubscriptionPayment::STATUS_PAID,
+            // Sin pasarela no hay referencia externa: la interna (SIM-…) la
+            // genera SubscriptionPayment al guardarse (PaymentReferenceService).
+        ]);
     }
 
-    private static function activate(User $user, SubscriptionPlan $plan, ?Subscription $current): Subscription
+    /** Cobro que se registra al asignar un plan desde el panel de administración. */
+    public const ADMIN_PAYMENT_NONE = 'ninguno';
+
+    public const ADMIN_PAYMENT_PENDING = SubscriptionPayment::STATUS_PENDING;
+
+    public const ADMIN_PAYMENT_PAID = SubscriptionPayment::STATUS_PAID;
+
+    /**
+     * El administrador global asigna un plan a una cuenta principal (misma
+     * lógica que la contratación: cierra la suscripción anterior y abre una
+     * nueva). $payment:
+     *  - 'ninguno'   → sin cobro (cortesía / ajuste).
+     *  - 'pendiente' → cobro manual por confirmar (se confirma en /admin/cobros).
+     *  - 'pagado'    → cobro manual ya recibido.
+     * Nunca toca pasarelas externas: el método queda como "Manual".
+     */
+    public static function assignByAdmin(User $user, SubscriptionPlan $plan, User $admin, int $months, string $payment): Subscription
     {
-        return DB::transaction(function () use ($user, $plan, $current) {
+        if (! $user->isNutritionist() || $user->isClinicMember()) {
+            throw ValidationException::withMessages([
+                'subscription_plan_id' => 'Solo las cuentas principales tienen plan propio; los subperfiles usan la licencia de su clínica.',
+            ]);
+        }
+
+        $now = now();
+
+        return self::activate($user, $plan, $user->latestSubscription, $now->copy()->addMonthsNoOverflow(max($months, 1)), $payment === self::ADMIN_PAYMENT_NONE ? null : [
+            'payment_method' => 'Manual',
+            'status' => $payment,
+            // Sin método conocido: la referencia interna sale con prefijo OTR.
+            'status_changed_by' => $payment === self::ADMIN_PAYMENT_PAID ? $admin->id : null,
+            'status_changed_at' => $payment === self::ADMIN_PAYMENT_PAID ? $now : null,
+        ]);
+    }
+
+    /**
+     * @param  array{payment_method: string, status: string, status_changed_by?: ?int, status_changed_at?: mixed}|null  $payment
+     */
+    private static function activate(User $user, SubscriptionPlan $plan, ?Subscription $current, Carbon $periodEnd, ?array $payment): Subscription
+    {
+        return DB::transaction(function () use ($user, $plan, $current, $periodEnd, $payment) {
             $now = now();
 
             // Cambio de paquete: el anterior se cancela desde hoy.
@@ -85,17 +129,18 @@ class PlanCheckout
                 'subscription_plan_id' => $plan->id,
                 'status' => Subscription::STATUS_ACTIVE,
                 'starts_at' => $now->toDateString(),
-                'current_period_ends_at' => self::periodEnd($plan, $now)->toDateString(),
+                'current_period_ends_at' => $periodEnd->toDateString(),
             ]);
 
-            SubscriptionPayment::create([
-                'subscription_id' => $subscription->id,
-                'amount' => $plan->price,
-                'paid_at' => $now,
-                'payment_method' => (string) config('nutrilife.checkout.payment_method', 'Simulado'),
-                'status' => 'pagado',
-                'reference' => 'SIM-'.$now->format('Ymd').'-'.Str::upper(Str::random(6)),
-            ]);
+            if ($payment !== null) {
+                (new SubscriptionPayment)->forceFill([
+                    'subscription_id' => $subscription->id,
+                    'amount' => $plan->price,
+                    'paid_at' => $now,
+                    'status_changed_by' => null,
+                    'status_changed_at' => null,
+                ] + $payment)->save();
+            }
 
             $user->unsetRelation('latestSubscription');
 

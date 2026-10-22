@@ -1,9 +1,12 @@
 {{-- =========================================================
      PLANES ALIMENTICIOS — HOJAS DE ESTILO
      Tema del panel (claro/oscuro) + estilos propios del módulo
-     (public/css/diet-plans.css, todo bajo .dp).
+     (public/css/diet-plans/*, todo bajo .dp, y sus @media en
+     public/css/responsive/diet-plans/*). Orden: config/stylesheets.php.
      ========================================================= --}}
 @include('partials.theme-styles', ['section' => 'admin'])
 
-@php $dpCss = public_path('css/diet-plans.css'); @endphp
-<link rel="stylesheet" href="{{ asset('css/diet-plans.css') }}{{ is_file($dpCss) ? '?v='.filemtime($dpCss) : '' }}">
+@foreach (config('stylesheets.modules.diet-plans') as $dpSheet)
+    @php $dpCss = public_path('css/'.$dpSheet); @endphp
+    <link rel="stylesheet" href="{{ asset('css/'.$dpSheet) }}{{ is_file($dpCss) ? '?v='.filemtime($dpCss) : '' }}">
+@endforeach

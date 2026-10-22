@@ -1,0 +1,299 @@
+/* =========================================================
+   RESPONSIVE · APP · TELÉFONO (max-width < 768 px y pantallas bajas)
+   Todas las @media de esta sección para este rango de
+   pantalla, agrupadas por el archivo de origen y en el mismo
+   orden en que estaban. Se cargan después de las hojas base y
+   de los temas (config/stylesheets.php), de mayor a menor ancho.
+   ========================================================= */
+/* ---------------------------------------------------------
+   app/sections.css
+   --------------------------------------------------------- */
+
+@media (max-width: 600px) {
+    .features-section {
+        padding:
+            90px 0;
+    }
+    .features-grid {
+        grid-template-columns:
+            1fr;
+    }
+    .featured-card {
+        grid-column:
+            span 1;
+    }
+    .feature-card {
+        min-height:
+            auto;
+    }
+    .feature-decoration {
+        display:
+            none;
+    }
+    .features-bottom {
+        align-items:
+            flex-start;
+        flex-wrap:
+            wrap;
+    }
+    .features-bottom a {
+        width:
+            100%;
+        justify-content:
+            center;
+        margin-left:
+            0;
+        margin-top:
+            7px;
+    }
+
+    .how-section {
+        padding:
+            90px 0;
+    }
+    .how-steps {
+        grid-template-columns:
+            1fr;
+    }
+    .how-step {
+        min-height: auto;
+    }
+    .how-cta {
+        align-items:
+            flex-start;
+        flex-direction:
+            column;
+        padding:
+            25px;
+    }
+    .how-cta-button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 650px) {
+    .product-demo-section {
+        padding: 90px 0;
+    }
+    .demo-featured {
+        padding: 24px;
+        gap: 35px;
+    }
+    .demo-copy h3 {
+        font-size: 25px;
+    }
+    .demo-grid {
+        grid-template-columns: 1fr;
+    }
+    .demo-footer {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+    .demo-footer a {
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .faq-section {
+        padding: 90px 0;
+    }
+    .faq-item summary {
+        grid-template-columns:
+            25px 1fr 32px;
+        padding: 18px;
+    }
+    .faq-answer {
+        padding:
+            0 50px 18px;
+    }
+    .faq-support-card {
+        grid-template-columns:
+            auto 1fr;
+    }
+    .faq-support-card a {
+        grid-column:
+            1 / -1;
+        justify-content: center;
+        margin-top: 5px;
+        padding-top: 12px;
+        border-top:
+            1px solid rgba(var(--nl-overlay-rgb), 0.06);
+    }
+
+    .pricing-section {
+        padding: 90px 0;
+    }
+    .trial-banner {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+    .trial-pill {
+        width: 100%;
+        margin-left: 0;
+        text-align: center;
+    }
+    .pricing-card {
+        padding: 25px;
+    }
+}
+
+@media (max-width: 650px) {
+    .landing-container {
+        width:
+            calc(100% - 28px);
+    }
+    .landing-nav-actions
+    .nav-login {
+        display: none;
+    }
+    .nav-trial {
+        padding:
+            10px 12px;
+    }
+
+    .hero-content h1 {
+        font-size:
+            44px;
+    }
+
+
+    .patient-card,
+    .growth-card {
+        display: none;
+    }
+
+
+    .preview-patient {
+        display: none;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   app/hero-organic.css
+   --------------------------------------------------------- */
+
+@media (max-width: 650px) {
+
+    .hero-container {
+        width: min(100% - 28px, 560px);
+        gap: 48px;
+    }
+    .hero-content h1 {
+        font-size: clamp(42px, 12vw, 58px);
+        letter-spacing: -2.2px;
+    }
+    .hero-description {
+        font-size: 14px;
+        line-height: 1.7;
+    }
+    .hero-actions {
+        gap: 9px;
+    }
+    .hero-primary,
+    .hero-secondary {
+        width: 100%;
+    }
+    .hero-benefits {
+        gap: 12px 16px;
+    }
+
+
+    .floating-card {
+        display: none;
+    }
+    .preview-main {
+        padding: 18px;
+    }
+    .preview-sidebar {
+        display: none;
+    }
+    .preview-stats {
+        grid-template-columns: 1fr;
+    }
+    .preview-bottom {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .hero-section {
+        background-position: 56% center;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   app/sections-extra.css
+   --------------------------------------------------------- */
+
+@media (max-width: 600px) {
+    .trust-list {
+        grid-template-columns: 1fr;
+    }
+
+    .patients-app-section {
+        padding: 80px 0;
+    }
+
+    .landing-footer-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 28px;
+    }
+
+    .landing-footer-bottom {
+        flex-direction: column;
+    }
+}
+
+/* =============================================================
+   AJUSTES RESPONSIVE · ENCABEZADO EN TELÉFONO
+   El logo se encogía porque el botón de tema con texto ocupaba
+   el espacio: en pantallas angostas el botón queda solo con ícono.
+============================================================= */
+
+@media (max-width: 480px) {
+    .landing-logo {
+        flex-shrink: 0;
+    }
+
+    .landing-logo .nl-logo {
+        height: 34px;
+    }
+
+    .landing-nav-actions .theme-toggle-btn [data-theme-label] {
+        display: none;
+    }
+
+    .landing-nav-actions .theme-toggle-btn {
+        width: 42px;
+        height: 42px;
+        flex-shrink: 0;
+        padding: 0;
+        justify-content: center;
+    }
+
+    .landing-nav-actions {
+        min-width: 0;
+        gap: 8px;
+    }
+
+    .landing-nav-actions .nav-trial {
+        padding: 10px 12px;
+        white-space: nowrap;
+    }
+
+    .landing-nav-actions .nav-trial i {
+        display: none;
+    }
+}
+
+/* En los teléfonos más angostos "Prueba gratis" ya está en el menú
+   ("Crear cuenta gratis"), así que se oculta del encabezado. */
+
+@media (max-width: 374.98px) {
+    .landing-nav-actions .nav-trial {
+        display: none;
+    }
+}

@@ -148,7 +148,9 @@ class DietPlanAccessTest extends TestCase
     {
         $admin = User::factory()->create(['role_id' => Role::ADMIN]);
 
-        $this->actingAs($admin)->get('/planes-alimenticios')->assertForbidden();
+        // El administrador global no atiende pacientes: va a su panel.
+        $this->actingAs($admin)->get('/planes-alimenticios')->assertRedirect('/admin');
+        $this->actingAs($admin)->post('/planes-alimenticios')->assertRedirect('/admin');
     }
 
     public function test_a_plan_change_is_reflected_immediately(): void

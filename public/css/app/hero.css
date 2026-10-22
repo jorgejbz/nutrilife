@@ -1,0 +1,438 @@
+/* =========================================================
+   app/hero.css
+   Hero y maqueta principal
+   Parte de la hoja de la sección: el orden de carga está en
+   config/stylesheets.php. Los ajustes por tamaño de pantalla
+   viven en public/css/responsive/.
+   ========================================================= */
+
+/* =========================================================
+   HERO
+========================================================= */
+
+/* .hero-section base rule consolidated at the end of this file
+   (search "HERO — DEFINICIÓN ÚNICA") to avoid duplicate/conflicting
+   declarations. Do not add another .hero-section rule here. */
+
+
+.hero-container {
+    display: grid;
+    align-items: center;
+    gap: 66px;
+}
+
+
+/* TEXTO */
+
+
+.hero-badge {
+    width: fit-content;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 22px;
+    padding:
+        9px 16px;
+    border:
+        1px solid var(--landing-card-border);
+    border-radius: 30px;
+    font-size: 13px;
+    backdrop-filter: blur(8px);
+}
+
+
+.hero-content h1 {
+    margin:
+        0 0 24px;
+    font-family:
+        'Manrope',
+        sans-serif;
+    font-size:
+        clamp(
+            64px,
+            6vw,
+            115px
+        );
+    font-weight: 800;
+}
+
+
+.hero-content h1 span {
+    display: block;
+}
+
+
+.hero-description {
+    margin:
+        0 0 30px;
+}
+
+
+.hero-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 8px;
+}
+
+
+.hero-primary,
+.hero-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding:
+        0 24px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+
+.hero-secondary {
+    border:
+        1px solid var(--landing-card-border);
+}
+
+
+.hero-benefits {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+
+.hero-benefits span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+
+/* =========================================================
+   MOCKUP
+========================================================= */
+
+.hero-visual {
+    position: relative;
+}
+
+
+.dashboard-preview {
+    overflow: hidden;
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.13);
+    border-radius: 24px;
+}
+
+
+.preview-topbar {
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding:
+        0 15px;
+    border-bottom:
+        1px solid rgba(var(--nl-overlay-rgb), 0.06);
+}
+
+
+.preview-topbar > div {
+    display: flex;
+    gap: 5px;
+}
+
+
+.preview-topbar > div span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background:
+        rgba(var(--nl-overlay-rgb), 0.2);
+}
+
+
+.preview-topbar small {
+    color:
+        var(--text-muted);
+    font-size: 8px;
+}
+
+
+.preview-content {
+    display: flex;
+}
+
+
+.preview-sidebar {
+    width: 70px;
+    padding:
+        18px;
+    border-right:
+        1px solid rgba(var(--nl-overlay-rgb), 0.05);
+}
+
+
+.preview-logo {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 28px;
+    border-radius: 11px;
+    background:
+        rgba(var(--nl-accent-rgb), 0.14);
+    color:
+        var(--accent-text);
+}
+
+
+.preview-sidebar > div:not(
+.preview-logo
+) {
+    height: 8px;
+    margin-bottom: 22px;
+    border-radius: 20px;
+    background:
+        rgba(var(--nl-overlay-rgb), 0.06);
+}
+
+
+.preview-main {
+    flex: 1;
+    padding:
+        25px;
+}
+
+
+.preview-title {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+
+.preview-title small {
+    color:
+        var(--text-muted);
+    font-size: 8px;
+}
+
+
+.preview-title strong {
+    color:
+        var(--text-primary);
+    font-size: 17px;
+}
+
+
+.preview-stats {
+    display: grid;
+    grid-template-columns:
+        repeat(3,1fr);
+    gap: 9px;
+    margin-top: 22px;
+}
+
+
+.preview-stats > div {
+    padding:
+        13px;
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.07);
+    border-radius: 13px;
+}
+
+
+.preview-stats span {
+    display: block;
+    margin-bottom: 5px;
+    color:
+        var(--text-muted);
+    font-size: 7px;
+}
+
+
+.preview-stats strong {
+    color:
+        var(--landing-white);
+    font-size: 14px;
+}
+
+
+.preview-bottom {
+    display: grid;
+    grid-template-columns:
+        1.4fr 1fr;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+
+.preview-chart,
+.preview-patient {
+    min-height: 150px;
+    padding: 15px;
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.07);
+    border-radius: 15px;
+}
+
+
+.preview-chart > span,
+.preview-patient > span {
+    color:
+        var(--text-muted);
+    font-size: 7px;
+}
+
+
+.fake-chart {
+    height: 90px;
+    display: flex;
+    align-items: flex-end;
+    gap: 7px;
+    margin-top: 15px;
+}
+
+
+.fake-chart div {
+    flex: 1;
+    border-radius:
+        5px 5px 2px 2px;
+}
+
+
+.fake-chart div:nth-child(1) {
+    height: 35%;
+}
+
+.fake-chart div:nth-child(2) {
+    height: 48%;
+}
+
+.fake-chart div:nth-child(3) {
+    height: 45%;
+}
+
+.fake-chart div:nth-child(4) {
+    height: 68%;
+}
+
+.fake-chart div:nth-child(5) {
+    height: 72%;
+}
+
+.fake-chart div:nth-child(6) {
+    height: 88%;
+}
+
+
+.preview-patient > div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+
+.preview-patient i {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background:
+        rgba(var(--nl-accent-rgb), 0.1);
+    color:
+        var(--accent-text);
+}
+
+
+.preview-patient p {
+    margin: 0;
+}
+
+
+.preview-patient strong {
+    display: block;
+    color:
+        var(--text-primary);
+    font-size: 8px;
+}
+
+
+.preview-patient small {
+    color:
+        var(--text-muted);
+    font-size: 7px;
+}
+
+
+/* FLOTANTES */
+
+.floating-card {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding:
+        11px 13px;
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.13);
+    border-radius: 14px;
+}
+
+
+.patient-card {
+    bottom: 35px;
+}
+
+
+.patient-card > div {
+    width: 33px;
+    height: 33px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    background:
+        rgba(var(--nl-accent-rgb), 0.12);
+    color:
+        var(--accent-text);
+}
+
+
+.patient-card p {
+    margin: 0;
+}
+
+
+.patient-card strong,
+.patient-card span {
+    display: block;
+}
+
+
+.patient-card strong {
+    color: white;
+    font-size: 13px;
+}
+
+
+.patient-card span {
+    color:
+        var(--text-muted);
+    font-size: 9px;
+}
+
+
+.growth-card {
+    top: 60px;
+    color:
+        var(--accent-text);
+    font-size: 10px;
+}

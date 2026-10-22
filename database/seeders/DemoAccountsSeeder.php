@@ -62,13 +62,13 @@ class DemoAccountsSeeder extends Seeder
                 ['regina.bustamante@pacientes-pro.test', 13, 'Confirmada', 'Revisión de estudios de laboratorio', 'Confirmó por WhatsApp.'],
                 ['itzel.cervantes@pacientes-pro.test', 19, 'Pendiente', 'Consulta de seguimiento', null],
             ],
-            'own_dishes' => [
-                'Ensalada de Nopales con Queso Panela' => [['Nopales (cocidos)', 150], ['Jitomate', 60], ['Cebolla blanca (cruda)', 20], ['Queso panela', 40], ['Aguacate Hass', 30]],
-            ],
+            // Sin platillos propios: «Ensalada de Nopales con Queso Panela» era un
+            // dato de ejemplo y se retiró del catálogo (migración
+            // 2026_10_22_000002_remove_demo_dish_ensalada_de_nopales).
+            'own_dishes' => [],
             'dishes' => [
                 ['ana.gomez@pacientes-pro.test', 'Cena de fin de semana', '20:30', 'system:Tacos de Pescado a la Mexicana con Tortilla de Maíz'],
                 ['diego.montes@pacientes-pro.test', 'Post-entreno', '19:00', 'system:Sándwich Integral de Pollo y Aguacate'],
-                ['regina.bustamante@pacientes-pro.test', 'Comida (opción vegetariana)', '14:30', 'own:Ensalada de Nopales con Queso Panela'],
                 // Alergia severa al huevo: el renglón muestra el aviso
                 ['fernanda.lozano@pacientes-pro.test', 'Desayuno de domingo', '10:00', 'system:Tostadas de Aguacate con Huevo Pochado'],
             ],
@@ -118,6 +118,26 @@ class DemoAccountsSeeder extends Seeder
                 ['elena.fierro@pacientes-manuel.test', 'Desayuno de domingo', '10:00', 'system:Bowl de Avena con Plátano y Crema de Maní'],
             ],
             'custom' => ['bruno.esparza@pacientes-manuel.test', 'Colación matutina', ['custom_name' => 'Gel energético deportivo', 'custom_portion_description' => '1 sobre (32 g)', 'custom_kcal' => 100, 'custom_protein_g' => 0, 'custom_carbs_g' => 25, 'custom_lipids_g' => 0, 'grams' => 32]],
+        ],
+
+        // Subperfiles de la clínica consultorio@ (los crea ClinicDemoSeeder):
+        // funciones Pro con la licencia de la clínica, pacientes propios.
+        'nutriologa.andrea@vidasana.test' => [
+            'patients' => 'clinicAndrea',
+            'archived' => ['pacientes-vidasana.test', 'Joaquín', 'Pérez Lara'],
+            'plans' => true,
+            'today' => [
+                ['monica.trevino@pacientes-vidasana.test', 12, 'Confirmada', 'Consulta de seguimiento', 'Confirmó por WhatsApp.'],
+            ],
+        ],
+
+        'nutriologo.diego@vidasana.test' => [
+            'patients' => 'clinicDiego',
+            'archived' => ['pacientes-vidasana.test', 'Felipe', 'Durán Ochoa'],
+            'plans' => true,
+            'today' => [
+                ['rodrigo.ibanez@pacientes-vidasana.test', 16, 'Pendiente', 'Ajuste de plan por competencia', null],
+            ],
         ],
 
         // Paquete Esencial: sin planes alimenticios, platillos ni catálogos
