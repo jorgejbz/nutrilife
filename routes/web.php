@@ -150,7 +150,7 @@ Route::middleware(['auth', EnsureAccountIsActive::class, EnsureTrialSubscription
     |----------------------------------------------------------------
     */
     Route::resource('consultas', ConsultationController::class)
-        ->only(['index', 'create', 'store']);
+        ->only(['index', 'create', 'store', 'show']);
 
     /*
     |----------------------------------------------------------------
@@ -265,6 +265,12 @@ Route::middleware(['auth', EnsureAccountIsActive::class, EnsureTrialSubscription
             // Alimento personalizado (fuera del catálogo) y platillos (actualización 3.2)
             Route::post('/{plan}/comidas/{meal}/alimentos-personalizados', [DietPlanItemController::class, 'storeCustom'])->name('items.custom.store');
             Route::post('/{plan}/comidas/{meal}/platillos', [DietPlanItemController::class, 'storeDish'])->name('meals.dishes.store');
+
+            // Personalizar los ingredientes copiados de un platillo (solo este plan)
+            Route::patch('/{plan}/comidas/{meal}/alimentos/{item}/sustituir', [DietPlanItemController::class, 'substitute'])->name('items.substitute');
+            Route::patch('/{plan}/comidas/{meal}/platillos/{dish}/porciones', [DietPlanItemController::class, 'scaleDish'])
+                ->whereNumber('dish')
+                ->name('meals.dishes.scale');
         });
     }); // fin middleware('nutritionist')
 });

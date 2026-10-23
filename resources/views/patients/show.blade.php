@@ -30,6 +30,14 @@
                 Regresar
             </a>
 
+            {{-- Las consultas son del nutriólogo que atiende al paciente (consultations.user_id) --}}
+            @if($canTreat)
+                <a href="{{ route('consultas.index', ['paciente' => $paciente->id]) }}" class="btn-liquid-secondary">
+                    <i class="fas fa-stethoscope"></i>
+                    Ver consultas
+                </a>
+            @endif
+
             <a href="{{ route('pacientes.edit', $paciente) }}" class="btn-liquid-primary">
                 <i class="far fa-edit"></i>
                 Editar paciente

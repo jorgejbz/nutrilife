@@ -83,6 +83,15 @@
     --chart-point-border: #FFFFFF;
     --chart-warning: #B98C2A;
     --chart-info: #3F8C94;
+    /* Series categóricas (orden fijo; validadas para daltonismo sobre #FFF):
+       verde+azul = 2 series; azul/ámbar/rosa = 3; las 4 solo apiladas en ese orden */
+    --chart-cat-1: #459C4D;
+    --chart-cat-2: #2A78D6;
+    --chart-cat-3: #B97A00;
+    --chart-cat-4: #C94F86;
+    /* Texto sobre las celdas más intensas del mapa de calor */
+    --chart-heat-text-3: var(--nl-forest);
+    --chart-heat-text-4: var(--nl-forest);
 
     /* ---------- Bootstrap 5.3 / AdminLTE 4 ---------- */
     --bs-body-bg: var(--nl-cream);

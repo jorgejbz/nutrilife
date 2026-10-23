@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 
 /**
  * Tiempo de comida de un plan (tabla `diet_plan_meals`): Desayuno,
@@ -67,6 +68,39 @@ class DietPlanMeal extends Model
         return DietPlanItem::sumNutrients(
             $this->items->map(fn (DietPlanItem $item) => $item->nutrients())
         );
+    }
+
+    /**
+     * Renglones para mostrar: los alimentos sueltos uno por uno y los
+     * ingredientes copiados de un platillo juntos (por diet_plan_dish_id),
+     * en el lugar donde aparece su primer ingrediente. Si el platillo de
+     * origen se borró (diet_plan_dish_id NULL) sus ingredientes quedan sueltos.
+     *
+     * @return Collection<int, array{dish_id: int|null, items: Collection<int, DietPlanItem>}>
+     */
+    public function entries(): Collection
+    {
+        $entries = [];
+        $groupIndex = [];
+
+        foreach ($this->items as $item) {
+            $dishId = $item->diet_plan_dish_id;
+
+            if ($dishId === null) {
+                $entries[] = ['dish_id' => null, 'items' => collect([$item])];
+
+                continue;
+            }
+
+            if (! isset($groupIndex[$dishId])) {
+                $groupIndex[$dishId] = count($entries);
+                $entries[] = ['dish_id' => $dishId, 'items' => collect()];
+            }
+
+            $entries[$groupIndex[$dishId]]['items']->push($item);
+        }
+
+        return collect($entries);
     }
 
     /** Icono según el nombre de la comida. */

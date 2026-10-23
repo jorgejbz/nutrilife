@@ -171,6 +171,27 @@
 
 
 
+        {{-- Filtro por paciente (?paciente=): ficha del paciente o detalle de consulta --}}
+        @if($patientFilter)
+            <div class="consultation-filter" role="status">
+                <span>
+                    <i class="fas fa-user" aria-hidden="true"></i>
+                    Consultas de <strong>{{ $patientFilter->first_name }} {{ $patientFilter->last_name }}</strong>
+                </span>
+                <a href="{{ route('consultas.index') }}">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                    Ver todas
+                </a>
+            </div>
+        @elseif($invalidPatientFilter)
+            <div class="consultation-filter is-warning" role="alert">
+                <span>
+                    <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+                    El paciente indicado no existe o no pertenece a tu consultorio. Se muestran todas tus consultas.
+                </span>
+            </div>
+        @endif
+
         @if($consultations->isEmpty())
 
 
@@ -179,7 +200,7 @@
                 <i class="fas fa-stethoscope"></i>
 
                 <h5>
-                    Sin consultas registradas
+                    {{ $patientFilter ? 'Este paciente aún no tiene consultas' : 'Sin consultas registradas' }}
                 </h5>
 
                 <p>
@@ -188,7 +209,7 @@
                 </p>
 
                 <a href="{{ route('consultas.create') }}">
-                    Registrar primera consulta
+                    {{ $patientFilter ? 'Registrar consulta' : 'Registrar primera consulta' }}
                 </a>
 
             </div>
@@ -281,16 +302,17 @@
 
                         <div class="consultation-actions">
 
-                            <button
-                                class="consultation-view-disabled"
-                                type="button"
+                            <a
+                                href="{{ route('consultas.show', $consultation) }}"
+                                class="consultation-view-btn"
+                                aria-label="Ver consulta de {{ $consultation->patient?->first_name }} {{ $consultation->patient?->last_name }} del {{ $consultation->consultation_at->format('d/m/Y') }}"
                             >
 
-                                <i class="fas fa-eye"></i>
+                                <i class="fas fa-eye" aria-hidden="true"></i>
 
                                 Ver consulta
 
-                            </button>
+                            </a>
 
                         </div>
 

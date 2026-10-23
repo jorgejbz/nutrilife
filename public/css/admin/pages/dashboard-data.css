@@ -203,3 +203,140 @@ a.dashboard-summary__item:hover strong {
     margin-top: 0;
     font-size: 16px;
 }
+
+
+/* =============================================================
+   DASHBOARD — ANÁLISIS (partials/insights + series de charts)
+   Colores de series: --chart-cat-1..4 (admin-light / admin-dark)
+============================================================= */
+
+/* Gráfica + leyenda dentro de la altura fija de la tarjeta */
+.dashboard-chart-card__body:has(> .dashboard-chart-canvas) {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.dashboard-chart-canvas {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+}
+
+.dashboard-legend {
+    flex-wrap: wrap;
+    row-gap: 6px;
+}
+
+.dashboard-legend strong {
+    margin-left: 3px;
+    color: var(--text-primary);
+}
+
+.dashboard-legend span.is-square { border-radius: 3px; }
+.dashboard-legend .is-cat-1 { background: var(--chart-cat-1); }
+.dashboard-legend .is-cat-2 { background: var(--chart-cat-2); }
+.dashboard-legend .is-cat-3 { background: var(--chart-cat-3); }
+.dashboard-legend .is-cat-4 { background: var(--chart-cat-4); }
+
+/* KPI en el encabezado de una tarjeta (tasa de cancelación) */
+.dashboard-kpi-pill {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    flex-shrink: 0;
+    padding: 6px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(var(--nl-overlay-rgb), .1);
+    background: rgba(var(--nl-overlay-rgb), .04);
+}
+
+.dashboard-kpi-pill span {
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.dashboard-kpi-pill strong {
+    color: var(--text-primary);
+    font-size: 20px;
+    line-height: 1.1;
+}
+
+/* Evolución de peso: dos cifras + barras */
+.dashboard-weight-kpi {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.dashboard-weight-kpi div {
+    padding: 8px 10px;
+    border-radius: 12px;
+    background: rgba(var(--nl-overlay-rgb), .04);
+}
+
+.dashboard-weight-kpi strong {
+    display: block;
+    color: var(--text-primary);
+    font-size: 19px;
+    line-height: 1.2;
+}
+
+.dashboard-weight-kpi span,
+.dashboard-chart-note {
+    color: var(--text-muted);
+    font-size: 12.5px;
+}
+
+/* Mapa de calor día × hora (tabla; un solo tono, claro → intenso) */
+.dashboard-chart-card__body--auto {
+    height: auto;
+    min-height: 200px;
+}
+
+.dashboard-heatmap-scroll {
+    overflow-x: auto;
+    max-height: 340px;
+    overflow-y: auto;
+}
+
+.dashboard-heatmap {
+    width: 100%;
+    min-width: 420px;
+    border-collapse: separate;
+    border-spacing: 3px;
+    font-size: 12px;
+    text-align: center;
+}
+
+.dashboard-heatmap th {
+    padding: 2px 4px;
+    color: var(--text-muted);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.dashboard-heatmap thead th {
+    position: sticky;
+    top: 0;
+    background: var(--surface-solid);
+}
+
+.dashboard-heatmap td {
+    height: 28px;
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-weight: 600;
+    cursor: default;
+}
+
+.dashboard-heatmap td.is-level-0 { background: rgba(var(--nl-overlay-rgb), .035); }
+.dashboard-heatmap td.is-level-1 { background: rgba(var(--chart-primary-rgb), .2); }
+.dashboard-heatmap td.is-level-2 { background: rgba(var(--chart-primary-rgb), .42); }
+.dashboard-heatmap td.is-level-3 { background: rgba(var(--chart-primary-rgb), .66); color: var(--chart-heat-text-3); }
+.dashboard-heatmap td.is-level-4 { background: rgba(var(--chart-primary-rgb), .92); color: var(--chart-heat-text-4); }
+
+.dashboard-heatmap td:hover {
+    outline: 2px solid var(--chart-primary);
+    outline-offset: -1px;
+}

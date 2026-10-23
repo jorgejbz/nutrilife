@@ -6,7 +6,9 @@
  *   patients     { labels, total, new }  → pacientes acumulados por mes
  *   status       { active, inactive }    → dona activos / inactivos
  *   appointments { labels, data, today } → citas de la semana actual
- *   income       { labels, data }        → ingresos cobrados por mes
+ *   income       { labels, data, pending } → cobrado vs. pendiente por mes
+ *   paymentMethods, appointmentStatus, consultations, demographics,
+ *   pathologies, bmi, weight → sección «Análisis» (partials/insights)
  * Si una gráfica no tiene datos, la vista no dibuja su <canvas> y
  * muestra un mensaje en su lugar.
  *
@@ -45,36 +47,75 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const hiddenAxisLine = { display: false };
 
+        // Ejes recesivos comunes; `horizontal` invierte categoría y valor
+        const axes = ({ stacked = false, horizontal = false, money = false } = {}) => {
+            const category = {
+                stacked,
+                border: hiddenAxisLine,
+                grid: { display: false },
+                ticks: { color: c.label, font: { size: 9 } },
+            };
+            const value = {
+                stacked,
+                beginAtZero: true,
+                border: hiddenAxisLine,
+                grid: { color: c.grid },
+                ticks: {
+                    color: c.label,
+                    precision: 0,
+                    font: { size: 8 },
+                    ...(money ? { callback: (v) => money$(v) } : {}),
+                },
+            };
+
+            return horizontal ? { x: value, y: category } : { x: category, y: value };
+        };
+
+        // Barras: extremos de 4 px y separación de 2 px con el color de la tarjeta
+        const barStyle = (color) => ({
+            backgroundColor: color,
+            hoverBackgroundColor: color,
+            borderColor: c.surface,
+            borderWidth: 1,
+            borderRadius: 4,
+            borderSkipped: 'start',
+            maxBarThickness: 22,
+        });
+
+        const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+
         /* -----------------------------------------------------
-           1) PACIENTES — CRECIMIENTO (línea)
+           1) PACIENTES — NUEVOS (barras) Y ACUMULADO (línea), un solo eje
         ----------------------------------------------------- */
         const patientsCanvas = document.getElementById('patientsGrowthChart');
 
         if (patientsCanvas && data.patients) {
-            const ctx = patientsCanvas.getContext('2d');
-
-            const gradient = ctx.createLinearGradient(0, 0, 0, 280);
-            gradient.addColorStop(0, c.primaryAlpha(.28));
-            gradient.addColorStop(1, c.primaryAlpha(0));
-
             charts.push(new Chart(patientsCanvas, {
-                type: 'line',
                 data: {
                     labels: data.patients.labels,
-                    datasets: [{
-                        label: 'Pacientes registrados',
-                        data: data.patients.total,
-                        borderColor: c.primary,
-                        backgroundColor: gradient,
-                        fill: true,
-                        borderWidth: 2,
-                        tension: .42,
-                        pointRadius: 3,
-                        pointHoverRadius: 5,
-                        pointHoverBackgroundColor: c.primary,
-                        pointHoverBorderColor: c.pointBorder,
-                        pointHoverBorderWidth: 3,
-                    }],
+                    datasets: [
+                        {
+                            type: 'line',
+                            label: 'Total acumulado',
+                            data: data.patients.total,
+                            borderColor: c.cat[0],
+                            backgroundColor: c.cat[0],
+                            borderWidth: 2,
+                            tension: .35,
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            pointBorderColor: c.pointBorder,
+                            pointBorderWidth: 2,
+                            order: 0,
+                        },
+                        {
+                            type: 'bar',
+                            label: 'Nuevos',
+                            data: data.patients.new,
+                            ...barStyle(c.cat[1]),
+                            order: 1,
+                        },
+                    ],
                 },
                 options: {
                     responsive: true,
@@ -85,29 +126,14 @@ document.addEventListener('DOMContentLoaded', function () {
                         tooltip: {
                             ...tooltipBase,
                             padding: 10,
-                            displayColors: false,
                             callbacks: {
-                                label: (context) => `${context.raw} pacientes`,
-                                afterLabel: (context) => {
-                                    const added = data.patients.new[context.dataIndex] || 0;
-                                    return added ? `+${added} nuevos en el mes` : 'Sin altas en el mes';
-                                },
+                                label: (context) => context.dataset.type === 'line'
+                                    ? `Total: ${plural(context.raw, 'paciente', 'pacientes')}`
+                                    : `Nuevos: ${context.raw}`,
                             },
                         },
                     },
-                    scales: {
-                        x: {
-                            border: hiddenAxisLine,
-                            grid: { display: false },
-                            ticks: { color: c.label, font: { size: 9 } },
-                        },
-                        y: {
-                            beginAtZero: true,
-                            border: hiddenAxisLine,
-                            grid: { color: c.grid },
-                            ticks: { color: c.label, precision: 0, font: { size: 8 } },
-                        },
-                    },
+                    scales: axes(),
                 },
             }));
         }
@@ -192,65 +218,194 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         /* -----------------------------------------------------
-           4) INGRESOS MENSUALES (línea de área)
+           4) INGRESOS COBRADOS VS. PENDIENTES (barras apiladas)
         ----------------------------------------------------- */
         const incomeCanvas = document.getElementById('incomeChart');
 
         if (incomeCanvas && data.income) {
-            const ctx = incomeCanvas.getContext('2d');
-
-            const incomeGradient = ctx.createLinearGradient(0, 0, 0, 250);
-            incomeGradient.addColorStop(0, c.primaryAlpha(.22));
-            incomeGradient.addColorStop(1, c.primaryAlpha(0));
-
             charts.push(new Chart(incomeCanvas, {
-                type: 'line',
+                type: 'bar',
                 data: {
                     labels: data.income.labels,
-                    datasets: [{
-                        data: data.income.data,
-                        borderColor: c.primary,
-                        backgroundColor: incomeGradient,
-                        fill: true,
-                        borderWidth: 2,
-                        tension: .42,
-                        pointRadius: 3,
-                        pointHoverRadius: 5,
-                    }],
+                    datasets: [
+                        { label: 'Cobrado', data: data.income.data, ...barStyle(c.cat[0]) },
+                        { label: 'Pendiente', data: data.income.pending || [], ...barStyle(c.cat[1]) },
+                    ],
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: { intersect: false, mode: 'index' },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            ...tooltipBase,
+                            callbacks: {
+                                label: (context) => `${context.dataset.label}: ${money$(context.raw)}`,
+                            },
+                        },
+                    },
+                    scales: axes({ stacked: true, money: true }),
+                },
+            }));
+        }
+
+        /* -----------------------------------------------------
+           5) ESTADO DE LAS CITAS POR MES (barras apiladas, 4 estados
+              en orden fijo: cat-1..4 validados como vecinos)
+        ----------------------------------------------------- */
+        const statusByMonthCanvas = document.getElementById('appointmentStatusChart');
+
+        if (statusByMonthCanvas && data.appointmentStatus) {
+            charts.push(new Chart(statusByMonthCanvas, {
+                type: 'bar',
+                data: {
+                    labels: data.appointmentStatus.labels,
+                    datasets: Object.entries(data.appointmentStatus.series).map(([status, values], i) => ({
+                        label: status,
+                        data: values,
+                        ...barStyle(c.cat[i]),
+                    })),
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { intersect: false, mode: 'index' },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            ...tooltipBase,
+                            callbacks: { label: (context) => `${context.dataset.label}: ${context.raw}` },
+                        },
+                    },
+                    scales: axes({ stacked: true }),
+                },
+            }));
+        }
+
+        /* -----------------------------------------------------
+           6) BARRAS DE UNA SOLA SERIE (método de pago, IMC,
+              patologías, evolución de peso)
+        ----------------------------------------------------- */
+        const singleBars = (id, series, { horizontal = false, money = false, unit = ['paciente', 'pacientes'] } = {}) => {
+            const canvas = document.getElementById(id);
+
+            if (!canvas || !series) {
+                return;
+            }
+
+            charts.push(new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: series.labels,
+                    datasets: [{ data: series.data, ...barStyle(c.primary) }],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: horizontal ? 'y' : 'x',
                     plugins: {
                         legend: { display: false },
                         tooltip: {
                             ...tooltipBase,
                             displayColors: false,
                             callbacks: {
-                                label: (context) => '$' + Number(context.raw).toLocaleString('es-MX'),
+                                label: (context) => (money ? money$(context.raw) : plural(context.raw, unit[0], unit[1])),
                             },
                         },
                     },
-                    scales: {
-                        x: {
-                            border: hiddenAxisLine,
-                            grid: { display: false },
-                            ticks: { color: c.label, font: { size: 8 } },
-                        },
-                        y: {
-                            beginAtZero: true,
-                            border: hiddenAxisLine,
-                            grid: { color: c.grid },
-                            ticks: {
-                                color: c.label,
-                                font: { size: 8 },
-                                callback: (value) => '$' + Number(value).toLocaleString('es-MX'),
-                            },
+                    scales: axes({ horizontal, money }),
+                },
+            }));
+        };
+
+        singleBars('paymentMethodsChart', data.paymentMethods, { horizontal: true, money: true });
+        singleBars('bmiChart', data.bmi);
+        singleBars('pathologiesChart', data.pathologies, { horizontal: true });
+        singleBars('weightChart', data.weight);
+
+        /* -----------------------------------------------------
+           7) CONSULTAS POR MES (área, una serie)
+        ----------------------------------------------------- */
+        const consultationsCanvas = document.getElementById('consultationsChart');
+
+        if (consultationsCanvas && data.consultations) {
+            const gradient = consultationsCanvas.getContext('2d').createLinearGradient(0, 0, 0, 280);
+            gradient.addColorStop(0, c.primaryAlpha(.24));
+            gradient.addColorStop(1, c.primaryAlpha(0));
+
+            charts.push(new Chart(consultationsCanvas, {
+                type: 'line',
+                data: {
+                    labels: data.consultations.labels,
+                    datasets: [{
+                        data: data.consultations.data,
+                        borderColor: c.primary,
+                        backgroundColor: gradient,
+                        fill: true,
+                        borderWidth: 2,
+                        tension: .35,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBorderColor: c.pointBorder,
+                        pointBorderWidth: 2,
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { intersect: false, mode: 'index' },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            ...tooltipBase,
+                            displayColors: false,
+                            callbacks: { label: (context) => plural(context.raw, 'consulta', 'consultas') },
                         },
                     },
+                    scales: axes(),
                 },
             }));
         }
+
+        /* -----------------------------------------------------
+           8) PACIENTES POR SEXO Y EDAD (barras horizontales agrupadas;
+              3 series = cat-2..4, validadas entre todos los pares)
+        ----------------------------------------------------- */
+        const demographicsCanvas = document.getElementById('demographicsChart');
+
+        if (demographicsCanvas && data.demographics) {
+            charts.push(new Chart(demographicsCanvas, {
+                type: 'bar',
+                data: {
+                    labels: data.demographics.labels.map((range) => `${range} años`),
+                    datasets: Object.entries(data.demographics.series).map(([sex, values], i) => ({
+                        label: sex,
+                        data: values,
+                        ...barStyle(c.cat[i + 1]),
+                        maxBarThickness: 14,
+                    })),
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    interaction: { intersect: false, mode: 'index', axis: 'y' },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            ...tooltipBase,
+                            callbacks: { label: (context) => `${context.dataset.label}: ${context.raw}` },
+                        },
+                    },
+                    scales: axes({ horizontal: true }),
+                },
+            }));
+        }
+    }
+
+    function money$(value) {
+        return '$' + Number(value).toLocaleString('es-MX', { maximumFractionDigits: 0 });
     }
 
     build();

@@ -530,144 +530,12 @@
                         @else
 
                             <ul class="dp-food-list">
-                                @foreach($meal->items as $item)
-                                    @php
-                                        $nutrients = $item->nutrients();
-                                        $itemName = $item->displayName();
-                                        $itemWarnings = $item->food_id ? ($warnings[$item->food_id] ?? []) : [];
-                                        $itemImage = $item->imageSrc();
-                                        $gramsOpen = old('_grams_item') == $item->id && $errors->has('grams');
-                                    @endphp
-
-                                    <li class="dp-food-row">
-                                        <div class="dp-food-row-main">
-                                            <div class="dp-food-row-icon">
-                                                @if($itemImage)
-                                                    <img src="{{ $itemImage }}" alt="" loading="lazy">
-                                                @else
-                                                    <i class="fas fa-apple-whole" aria-hidden="true"></i>
-                                                @endif
-                                            </div>
-
-                                            <div class="dp-food-info">
-                                                <strong title="{{ $itemName }}">{{ $itemName }}</strong>
-
-                                                <span>
-                                                    {{ $fmt((float) $item->grams) }} g
-                                                    @if($item->isCustom())
-                                                        @if($item->custom_portion_description)
-                                                            · {{ $item->custom_portion_description }}
-                                                        @endif
-                                                        · <span class="dp-badge">Personalizado</span>
-                                                    @else
-                                                        · {{ $trimNumber($item->equivalents) }} {{ (float) $item->equivalents === 1.0 ? 'porción' : 'porciones' }}
-                                                        @if($item->food?->portion_description)
-                                                            de {{ $item->food->portion_description }}
-                                                        @endif
-                                                    @endif
-                                                    @if($item->dish)
-                                                        · <i class="fas fa-utensils" aria-hidden="true"></i> {{ $item->dish->name }}
-                                                    @endif
-                                                </span>
-
-                                                @foreach($itemWarnings as $warning)
-                                                    <span class="dp-warning is-{{ $warning['type'] }}">
-                                                        <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
-                                                        {{ $warning['text'] }}
-                                                    </span>
-                                                @endforeach
-
-                                                @if($item->isCustom() && ! $item->hasNutrients())
-                                                    <span class="dp-warning is-limited">
-                                                        <i class="fas fa-question-circle" aria-hidden="true"></i>
-                                                        Sin datos nutricionales completos (cuenta 0)
-                                                    </span>
-                                                @endif
-
-                                                @if($item->isCustom() && $hasClinicalFlags)
-                                                    <span class="dp-warning is-info">
-                                                        <i class="fas fa-info-circle" aria-hidden="true"></i>
-                                                        Fuera del catálogo: no se revisan alergias ni patologías
-                                                    </span>
-                                                @endif
-                                            </div>
-                                        </div>
-
-                                        <div class="dp-food-row-values">
-                                            <strong>{{ $fmt($nutrients['kcal']) }} kcal</strong>
-                                            <span>
-                                                {{ $fmt($nutrients['protein_g'], 1) }}P
-                                                <b>·</b>
-                                                {{ $fmt($nutrients['carbs_g'], 1) }}C
-                                                <b>·</b>
-                                                {{ $fmt($nutrients['lipids_g'], 1) }}G
-                                            </span>
-                                        </div>
-
-                                        <div class="dp-food-row-actions">
-                                            <button type="button"
-                                                    class="dp-icon-btn"
-                                                    title="Cambiar cantidad"
-                                                    aria-label="Cambiar cantidad de {{ $itemName }}"
-                                                    aria-controls="gramsForm{{ $item->id }}"
-                                                    aria-expanded="{{ $gramsOpen ? 'true' : 'false' }}"
-                                                    data-dp-toggle="gramsForm{{ $item->id }}">
-                                                <i class="fas fa-pen" aria-hidden="true"></i>
-                                            </button>
-
-                                            <form action="{{ route('diet-plans.items.destroy', [$plan, $meal, $item]) }}"
-                                                  method="POST"
-                                                  data-confirm="¿Eliminar {{ $itemName }} de {{ $meal->meal_name }}?"
-                                                  data-confirm-title="Eliminar alimento"
-                                                  data-confirm-accept="Eliminar"
-                                                  data-confirm-variant="danger"
-                                                  data-confirm-icon="fa-trash-alt">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit"
-                                                        class="dp-icon-btn is-danger"
-                                                        title="Eliminar alimento"
-                                                        aria-label="Eliminar {{ $itemName }}"
-                                                        data-loading-text="">
-                                                    <i class="far fa-trash-alt"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-
-                                        {{-- CAMBIAR CANTIDAD (PATCH). En personalizados reescala su aporte. --}}
-                                        <form action="{{ route('diet-plans.items.update', [$plan, $meal, $item]) }}"
-                                              method="POST"
-                                              class="dp-grams-form"
-                                              id="gramsForm{{ $item->id }}"
-                                              @unless($gramsOpen) hidden @endunless>
-                                            @csrf
-                                            @method('PATCH')
-                                            <input type="hidden" name="_grams_item" value="{{ $item->id }}">
-
-                                            <label for="grams-{{ $item->id }}">Cantidad</label>
-                                            <div class="dp-unit-row">
-                                                <input type="number"
-                                                       id="grams-{{ $item->id }}"
-                                                       name="grams"
-                                                       class="dp-custom-input"
-                                                       value="{{ $gramsOpen ? old('grams') : $trimNumber($item->grams) }}"
-                                                       min="0.1"
-                                                       max="{{ \App\Models\DietPlanItem::MAX_GRAMS }}"
-                                                       step="0.1"
-                                                       inputmode="decimal"
-                                                       required>
-                                                <span>g</span>
-                                            </div>
-                                            <button type="button" class="dp-btn-secondary" data-dp-toggle="gramsForm{{ $item->id }}">Cancelar</button>
-                                            <button type="submit" class="dp-btn-primary" data-loading-text="Guardando…">
-                                                <i class="fas fa-check"></i>
-                                                Guardar
-                                            </button>
-                                            @if($item->isCustom())
-                                                <small>El aporte del alimento personalizado se ajusta en proporción a los gramos.</small>
-                                            @endif
-                                        </form>
-                                    </li>
+                                @foreach($meal->entries() as $entry)
+                                    @if($entry['dish_id'] === null)
+                                        @include('diet-plans.partials.item-row', ['item' => $entry['items']->first(), 'inDish' => false])
+                                    @else
+                                        @include('diet-plans.partials.dish-group', ['dishId' => $entry['dish_id'], 'dishItems' => $entry['items']])
+                                    @endif
                                 @endforeach
                             </ul>
 
@@ -855,14 +723,16 @@
     <div class="dp-drawer-overlay"
          id="foodDrawer"
          data-dp-drawer="food"
-         @if($foodOld) data-reopen-meal="{{ $reopenMeal }}" data-reopen-panel="{{ $reopenDrawer }}" @endif
+         @if($foodOld) data-reopen-meal="{{ $reopenMeal }}" data-reopen-panel="{{ $reopenDrawer }}" data-reopen-key="{{ old('_drawer_key') }}" @endif
          aria-hidden="true">
         <aside class="dp-drawer" role="dialog" aria-modal="true" aria-labelledby="foodDrawerTitle">
 
+            {{-- Modos (data-mode del botón que lo abre): agregar a la comida,
+                 agregar ingrediente a un platillo o sustituir un ingrediente. --}}
             <div class="dp-drawer-header">
                 <div>
-                    <span>AGREGAR ALIMENTO</span>
-                    <h3 id="foodDrawerTitle" data-meal-label>la comida</h3>
+                    <span data-drawer-kicker>AGREGAR ALIMENTO</span>
+                    <h3 id="foodDrawerTitle" data-drawer-title>la comida</h3>
                 </div>
                 <button type="button" data-dp-close aria-label="Cerrar">
                     <i class="fas fa-times"></i>
@@ -874,6 +744,7 @@
                 @csrf
                 <input type="hidden" name="_drawer" value="food">
                 <input type="hidden" name="_drawer_meal" value="" data-meal-input>
+                @include('diet-plans.partials.drawer-mode-inputs')
 
                 <div class="dp-drawer-field">
                     <label for="foodSearch">
@@ -986,9 +857,9 @@
                 </div>
 
                 <div class="dp-drawer-actions">
-                    <button type="submit" class="dp-drawer-submit" data-loading-text="Agregando…" @disabled($foods->isEmpty())>
+                    <button type="submit" class="dp-drawer-submit" data-loading-text="Guardando…" @disabled($foods->isEmpty())>
                         <i class="fas fa-plus"></i>
-                        Agregar a <span data-meal-label>la comida</span>
+                        <span data-submit-label>Agregar a <span data-meal-label>la comida</span></span>
                     </button>
                 </div>
             </form>
@@ -1007,6 +878,7 @@
                 @csrf
                 <input type="hidden" name="_drawer" value="custom">
                 <input type="hidden" name="_drawer_meal" value="" data-meal-input>
+                @include('diet-plans.partials.drawer-mode-inputs')
 
                 <div class="dp-custom-form-header">
                     <button type="button" data-dp-custom="hide" aria-label="Volver al catálogo">
@@ -1014,7 +886,7 @@
                     </button>
                     <div>
                         <span>ALIMENTO PERSONALIZADO</span>
-                        <h4>Agregar a <span data-meal-label>la comida</span></h4>
+                        <h4 data-custom-title>Agregar a <span data-meal-label>la comida</span></h4>
                     </div>
                 </div>
 
@@ -1108,9 +980,9 @@
                 </div>
 
                 <div class="dp-drawer-actions">
-                    <button type="submit" class="dp-drawer-submit" data-loading-text="Agregando…">
+                    <button type="submit" class="dp-drawer-submit" data-loading-text="Guardando…">
                         <i class="fas fa-plus"></i>
-                        Agregar alimento personalizado
+                        <span data-custom-submit-label>Agregar alimento personalizado</span>
                     </button>
                 </div>
             </form>

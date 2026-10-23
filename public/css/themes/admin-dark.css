@@ -89,6 +89,13 @@
     --chart-point-border: var(--nl-forest);
     --chart-warning: #D9BF70;
     --chart-info: #87BEB0;
+    /* Series categóricas: mismos tonos escalonados para el fondo oscuro */
+    --chart-cat-1: #4F9F58;
+    --chart-cat-2: #3987E5;
+    --chart-cat-3: #C98500;
+    --chart-cat-4: #D55181;
+    --chart-heat-text-3: var(--nl-forest-deep);
+    --chart-heat-text-4: var(--nl-forest-deep);
 
     /* ---------- Bootstrap 5.3 / AdminLTE 4 ---------- */
     --bs-body-bg: var(--nl-forest-deep);

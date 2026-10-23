@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 
 /**
  * Platillo reutilizable (tabla `diet_plan_dishes`, actualización 3.2).
@@ -90,6 +91,24 @@ class DietPlanDish extends Model
         return DietPlanItem::sumNutrients(
             $this->items->map(fn (DietPlanDishItem $item) => $item->nutrients())
         );
+    }
+
+    /**
+     * true si los ingredientes copiados en una comida ya no coinciden con la
+     * receta (se quitó, agregó, sustituyó o cambió la cantidad de alguno).
+     *
+     * @param  Collection<int, DietPlanItem>  $copied
+     */
+    public function differsFrom(Collection $copied): bool
+    {
+        $signature = fn (Collection $rows) => $rows
+            ->map(fn ($row) => ($row->food_id ? 'f'.$row->food_id : 'c'.mb_strtolower((string) $row->custom_name))
+                .'@'.number_format((float) $row->grams, 2, '.', ''))
+            ->sort()
+            ->values()
+            ->all();
+
+        return $signature($this->items) !== $signature($copied);
     }
 
     /** Ingredientes personalizados sin kcal o macros. */

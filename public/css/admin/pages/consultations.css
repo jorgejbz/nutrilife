@@ -247,7 +247,11 @@
 
 /* ACCIONES */
 
-.consultation-view-disabled {
+/* «Ver consulta» → consultas.show (antes un botón sin acción) */
+.consultation-view-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     padding: 8px 12px;
     border-radius: 11px;
     border:
@@ -256,6 +260,124 @@
         rgba(var(--nl-accent-rgb), 0.09);
     color: var(--accent);
     font-size: 14.5px;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: background .2s ease;
+}
+
+.consultation-view-btn:hover,
+.consultation-view-btn:focus-visible {
+    background:
+        rgba(var(--nl-accent-rgb), 0.18);
+    color: var(--accent);
+    text-decoration: none;
+}
+
+
+/* FILTRO POR PACIENTE */
+
+.consultation-filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 14px;
+    margin: 0 0 14px;
+    padding: 11px 14px;
+    border-radius: 12px;
+    border:
+        1px solid rgba(var(--nl-accent-rgb), 0.2);
+    background:
+        rgba(var(--nl-accent-rgb), 0.08);
+    color: var(--text-secondary);
+    font-size: 14.5px;
+}
+
+.consultation-filter i {
+    margin-right: 5px;
+    color: var(--accent);
+}
+
+.consultation-filter strong {
+    color: var(--text-primary);
+}
+
+.consultation-filter a {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.consultation-filter.is-warning {
+    border-color: rgba(var(--nl-warning-rgb), 0.3);
+    background:
+        rgba(var(--nl-warning-rgb), 0.1);
+    color: var(--nl-warning-text);
+}
+
+.consultation-filter.is-warning i {
+    color: var(--nl-warning-text);
+}
+
+
+/* DETALLE (consultations/show) */
+
+.consultation-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.consultation-detail-field {
+    padding: 13px 15px;
+    border-radius: 12px;
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.08);
+    background:
+        rgba(var(--nl-overlay-rgb), 0.03);
+}
+
+.consultation-detail-field > span {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--text-faint);
+    font-size: 12.5px;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.consultation-detail-field > strong,
+.consultation-detail-field > p {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 15px;
+    overflow-wrap: anywhere;
+    white-space: pre-line;
+}
+
+.consultation-detail-field small {
+    display: block;
+    margin-top: 3px;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.consultation-detail-field a {
+    color: var(--accent);
+}
+
+.consultation-detail-text {
+    grid-column: 1 / -1;
+}
+
+.consultation-detail-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.consultation-detail-body {
+    padding: 18px;
 }
 
 
@@ -301,4 +423,160 @@
     margin-top: 8px;
     color: var(--text-faint);
     font-size: 14.5px;
+}
+
+
+/* ALERTA DE ERROR (detalle de consulta) */
+
+.consultation-alert.is-error {
+    border-color: rgba(var(--nl-danger-rgb), 0.25);
+    background: rgba(var(--nl-danger-rgb), 0.1);
+    color: var(--nl-danger-text);
+}
+
+
+/* ESTADO DE CITA (icono + texto, nunca solo color) */
+
+.consultation-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 99px;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.consultation-status--pendiente {
+    background: rgba(var(--nl-warning-rgb), 0.16);
+    color: var(--nl-warning-text);
+}
+
+.consultation-status--confirmada {
+    background: rgba(var(--nl-info-rgb), 0.15);
+    color: var(--nl-info-text);
+}
+
+.consultation-status--completada {
+    background: rgba(var(--nl-accent-rgb), 0.15);
+    color: var(--accent-text);
+}
+
+.consultation-status--cancelada {
+    background: rgba(var(--nl-danger-rgb), 0.13);
+    color: var(--nl-danger-text);
+}
+
+
+/* CITA DE LA PRÓXIMA CONSULTA */
+
+.consultation-next {
+    margin-bottom: 16px;
+    padding: 14px 15px;
+    border-radius: 12px;
+    border:
+        1px solid rgba(var(--nl-accent-rgb), 0.18);
+    background:
+        rgba(var(--nl-accent-rgb), 0.05);
+}
+
+.consultation-next h5 {
+    margin: 0 0 10px;
+    color: var(--text-primary);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.consultation-next h5 i {
+    margin-right: 5px;
+    color: var(--accent);
+}
+
+.consultation-next-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 16px;
+    padding: 10px 0;
+    border-top: 1px solid rgba(var(--nl-overlay-rgb), 0.07);
+}
+
+.consultation-next-item:first-of-type {
+    border-top: 0;
+}
+
+.consultation-next-info {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+    min-width: 0;
+}
+
+.consultation-next-info strong {
+    color: var(--text-primary);
+    font-size: 14.5px;
+}
+
+.consultation-next-info small {
+    flex-basis: 100%;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.consultation-next-info a,
+.consultation-next-empty a {
+    color: var(--accent);
+}
+
+.consultation-next-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.consultation-next-actions form {
+    margin: 0;
+}
+
+.consultation-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: 10px;
+    border:
+        1px solid rgba(var(--nl-overlay-rgb), 0.12);
+    background:
+        rgba(var(--nl-overlay-rgb), 0.04);
+    color: var(--text-secondary);
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.consultation-action-btn:hover {
+    background:
+        rgba(var(--nl-overlay-rgb), 0.08);
+    color: var(--text-primary);
+}
+
+.consultation-action-btn.is-danger {
+    border-color: rgba(var(--nl-danger-rgb), 0.25);
+    background: rgba(var(--nl-danger-rgb), 0.08);
+    color: var(--nl-danger-text);
+}
+
+.consultation-action-btn.is-danger:hover {
+    background: rgba(var(--nl-danger-rgb), 0.16);
+}
+
+.consultation-next-note,
+.consultation-next-empty {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 13px;
 }

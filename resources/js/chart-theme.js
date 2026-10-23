@@ -36,6 +36,9 @@ export function chartColors() {
         pointBorder: cssVar('--chart-point-border', '#1B3625'),
         warning: cssVar('--chart-warning', '#D9BF70'),
         info: cssVar('--chart-info', '#87BEB0'),
+        // Series categóricas en orden fijo (ver admin-light/admin-dark.css)
+        cat: [1, 2, 3, 4].map((slot, i) => cssVar(`--chart-cat-${slot}`, ['#4F9F58', '#3987E5', '#C98500', '#D55181'][i])),
+        surface: cssVar('--surface-solid', '#1F3D2A'),
         font: cssVar('--nl-font-family', 'Poppins, sans-serif'),
     };
 }

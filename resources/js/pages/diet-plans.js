@@ -194,6 +194,21 @@
         });
     });
 
+    /* ---------- Cantidad en gramos o porciones (alimentos del catálogo) ---------- */
+    document.querySelectorAll('[data-dp-unit]').forEach((unit) => {
+        unit.addEventListener('change', () => {
+            const input = unit.closest('form')?.querySelector('input[name="grams"]');
+
+            if (!input) {
+                return;
+            }
+
+            // Muestra la cantidad guardada en la unidad elegida
+            input.value = unit.value === 'porciones' ? input.dataset.portionsValue : input.dataset.gramsValue;
+            input.focus();
+        });
+    });
+
     /* ---------- Drawers ---------- */
     const drawers = Array.from(document.querySelectorAll('[data-dp-drawer]'));
 
@@ -283,8 +298,11 @@
         const preview = document.getElementById('foodPreview');
         const measureButtons = Array.from(foodDrawer.querySelectorAll('[data-measure]'));
         const options = Array.from(select.options).filter((option) => option.value);
+        const customGrams = document.getElementById('customGrams');
 
         let mode = 'portion';
+        // Al sustituir: gramos del ingrediente actual como cantidad inicial
+        let preferredGrams = null;
 
         const selected = () => {
             const option = select.options[select.selectedIndex];
@@ -458,6 +476,53 @@
             setMode('portion');
         };
 
+        /*
+         * Modo según el botón (data-mode):
+         *  - (sin modo)   agregar a la comida.
+         *  - dish         agregar un ingrediente a un platillo de la comida.
+         *  - substitute   sustituir un ingrediente (PATCH), mismo catálogo
+         *                 y mismo formulario manual.
+         */
+        const setText = (selector, text) => {
+            foodDrawer.querySelectorAll(selector).forEach((element) => {
+                element.textContent = text;
+            });
+        };
+
+        const applyMode = (button) => {
+            const substitute = button.dataset.mode === 'substitute';
+            const toDish = button.dataset.mode === 'dish';
+            const mealName = button.dataset.mealName || 'la comida';
+            const target = toDish ? `«${button.dataset.dishName}»` : mealName;
+
+            foodDrawer.querySelectorAll('[data-method-input]').forEach((input) => {
+                input.disabled = !substitute;
+            });
+            foodDrawer.querySelectorAll('[data-dish-input]').forEach((input) => {
+                input.disabled = !toDish;
+                input.value = toDish ? button.dataset.dishId : '';
+            });
+            foodDrawer.querySelectorAll('[data-key-input]').forEach((input) => {
+                input.value = button.dataset.dpKey || '';
+            });
+
+            if (substitute) {
+                setText('[data-drawer-kicker]', 'SUSTITUIR INGREDIENTE');
+                setText('[data-drawer-title]', button.dataset.itemName);
+                setText('[data-submit-label]', `Sustituir ${button.dataset.itemName}`);
+                setText('[data-custom-title]', `Sustituir ${button.dataset.itemName}`);
+                setText('[data-custom-submit-label]', 'Sustituir por alimento personalizado');
+            } else {
+                setText('[data-drawer-kicker]', toDish ? 'AGREGAR INGREDIENTE' : 'AGREGAR ALIMENTO');
+                setText('[data-drawer-title]', toDish ? button.dataset.dishName : mealName);
+                setText('[data-submit-label]', `Agregar a ${target}`);
+                setText('[data-custom-title]', `Agregar a ${target}`);
+                setText('[data-custom-submit-label]', toDish ? 'Agregar ingrediente personalizado' : 'Agregar alimento personalizado');
+            }
+
+            preferredGrams = substitute ? (parseFloat(button.dataset.grams) || null) : null;
+        };
+
         const open = (button, { keepValues = false, panel = 'food' } = {}) => {
             lastTrigger = button;
 
@@ -468,6 +533,11 @@
             form.action = button.dataset.action;
             customForm.action = button.dataset.customAction;
             bindMeal(foodDrawer, button);
+            applyMode(button);
+
+            if (!keepValues && preferredGrams && customGrams) {
+                customGrams.value = preferredGrams;
+            }
 
             if (keepValues) {
                 // Tras un error: alimento y gramos que se habían elegido
@@ -503,7 +573,13 @@
 
         select.addEventListener('change', () => {
             applyFilters();
-            setMode('portion');
+
+            if (preferredGrams) {
+                quantity.value = preferredGrams;
+                setMode('grams', { keepQuantity: true });
+            } else {
+                setMode('portion');
+            }
         });
 
         measureButtons.forEach((button) => {
@@ -659,7 +735,10 @@
             return;
         }
 
-        const button = document.querySelector(`[data-dp-open="${type}"][data-meal-id="${mealId}"]`);
+        // Agregar a un platillo / sustituir: el mismo botón que lo abrió
+        const key = overlay.dataset.reopenKey;
+        const button = (key && document.querySelector(`[data-dp-open="${type}"][data-dp-key="${key}"]`))
+            || document.querySelector(`[data-dp-open="${type}"][data-meal-id="${mealId}"]:not([data-mode])`);
 
         if (!button) {
             return;

@@ -237,6 +237,27 @@
                     @enderror
                     </div>
 
+                    <div class="form-group">
+                        <label for="next_visit_time">Hora de la próxima consulta</label>
+
+                        <div class="liquid-input @error('next_visit_time') input-error @enderror">
+                            <span class="input-icon"><i class="far fa-clock"></i></span>
+
+                            <input
+                                type="time"
+                                name="next_visit_time"
+                                id="next_visit_time"
+                                value="{{ old('next_visit_time', '09:00') }}"
+                            >
+                        </div>
+                    @error('next_visit_time')
+                        <div class="field-error">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ $message }}
+                        </div>
+                    @enderror
+                    </div>
+
                 </div>
 
 

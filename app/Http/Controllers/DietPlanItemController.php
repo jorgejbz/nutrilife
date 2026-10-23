@@ -24,6 +24,11 @@ use Illuminate\Validation\ValidationException;
  *  - storeCustom: personalizado (food_id NULL); se guarda su aporte total.
  *  - storeDish:   un platillo; sus ingredientes se COPIAN como renglones.
  *
+ * store y storeCustom aceptan diet_plan_dish_id para agregar un ingrediente
+ * a un platillo que ya está en la comida. Esas copias se personalizan para
+ * el paciente (substitute, update, scaleDish) sin tocar diet_plan_dish_items:
+ * el platillo del catálogo y los demás planes no cambian.
+ *
  * Rutas con scopeBindings: {item} debe ser de {meal} y {meal} de {plan}; el
  * permiso es el del plan (DietPlanPolicy@update).
  */
@@ -40,20 +45,22 @@ class DietPlanItemController extends Controller
                 Rule::exists('foods', 'id')->where('active', true),
             ],
             'grams' => $this->gramsRules(),
+            'diet_plan_dish_id' => $this->dishGroupRules($meal),
         ], $this->messages());
 
         $food = Food::findOrFail($validated['food_id']);
         $grams = (float) $validated['grams'];
+        $dishId = $validated['diet_plan_dish_id'] ?? null;
 
         $meal->items()->create([
             'food_id' => $food->id,
             'grams' => $grams,
             'equivalents' => $this->equivalents($food, $grams),
+            ...$this->dishGroupColumns($meal, $dishId),
         ]);
 
-        return redirect()
-            ->to(route('diet-plans.show', $plan).'#comida-'.$meal->id)
-            ->with('success', $food->name.' se agregó a '.$meal->meal_name.'.');
+        return $this->backToMeal($plan, $meal, $dishId)
+            ->with('success', $food->name.' se agregó a '.$this->targetLabel($meal, $dishId).'.');
     }
 
     /**
@@ -73,17 +80,21 @@ class DietPlanItemController extends Controller
             'custom_protein_g' => $this->nutrientRules(DietPlan::MAX_MACRO_G),
             'custom_carbs_g' => $this->nutrientRules(DietPlan::MAX_MACRO_G),
             'custom_lipids_g' => $this->nutrientRules(DietPlan::MAX_MACRO_G),
+            'diet_plan_dish_id' => $this->dishGroupRules($meal),
         ], $this->messages());
+
+        $dishId = $validated['diet_plan_dish_id'] ?? null;
+        unset($validated['diet_plan_dish_id']);
 
         $meal->items()->create([
             ...$validated,
             'custom_portion_description' => $validated['custom_portion_description'] ?? null,
             'equivalents' => 1,
+            ...$this->dishGroupColumns($meal, $dishId),
         ]);
 
-        return redirect()
-            ->to(route('diet-plans.show', $plan).'#comida-'.$meal->id)
-            ->with('success', $validated['custom_name'].' se agregó a '.$meal->meal_name.'.');
+        return $this->backToMeal($plan, $meal, $dishId)
+            ->with('success', $validated['custom_name'].' se agregó a '.$this->targetLabel($meal, $dishId).'.');
     }
 
     /**
@@ -154,9 +165,15 @@ class DietPlanItemController extends Controller
 
         $validated = $request->validate([
             'grams' => $this->gramsRules(),
+            // Del catálogo se puede capturar en porciones (foods.portion_grams)
+            'unit' => ['nullable', Rule::in(['g', 'porciones'])],
         ], $this->messages());
 
         $grams = (float) $validated['grams'];
+
+        if (($validated['unit'] ?? 'g') === 'porciones' && ! $item->isCustom()) {
+            $grams = $this->gramsFromPortions($item, $grams);
+        }
 
         if ($item->isCustom()) {
             $item->update([
@@ -172,23 +189,202 @@ class DietPlanItemController extends Controller
             ]);
         }
 
-        return redirect()
-            ->to(route('diet-plans.show', $plan).'#comida-'.$meal->id)
-            ->with('success', 'Cantidad actualizada.');
+        return $this->backToMeal($plan, $meal, $item->diet_plan_dish_id)
+            ->with('success', 'Cantidad de '.$item->displayName().' actualizada.');
+    }
+
+    /**
+     * Sustituye un renglón por otro alimento (del catálogo o personalizado)
+     * conservando su lugar y su platillo de origen. Solo cambia la copia de
+     * este plan; la receta (diet_plan_dish_items) queda igual.
+     */
+    public function substitute(Request $request, DietPlan $plan, DietPlanMeal $meal, DietPlanItem $item)
+    {
+        Gate::authorize('update', $plan);
+
+        $previous = $item->displayName();
+
+        if ($request->filled('custom_name')) {
+            $validated = $request->validate([
+                'custom_name' => ['required', 'string', 'max:255'],
+                'custom_portion_description' => ['nullable', 'string', 'max:255'],
+                'grams' => $this->gramsRules(),
+                'custom_kcal' => $this->nutrientRules(DietPlan::MAX_KCAL),
+                'custom_protein_g' => $this->nutrientRules(DietPlan::MAX_MACRO_G),
+                'custom_carbs_g' => $this->nutrientRules(DietPlan::MAX_MACRO_G),
+                'custom_lipids_g' => $this->nutrientRules(DietPlan::MAX_MACRO_G),
+            ], $this->messages());
+
+            $item->update([
+                ...$validated,
+                'custom_portion_description' => $validated['custom_portion_description'] ?? null,
+                'food_id' => null,
+                'equivalents' => 1,
+            ]);
+        } else {
+            $validated = $request->validate([
+                'food_id' => [
+                    'required',
+                    'integer',
+                    Rule::exists('foods', 'id')->where('active', true),
+                ],
+                'grams' => $this->gramsRules(),
+            ], $this->messages());
+
+            $food = Food::findOrFail($validated['food_id']);
+            $grams = (float) $validated['grams'];
+
+            // Un renglón del catálogo no lleva custom_* (CHECK *_food_or_custom_check)
+            $item->update([
+                'food_id' => $food->id,
+                'grams' => $grams,
+                'equivalents' => $this->equivalents($food, $grams),
+                'custom_name' => null,
+                'custom_kcal' => null,
+                'custom_protein_g' => null,
+                'custom_carbs_g' => null,
+                'custom_lipids_g' => null,
+                'custom_portion_description' => null,
+            ]);
+        }
+
+        $item->load('food');
+
+        return $this->backToMeal($plan, $meal, $item->diet_plan_dish_id)
+            ->with('success', $previous.' se sustituyó por '.$item->displayName().'.');
+    }
+
+    /**
+     * Ajusta las porciones de un platillo ya agregado: multiplica los gramos
+     * de todos sus ingredientes (y el aporte de los personalizados). Todo o
+     * nada: si un ingrediente pasaría los límites de la BD no se guarda nada.
+     */
+    public function scaleDish(Request $request, DietPlan $plan, DietPlanMeal $meal, int $dish)
+    {
+        Gate::authorize('update', $plan);
+
+        $items = $meal->items()->with('food')->where('diet_plan_dish_id', $dish)->get();
+
+        abort_if($items->isEmpty(), 404);
+
+        $validated = $request->validate([
+            'factor' => ['required', 'numeric', 'decimal:0,2', 'min:0.1', 'max:10'],
+        ], [
+            'factor.required' => 'Indica por cuánto multiplicar las porciones.',
+            'factor.numeric' => 'Las porciones deben ser un número.',
+            'factor.decimal' => 'Las porciones admiten como máximo 2 decimales.',
+            'factor.min' => 'Las porciones deben ser de al menos 0.1.',
+            'factor.max' => 'Las porciones no pueden ser más de 10 veces la cantidad actual.',
+        ]);
+
+        $factor = (float) $validated['factor'];
+
+        // Primero se calcula todo (lanza error de validación si algo no cabe)
+        $changes = $items->map(function (DietPlanItem $item) use ($factor) {
+            $grams = round((float) $item->grams * $factor, 2);
+
+            if ($grams < 0.1 || $grams > DietPlanItem::MAX_GRAMS) {
+                throw ValidationException::withMessages([
+                    'factor' => 'Con ese ajuste '.$item->displayName().' quedaría fuera de 0.1 a '.DietPlanItem::MAX_GRAMS.' g.',
+                ]);
+            }
+
+            if ($item->isCustom()) {
+                return [$item, ['grams' => $grams, ...$this->scaledCustomNutrients($item, $grams)]];
+            }
+
+            return [$item, [
+                'grams' => $grams,
+                'equivalents' => $item->food ? $this->equivalents($item->food, $grams) : $item->equivalents,
+            ]];
+        });
+
+        DB::transaction(fn () => $changes->each(fn (array $change) => $change[0]->update($change[1])));
+
+        return $this->backToMeal($plan, $meal, $dish)
+            ->with('success', 'Porciones de '.$this->targetLabel($meal, $dish).' ajustadas (× '
+                .rtrim(rtrim(number_format($factor, 2, '.', ''), '0'), '.').').');
     }
 
     public function destroy(DietPlan $plan, DietPlanMeal $meal, DietPlanItem $item)
     {
         Gate::authorize('update', $plan);
 
+        $dishId = $item->diet_plan_dish_id;
+        $name = $item->displayName();
         $item->delete();
 
-        return redirect()
-            ->to(route('diet-plans.show', $plan).'#comida-'.$meal->id)
-            ->with('success', 'Alimento eliminado de '.$meal->meal_name.'.');
+        return $this->backToMeal($plan, $meal, $dishId)
+            ->with('success', $name.' se quitó de '.$this->targetLabel($meal, $dishId).'.');
     }
 
     /* ------------------------------------------------------------------ */
+
+    /**
+     * diet_plan_dish_id opcional: solo un platillo que ya tiene ingredientes
+     * en ESTA comida (así no se liga un renglón a platillos de otra cuenta).
+     */
+    private function dishGroupRules(DietPlanMeal $meal): array
+    {
+        return [
+            'nullable',
+            'integer',
+            Rule::exists('diet_plan_items', 'diet_plan_dish_id')->where('diet_plan_meal_id', $meal->id),
+        ];
+    }
+
+    /** Columnas que ligan un ingrediente nuevo al platillo (y su foto) dentro de la comida. */
+    private function dishGroupColumns(DietPlanMeal $meal, ?int $dishId): array
+    {
+        if ($dishId === null) {
+            return [];
+        }
+
+        return [
+            'diet_plan_dish_id' => $dishId,
+            'custom_image_url' => $meal->items()->where('diet_plan_dish_id', $dishId)->value('custom_image_url'),
+        ];
+    }
+
+    /** «el platillo X» si el renglón es de un platillo, si no el nombre de la comida. */
+    private function targetLabel(DietPlanMeal $meal, ?int $dishId): string
+    {
+        $dishName = $dishId ? DietPlanDish::whereKey($dishId)->value('name') : null;
+
+        return $dishName ? '«'.$dishName.'» ('.$meal->meal_name.')' : $meal->meal_name;
+    }
+
+    /** Regresa al plan, a la tarjeta del platillo si aplica o a la de la comida. */
+    private function backToMeal(DietPlan $plan, DietPlanMeal $meal, ?int $dishId = null)
+    {
+        $anchor = $dishId && $meal->items()->where('diet_plan_dish_id', $dishId)->exists()
+            ? 'platillo-'.$meal->id.'-'.$dishId
+            : 'comida-'.$meal->id;
+
+        return redirect()->to(route('diet-plans.show', $plan).'#'.$anchor);
+    }
+
+    /** Porciones del catálogo → gramos, dentro del límite de diet_plan_items.grams. */
+    private function gramsFromPortions(DietPlanItem $item, float $portions): float
+    {
+        $portion = (float) ($item->food?->portion_grams ?? 0);
+
+        if ($portion <= 0) {
+            throw ValidationException::withMessages([
+                'grams' => $item->displayName().' no tiene una porción válida en el catálogo; captura la cantidad en gramos.',
+            ]);
+        }
+
+        $grams = round($portions * $portion, 2);
+
+        if ($grams < 0.1 || $grams > DietPlanItem::MAX_GRAMS) {
+            throw ValidationException::withMessages([
+                'grams' => 'Esa cantidad de porciones queda fuera de 0.1 a '.DietPlanItem::MAX_GRAMS.' g.',
+            ]);
+        }
+
+        return $grams;
+    }
 
     /** diet_plan_items.grams DECIMAL(6,2) */
     private function gramsRules(): array
@@ -268,6 +464,8 @@ class DietPlanItemController extends Controller
             'max' => 'Los macros no pueden ser mayores a '.DietPlan::MAX_MACRO_G.' g.',
             'diet_plan_dish_id.required' => 'Selecciona un platillo.',
             'diet_plan_dish_id.integer' => 'Selecciona un platillo.',
+            'diet_plan_dish_id.exists' => 'El platillo ya no está en esta comida.',
+            'unit.in' => 'Selecciona gramos o porciones.',
         ];
     }
 }

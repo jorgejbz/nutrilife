@@ -143,6 +143,41 @@
         flex-direction: column;
     }
 
+    /* Platillos: los ingredientes ponen sus acciones con texto en un renglón propio */
+    .dp-dish-group-header {
+        grid-template-columns: minmax(0, 1fr) auto;
+        padding: 11px 12px;
+    }
+
+    .dp-dish-group-items {
+        margin: 0 10px;
+        padding-left: 9px;
+    }
+
+    .dp-food-row.is-ingredient .dp-food-row-values {
+        padding-left: 42px;
+    }
+
+    .dp-food-row.is-ingredient .dp-food-row-actions {
+        grid-column: 1 / -1;
+        grid-row: auto;
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding-left: 42px;
+    }
+
+    .dp-dish-group-tools {
+        padding: 11px 12px;
+    }
+
+    .dp-dish-group-tools > * {
+        flex: 1 1 auto;
+    }
+
+    .dp-dish-group > .dp-dish-group-body > .dp-grams-form {
+        margin: 0 10px 12px;
+    }
+
     /* Deja ver una franja del fondo: se nota que es un panel y al tocarla se cierra */
     .dp-drawer {
         width: calc(100% - 28px);
