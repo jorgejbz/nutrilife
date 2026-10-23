@@ -351,6 +351,30 @@
 
                                     @endif
 
+
+                                    @if ($appointment->status === 'Pendiente' && $appointment->user_id === auth()->id())
+
+                                        <form
+                                            method="POST"
+                                            action="{{ route('citas.confirm', $appointment) }}"
+                                            class="upcoming-confirm-form"
+                                            data-confirm="La cita quedará marcada como «Confirmada»."
+                                            data-confirm-title="¿Confirmar esta cita?"
+                                            data-confirm-accept="Sí, confirmar cita"
+                                            data-confirm-cancel="Volver"
+                                            data-confirm-icon="fa-check"
+                                        >
+                                            @csrf
+                                            @method('PATCH')
+
+                                            <button type="submit" class="upcoming-confirm">
+                                                <i class="fas fa-check" aria-hidden="true"></i>
+                                                Confirmar
+                                            </button>
+                                        </form>
+
+                                    @endif
+
                                 </div>
 
 

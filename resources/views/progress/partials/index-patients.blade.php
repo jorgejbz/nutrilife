@@ -80,7 +80,11 @@
                     @endphp
 
 
-                    <div class="patient-progress-card">
+                    <div
+                        class="patient-progress-card"
+                        data-patient-card
+                        data-search="{{ $patient->first_name }} {{ $patient->last_name }} {{ $patient->email }}"
+                    >
 
 
                         {{-- PACIENTE --}}

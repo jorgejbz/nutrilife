@@ -72,7 +72,11 @@
                     : null,
                 // La edición de citas no está implementada (el método edit del
                 // controlador estaba vacío), por eso ya no se envía edit_url.
-                // Solo quien agendó la cita la cancela o elimina (AppointmentController).
+                // Solo quien agendó la cita la confirma, cancela o elimina
+                // (AppointmentController).
+                'confirm_url' => $own && $appointment->status === 'Pendiente'
+                    ? route('citas.confirm', $appointment)
+                    : null,
                 'cancel_url' => $own ? route('citas.cancel', $appointment) : null,
                 'delete_url' => $own ? route('citas.destroy', $appointment) : null,
             ];

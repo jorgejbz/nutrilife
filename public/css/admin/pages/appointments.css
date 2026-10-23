@@ -835,6 +835,37 @@
 }
 
 
+.upcoming-confirm-form {
+    display: inline-flex;
+    margin-top: 6px;
+}
+
+
+.upcoming-confirm {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 28px;
+    padding: 4px 9px;
+    border: none;
+    border-radius: 9px;
+    background: rgba(var(--nl-accent-rgb), 0.12);
+    color: var(--accent);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .2s;
+}
+
+
+.upcoming-confirm:hover {
+    background: rgb(var(--nl-accent-rgb));
+    color: rgb(var(--nl-on-accent-rgb));
+    transform: translateY(-1px);
+}
+
+
 .mini-status {
     display: inline-block;
     padding: 3px 7px;
@@ -1066,6 +1097,18 @@
 .appointment-action.edit:hover {
     background: rgb(var(--nl-accent-rgb));
     color: rgb(var(--nl-on-accent-rgb)) !important;
+    transform: translateY(-1px);
+}
+
+
+.appointment-action.confirm {
+    border-color: transparent;
+    background: rgb(var(--nl-accent-rgb));
+    color: rgb(var(--nl-on-accent-rgb)) !important;
+}
+
+.appointment-action.confirm:hover {
+    background: rgb(var(--nl-accent-strong-rgb));
     transform: translateY(-1px);
 }
 

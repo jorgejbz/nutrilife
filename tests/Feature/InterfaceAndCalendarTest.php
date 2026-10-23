@@ -220,6 +220,29 @@ class InterfaceAndCalendarTest extends TestCase
         $this->assertSame('Pendiente', $open->fresh()->status);
     }
 
+    public function test_confirming_from_the_calendar_returns_to_that_day_and_respects_ownership(): void
+    {
+        $user = $this->account();
+        $patient = $this->patientFor($user, 'Marta');
+        $appointment = $this->appointment($user, $patient, now()->addDays(3)->setTime(10, 0), 'Control');
+
+        $this->actingAs($user)->patch(route('citas.confirm', $appointment))
+            ->assertRedirect(route('citas.index', ['dia' => $appointment->appointment_at->toDateString()]))
+            ->assertSessionHas('success');
+        $this->assertSame('Confirmada', $appointment->fresh()->status);
+
+        // Solo las pendientes se confirman: repetir la acción no cambia nada.
+        $this->actingAs($user)->patch(route('citas.confirm', $appointment))
+            ->assertRedirect(route('citas.index', ['dia' => $appointment->appointment_at->toDateString()]))
+            ->assertSessionHas('error');
+        $this->assertSame('Confirmada', $appointment->fresh()->status);
+
+        $intruder = $this->account();
+        $open = $this->appointment($user, $patient, now()->addDays(4), 'Otra');
+        $this->actingAs($intruder)->patch(route('citas.confirm', $open))->assertForbidden();
+        $this->assertSame('Pendiente', $open->fresh()->status);
+    }
+
     public function test_consultation_form_preselects_an_own_open_appointment_only(): void
     {
         $user = $this->account();

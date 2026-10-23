@@ -722,6 +722,37 @@ document.addEventListener('DOMContentLoaded', function () {
 
             let cancelButton = '';
 
+            let confirmButton = '';
+
+            if (
+                appointment.confirm_url &&
+                appointment.status === 'Pendiente'
+            ) {
+                confirmButton = `
+                    <form
+                        method="POST"
+                        action="${appointment.confirm_url}"
+                        class="appointment-action-form"
+                        data-confirm="La cita quedará marcada como «Confirmada»."
+                        data-confirm-title="¿Confirmar esta cita?"
+                        data-confirm-accept="Sí, confirmar cita"
+                        data-confirm-cancel="Volver"
+                        data-confirm-icon="fa-check"
+                    >
+                        <input type="hidden" name="_token" value="${csrfToken}">
+                        <input type="hidden" name="_method" value="PATCH">
+
+                        <button
+                            type="submit"
+                            class="appointment-action confirm"
+                        >
+                            <i class="fas fa-check"></i>
+                            Confirmar
+                        </button>
+                    </form>
+                `;
+            }
+
             if (
                 appointment.cancel_url &&
                 appointment.status !== 'Cancelada' &&
@@ -798,6 +829,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             <i class="fas fa-notes-medical" aria-hidden="true"></i>
                             Registrar consulta
                         </a>` : ''}
+
+                        ${confirmButton}
 
                         ${cancelButton}
 

@@ -141,6 +141,9 @@ Route::middleware(['auth', EnsureAccountIsActive::class, EnsureTrialSubscription
     Route::patch('/citas/{cita}/cancelar', [AppointmentController::class, 'cancel'])
         ->name('citas.cancel');
 
+    Route::patch('/citas/{cita}/confirmar', [AppointmentController::class, 'confirm'])
+        ->name('citas.confirm');
+
     /*
     |----------------------------------------------------------------
     | Consultas

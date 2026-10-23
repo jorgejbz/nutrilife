@@ -124,6 +124,24 @@ class AppointmentController extends Controller
 
 
 
+    public function confirm(Appointment $cita)
+{
+    abort_if($cita->user_id !== Auth::id(), 403);
+
+    // Solo una cita pendiente puede pasar a confirmada.
+    if ($cita->status !== 'Pendiente') {
+        return $this->backToDay($cita)
+            ->with('error', 'Solo se pueden confirmar citas pendientes.');
+    }
+
+    $cita->update([
+        'status' => 'Confirmada',
+    ]);
+
+    return $this->backToDay($cita)
+        ->with('success', 'Cita confirmada correctamente.');
+}
+
     public function cancel(Appointment $cita)
 {
     abort_if($cita->user_id !== Auth::id(), 403);
