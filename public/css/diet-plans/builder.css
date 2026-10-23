@@ -931,3 +931,125 @@
     color: var(--text-muted);
     font-size: 13px;
 }
+
+/* ---------------------------------------------------------
+   Platillo dentro de una comida: sus ingredientes (copias
+   del plan) agrupados, con Cantidad · Sustituir · Quitar,
+   «Agregar ingrediente» y «Ajustar porciones».
+   --------------------------------------------------------- */
+.dp-dish-group {
+    margin: 10px 0;
+    border: 1px solid var(--dp-green-border);
+    border-radius: 14px;
+    background: var(--dp-layer);
+    list-style: none;
+}
+
+.dp-dish-group-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 10px 12px;
+    padding: 12px 14px;
+}
+
+.dp-dish-group-kicker {
+    display: block;
+    color: var(--dp-green) !important;
+    font-size: 10px !important;
+    font-weight: 700;
+    letter-spacing: .06em;
+}
+
+.dp-dish-group-note {
+    margin: 0;
+    padding: 0 14px 10px;
+}
+
+.dp-dish-group-body[hidden] {
+    display: none;
+}
+
+.dp-dish-group-items {
+    margin: 0 14px;
+    padding: 0 0 0 12px;
+    border-left: 2px solid var(--dp-green-border);
+    list-style: none;
+}
+
+.dp-food-row.is-ingredient {
+    padding: 10px 0;
+}
+
+.dp-food-row.is-ingredient .dp-food-row-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    font-size: 13px;
+}
+
+.dp-dish-group-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 14px;
+}
+
+.dp-dish-group > .dp-dish-group-body > .dp-grams-form {
+    margin: 0 14px 14px;
+}
+
+/* Acciones con texto de los ingredientes */
+.dp-row-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 34px;
+    padding: 0 10px;
+    border: 1px solid var(--dp-line-strong);
+    border-radius: 10px;
+    background: var(--dp-layer);
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.dp-row-action:hover {
+    background: var(--dp-layer-2);
+    color: var(--text-primary);
+}
+
+.dp-row-action.is-danger {
+    border-color: var(--dp-danger-border);
+    background: var(--dp-danger-bg);
+    color: var(--dp-danger);
+}
+
+.dp-row-action.is-danger:hover {
+    background: rgba(var(--nl-danger-rgb), .18);
+}
+
+/* Unidad (g / porciones) al cambiar la cantidad */
+.dp-grams-form .dp-unit-row:has(.dp-unit-select) {
+    width: auto;
+}
+
+.dp-unit-select {
+    max-width: 190px;
+    height: 100%;
+    min-height: 38px;
+    padding: 0 8px;
+    border: 0;
+    border-left: 1px solid var(--input-border);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+.dp-unit-select option {
+    background: var(--dp-select-bg);
+    color: var(--text-primary);
+}

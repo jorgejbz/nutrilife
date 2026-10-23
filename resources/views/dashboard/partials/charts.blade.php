@@ -26,8 +26,8 @@
         <div class="dashboard-chart-card__header">
             <div>
                 <span class="dashboard-chart-card__eyebrow">Pacientes</span>
-                <h3 class="dashboard-chart-card__title">Pacientes registrados</h3>
-                <small class="dashboard-chart-card__hint">Total acumulado al cierre de cada mes · altas del mes en la etiqueta</small>
+                <h3 class="dashboard-chart-card__title">Pacientes nuevos y total acumulado</h3>
+                <small class="dashboard-chart-card__hint">Altas de cada mes (barras) y total al cierre del mes (línea) · sin eliminados</small>
             </div>
             {{-- Atajo al mismo formulario de "Acciones rápidas" (pacientes.create) --}}
             <a href="{{ route('pacientes.create') }}" class="dashboard-chart-card__icon is-action" title="Registrar paciente" aria-label="Registrar paciente nuevo"><i class="fas fa-user-plus" aria-hidden="true"></i></a>
@@ -36,7 +36,13 @@
             @if(array_sum($charts['patients']['total']) === 0)
                 <p class="dashboard-chart-empty">Aún no hay pacientes registrados.</p>
             @else
-                <canvas id="patientsGrowthChart" role="img" aria-label="Pacientes registrados por mes"></canvas>
+                <div class="dashboard-chart-canvas">
+                    <canvas id="patientsGrowthChart" role="img" aria-label="Pacientes nuevos y total acumulado por mes"></canvas>
+                </div>
+                <ul class="dashboard-legend">
+                    <li><span class="is-cat-1"></span> Total acumulado <strong>{{ last($charts['patients']['total']) }}</strong></li>
+                    <li><span class="is-cat-2 is-square"></span> Nuevos en el periodo <strong>{{ array_sum($charts['patients']['new']) }}</strong></li>
+                </ul>
             @endif
         </div>
     </section>
@@ -84,16 +90,22 @@
         <div class="dashboard-chart-card__header">
             <div>
                 <span class="dashboard-chart-card__eyebrow">Finanzas</span>
-                <h3 class="dashboard-chart-card__title">Ingresos cobrados</h3>
-                <small class="dashboard-chart-card__hint">Pagos con estado «Pagado», MXN</small>
+                <h3 class="dashboard-chart-card__title">Ingresos cobrados vs. pendientes</h3>
+                <small class="dashboard-chart-card__hint">Por mes del pago · MXN · sin cancelados</small>
             </div>
-            <div class="dashboard-chart-card__icon"><i class="fas fa-chart-line"></i></div>
+            <div class="dashboard-chart-card__icon"><i class="fas fa-chart-column"></i></div>
         </div>
         <div class="dashboard-chart-card__body">
-            @if(array_sum($charts['income']['data']) == 0)
-                <p class="dashboard-chart-empty">Aún no hay pagos cobrados en este periodo.</p>
+            @if(array_sum($charts['income']['data']) + array_sum($charts['income']['pending']) == 0)
+                <p class="dashboard-chart-empty">Aún no hay pagos cobrados ni pendientes en este periodo.</p>
             @else
-                <canvas id="incomeChart" role="img" aria-label="Ingresos cobrados por mes"></canvas>
+                <div class="dashboard-chart-canvas">
+                    <canvas id="incomeChart" role="img" aria-label="Ingresos cobrados y pendientes por mes"></canvas>
+                </div>
+                <ul class="dashboard-legend">
+                    <li><span class="is-cat-1 is-square"></span> Cobrado <strong>${{ number_format(array_sum($charts['income']['data']), 0) }}</strong></li>
+                    <li><span class="is-cat-2 is-square"></span> Pendiente <strong>${{ number_format(array_sum($charts['income']['pending']), 0) }}</strong></li>
+                </ul>
             @endif
         </div>
     </section>

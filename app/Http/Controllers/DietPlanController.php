@@ -122,7 +122,8 @@ class DietPlanController extends Controller
     {
         Gate::authorize('view', $plan);
 
-        $plan->load(['patient.allergens', 'patient.pathologies', 'meals.items.food.foodGroup', 'meals.items.dish']);
+        // dish.items: receta original, para avisar si la copia del plan se personalizó
+        $plan->load(['patient.allergens', 'patient.pathologies', 'meals.items.food.foodGroup', 'meals.items.dish.items']);
 
         // Contexto clínico del paciente (solo se muestra; no se calcula nada)
         $latestEvaluation = $plan->patient?->evaluations()

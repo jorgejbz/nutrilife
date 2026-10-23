@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Models\Consultation;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -56,9 +57,19 @@ class AppointmentController extends Controller
         return checkdate($month, $day, $year) ? $value : null;
     }
 
-    /** Vuelve al calendario con el día de la cita abierto. */
+    /**
+     * Vuelve al calendario con el día de la cita abierto, o al detalle de la
+     * consulta si la acción se hizo desde ahí (campo `consulta`; solo una
+     * consulta propia, si no se ignora).
+     */
     private function backToDay(Appointment $cita)
     {
+        $consultationId = request()->integer('consulta');
+
+        if ($consultationId && Consultation::where('user_id', Auth::id())->whereKey($consultationId)->exists()) {
+            return redirect()->route('consultas.show', $consultationId);
+        }
+
         return redirect()->route('citas.index', ['dia' => $cita->appointment_at->toDateString()]);
     }
 

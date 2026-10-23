@@ -125,6 +125,12 @@
 
 
         {{-- =================================================
+             ANÁLISIS: agenda, finanzas y perfil de pacientes
+             ================================================= --}}
+        @include('dashboard.partials.insights')
+
+
+        {{-- =================================================
              RESUMEN + ACCIONES RÁPIDAS
              ================================================= --}}
         <div class="dashboard-bottom-grid">
