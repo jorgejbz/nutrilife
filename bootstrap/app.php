@@ -18,9 +18,14 @@ return Application::configure(basePath: dirname(__DIR__))
         // que la petición original fue HTTPS. Sin esto, los formularios
         // apuntaban a http://… dentro de una página https://… y el login
         // respondía 419 Page Expired. TRUSTED_PROXIES en .env lo amplía.
-        $middleware->trustProxies(
-            at: array_values(array_filter(array_map('trim', explode(',', (string) env('TRUSTED_PROXIES', '127.0.0.1,::1'))))),
-        );
+        // En Laravel Cloud no se fija nada: el framework ya confía en su
+        // proxy automáticamente (si se fija aquí, esa detección se anula y
+        // la app cree que la petición es HTTP).
+        if (! laravel_cloud()) {
+            $middleware->trustProxies(
+                at: array_values(array_filter(array_map('trim', explode(',', (string) env('TRUSTED_PROXIES', '127.0.0.1,::1'))))),
+            );
+        }
 
         // Funciones por plan: ->middleware('feature:diet_plans')
         // Por el túnel se usan los JS compilados, no el servidor de `npm run dev`.
