@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use Laravel\Sanctum\Sanctum;
+use Laravel\Sanctum\TransientToken;
 use Throwable;
 
 /**
@@ -54,8 +54,10 @@ class AuditMobileApi extends Command
 
             // La app solo entra con pacientes que pasan el middleware; aun así se
             // revisan todos para encontrar datos rotos antes de que entren.
+            // Token en memoria (no se guarda en la BD) para actuar como el paciente
             app('auth')->forgetGuards();
-            Sanctum::actingAs($p, ['*'], 'sanctum');
+            app('auth')->guard('sanctum')->setUser($p->withAccessToken(new TransientToken));
+            app('auth')->shouldUse('sanctum');
 
             $from = now()->toDateString();
             $to = now()->addDays(30)->toDateString();
