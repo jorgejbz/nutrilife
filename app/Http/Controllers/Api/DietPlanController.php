@@ -65,6 +65,9 @@ class DietPlanController extends Controller
 
             foreach ($items->get($meal->id, collect()) as $it) {
                 $m = $this->mapItem($it, $foodAlerts);
+                // Las sumas usan los valores sin redondear (igual que el panel web);
+                // redondear cada alimento antes de sumar descuadraba 1-2 kcal
+                $raw = $it->nutrients();
                 $count++;
 
                 if ($it->diet_plan_dish_id) {
@@ -84,7 +87,7 @@ class DietPlanController extends Controller
                     $e = &$entries[$dishIndex[$k]];
                     $e['items'][] = $m;
                     foreach (['kcal', 'protein_g', 'carbs_g', 'lipids_g'] as $f) {
-                        $e[$f] += $m[$f];
+                        $e[$f] += $raw[$f];
                     }
                     unset($e);
                 } else {
@@ -94,8 +97,8 @@ class DietPlanController extends Controller
                         'name' => $m['name'],
                         'image_url' => $m['image_url'],
                         'image_credit' => null,
-                        'kcal' => $m['kcal'], 'protein_g' => $m['protein_g'],
-                        'carbs_g' => $m['carbs_g'], 'lipids_g' => $m['lipids_g'],
+                        'kcal' => $raw['kcal'], 'protein_g' => $raw['protein_g'],
+                        'carbs_g' => $raw['carbs_g'], 'lipids_g' => $raw['lipids_g'],
                         'items' => [$m],
                     ];
                 }
