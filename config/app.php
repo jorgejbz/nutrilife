@@ -80,7 +80,9 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'en'),
+    // NutriLife es solo en español (lang/es). Se fija aquí para que no dependa
+    // de APP_LOCALE en cada entorno; 'en' queda como respaldo de textos faltantes.
+    'locale' => 'es',
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 

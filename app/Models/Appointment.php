@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 
 /** Cita (tabla `appointments`). Sin cambios de columnas en la nueva BD. */
 class Appointment extends Model
@@ -26,6 +27,25 @@ class Appointment extends Model
             'patient_id' => 'integer',
             'appointment_at' => 'datetime',
         ];
+    }
+
+    /**
+     * ¿El nutriólogo ya tiene otra cita abierta que se empalma con este
+     * horario? Cada cita dura config('appointments.slot_minutes') (60 min);
+     * las canceladas no ocupan lugar. Es la misma regla que usa la app móvil
+     * para mostrar horas libres (App\Services\AppointmentAvailability).
+     */
+    public static function overlapsFor(int $userId, \DateTimeInterface $at, ?int $ignoreId = null): bool
+    {
+        $slot = (int) config('appointments.slot_minutes', 60);
+        $start = Carbon::instance($at);
+
+        return static::where('user_id', $userId)
+            ->where('status', '!=', 'Cancelada')
+            ->when($ignoreId, fn ($q) => $q->whereKeyNot($ignoreId))
+            ->where('appointment_at', '>', $start->copy()->subMinutes($slot))
+            ->where('appointment_at', '<', $start->copy()->addMinutes($slot))
+            ->exists();
     }
 
     public function user(): BelongsTo

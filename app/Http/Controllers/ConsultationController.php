@@ -178,6 +178,24 @@ class ConsultationController extends Controller
 
         $validated['user_id'] = Auth::id();
 
+        // La próxima visita crea una cita: no debe encimarse con otra del
+        // nutriólogo (salvo que el paciente ya tenga cita ese día, en cuyo
+        // caso no se crea ninguna nueva).
+        if (! empty($validated['next_visit'])) {
+            $nextAt = Carbon::parse($validated['next_visit'].' '.($nextVisitTime ?? '09:00'));
+            $patientHasDay = Appointment::where('user_id', $validated['user_id'])
+                ->where('patient_id', $validated['patient_id'])
+                ->whereIn('status', ['Pendiente', 'Confirmada'])
+                ->whereDate('appointment_at', $nextAt->toDateString())
+                ->exists();
+
+            if (! $patientHasDay && Appointment::overlapsFor($validated['user_id'], $nextAt)) {
+                throw ValidationException::withMessages([
+                    'next_visit_time' => 'Ya tienes una cita en ese horario. Elige otra hora para la próxima consulta.',
+                ]);
+            }
+        }
+
         // Crear la consulta y completar la cita deben ocurrir juntos.
         DB::transaction(function () use ($validated, $appointment, $nextVisitTime) {
             Consultation::create($validated);

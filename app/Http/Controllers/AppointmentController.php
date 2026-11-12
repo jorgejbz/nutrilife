@@ -127,6 +127,15 @@ class AppointmentController extends Controller
     $validated['user_id'] = Auth::id();
     $validated['patient_id'] = $patient->id;
 
+    // Antes se podían agendar dos citas encimadas (10:00 y 10:30). Las
+    // completadas o canceladas son historial y no se revisan.
+    if (in_array($validated['status'], ['Pendiente', 'Confirmada'], true)
+        && Appointment::overlapsFor(Auth::id(), \Illuminate\Support\Carbon::parse($validated['appointment_at']))) {
+        throw \Illuminate\Validation\ValidationException::withMessages([
+            'appointment_at' => 'Ya tienes una cita en ese horario (cada cita dura '.config('appointments.slot_minutes', 60).' minutos). Elige otra hora.',
+        ]);
+    }
+
     $appointment = Appointment::create($validated);
 
     return $this->backToDay($appointment)
