@@ -82,9 +82,12 @@
             ];
         })->values();
 
+        // Solo citas abiertas: una cancelada (o ya completada) no es "próxima".
+        // Mismo criterio que el panel de administración.
         $upcomingAppointments = $appointments
             ->filter(function ($appointment) {
-                return $appointment->appointment_at >= now()->startOfDay();
+                return $appointment->appointment_at >= now()->startOfDay()
+                    && in_array($appointment->status, ['Pendiente', 'Confirmada'], true);
             })
             ->sortBy('appointment_at')
             ->take(5);
