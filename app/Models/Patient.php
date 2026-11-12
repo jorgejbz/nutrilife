@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Auth\Authenticatable;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Sanctum\HasApiTokens;
 
 /**
  * Paciente (tabla `patients`).
@@ -14,10 +17,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * En la nueva BD `email` es obligatorio y único por nutriólogo
  * (índice patients_user_id_email_unique): junto con el access_code del
  * nutriólogo es la credencial del paciente para la app móvil.
+ *
+ * Authenticatable + HasApiTokens: la app móvil (routes/api.php) inicia
+ * sesión como paciente y recibe un token de Sanctum. El panel web no lo usa.
  */
-class Patient extends Model
+class Patient extends Model implements AuthenticatableContract
 {
-    use SoftDeletes;
+    use Authenticatable, HasApiTokens, SoftDeletes;
 
     /** Valores de patient_allergens.severity (ENUM). */
     public const ALLERGY_SEVERITIES = ['leve', 'moderada', 'severa'];

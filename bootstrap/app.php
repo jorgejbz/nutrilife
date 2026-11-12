@@ -1,5 +1,11 @@
 <?php
 
+use App\Http\Middleware\EnsureAdmin;
+use App\Http\Middleware\EnsureClinicOwner;
+use App\Http\Middleware\EnsureFeature;
+use App\Http\Middleware\EnsureNutritionist;
+use App\Http\Middleware\EnsurePatientAccess;
+use App\Http\Middleware\UseBuiltAssetsOutsideLocalhost;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -8,6 +14,7 @@ use Illuminate\Http\Request;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
+        api: __DIR__.'/../routes/api.php', // app móvil del paciente
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
@@ -30,15 +37,17 @@ return Application::configure(basePath: dirname(__DIR__))
         // Funciones por plan: ->middleware('feature:diet_plans')
         // Por el túnel se usan los JS compilados, no el servidor de `npm run dev`.
         $middleware->web(append: [
-            \App\Http\Middleware\UseBuiltAssetsOutsideLocalhost::class,
+            UseBuiltAssetsOutsideLocalhost::class,
         ]);
 
         // Roles: ->middleware('admin' | 'clinic' | 'nutritionist')
         $middleware->alias([
-            'feature' => \App\Http\Middleware\EnsureFeature::class,
-            'admin' => \App\Http\Middleware\EnsureAdmin::class,
-            'clinic' => \App\Http\Middleware\EnsureClinicOwner::class,
-            'nutritionist' => \App\Http\Middleware\EnsureNutritionist::class,
+            'feature' => EnsureFeature::class,
+            'admin' => EnsureAdmin::class,
+            'clinic' => EnsureClinicOwner::class,
+            'nutritionist' => EnsureNutritionist::class,
+            // App móvil: expediente activo y nutriólogo habilitado
+            'patient.access' => EnsurePatientAccess::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

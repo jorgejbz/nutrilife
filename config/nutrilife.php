@@ -150,4 +150,15 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | App móvil del paciente (routes/api.php)
+    |--------------------------------------------------------------------------
+    | true = el paciente solo entra si su nutriólogo (o su consultorio) tiene
+    | la prueba o una suscripción vigente, con la misma regla que el panel.
+    */
+    'mobile' => [
+        'require_active_subscription' => (bool) env('NUTRILIFE_MOBILE_REQUIRE_SUBSCRIPTION', false),
+    ],
+
 ];
