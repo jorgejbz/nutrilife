@@ -308,7 +308,8 @@
                             <div>
                                 <dt>Próxima renovación</dt>
                                 <dd>
-                                    @php $renewDays = $subscription->trialDaysRemaining(); @endphp
+                                    {{-- Suscripción pagada: cuenta hasta el fin del periodo, no la prueba de 7 días --}}
+                                    @php $renewDays = $subscription->current_period_ends_at ? (int) max(0, now()->startOfDay()->diffInDays($subscription->current_period_ends_at->copy()->startOfDay(), false)) : 0; @endphp
                                     {{ $renewDays > 0 ? 'En '.$renewDays.' '.($renewDays === 1 ? 'día' : 'días') : 'Hoy' }}
                                 </dd>
                             </div>
