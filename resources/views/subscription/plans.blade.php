@@ -31,6 +31,20 @@
 @section('content')
 <div class="consultations-page plans-page">
 
+    {{-- Prueba gratuita en curso: qué paquete se prueba y hasta cuándo --}}
+    @if($trialActive && $subscription?->plan)
+        <div class="plans-trial-banner" role="status">
+            <i class="fas fa-seedling" aria-hidden="true"></i>
+            <div>
+                <strong>Estás probando el paquete {{ $subscription->plan->name }}</strong>
+                <span>
+                    Tu prueba gratuita termina el {{ $subscription->trialEndsAt()->format('d/m/Y \a \l\a\s H:i') }}.
+                    Mientras dure puedes cambiar entre {{ implode(' y ', $trialPlanNames) }} sin costo.
+                </span>
+            </div>
+        </div>
+    @endif
+
     {{-- Motivo del bloqueo --}}
     @unless($hasAccess)
         <section class="plans-lock" role="alert">
@@ -94,6 +108,9 @@
                     @if($isCurrent)
                         <span class="plans-current"><i class="fas fa-check-circle" aria-hidden="true"></i> Tu paquete actual</span>
                     @endif
+                    @if($trialActive && $trialPlanId === $plan->id)
+                        <span class="plans-current"><i class="fas fa-seedling" aria-hidden="true"></i> Lo estás probando gratis</span>
+                    @endif
 
                     <h2 id="plan-{{ $plan->id }}">{{ $plan->name }}</h2>
 
@@ -129,6 +146,17 @@
                     @endif
 
                     <div class="plans-action">
+                        {{-- Durante la prueba se puede cambiar el paquete que se prueba --}}
+                        @if($trialActive && $trialPlanId !== $plan->id && in_array($plan->name, $trialPlanNames, true))
+                            <form method="POST" action="{{ route('subscription.trial.switch', $plan) }}" class="plans-trial-switch">
+                                @csrf
+                                <button type="submit" class="diet-btn diet-btn--ghost" data-loading-text="Cambiando…">
+                                    <i class="fas fa-seedling" aria-hidden="true"></i>
+                                    Probar {{ $plan->name }} gratis
+                                </button>
+                            </form>
+                        @endif
+
                         @if($isCurrent)
                             <button type="button" class="diet-btn diet-btn--ghost" disabled>
                                 Activo hasta el {{ $subscription->current_period_ends_at->format('d/m/Y') }}

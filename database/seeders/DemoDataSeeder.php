@@ -246,13 +246,13 @@ class DemoDataSeeder extends Seeder
             'prueba@nutrilife.test' => function (string $email) {
                 $created = now()->subDays(2)->setTime(9, 30);
                 $user = $this->newUser($email, ['name' => 'Mtra. Sofía Arenas (prueba vigente)', 'license' => '10000004', 'degree' => 'LN-2018-00310'], $created);
-                $this->subscription($user, 'Esencial', Subscription::STATUS_TRIAL, $created, $created->copy()->addDays(Subscription::trialDays()), $created);
+                $this->subscription($user, 'Pro', Subscription::STATUS_TRIAL, $created, $created->copy()->addDays(Subscription::trialDays()), $created);
             },
             'prueba-vencida@nutrilife.test' => function (string $email) {
                 $created = now()->subDays(Subscription::trialDays() + 3)->setTime(16, 0);
                 $user = $this->newUser($email, ['name' => 'Lic. Andrés Pineda (prueba vencida)', 'license' => '10000005', 'degree' => 'LN-2019-00555'], $created);
                 // Queda en_prueba con fecha pasada: el middleware la marca como vencida
-                $this->subscription($user, 'Esencial', Subscription::STATUS_TRIAL, $created, $created->copy()->addDays(Subscription::trialDays()), $created);
+                $this->subscription($user, 'Pro', Subscription::STATUS_TRIAL, $created, $created->copy()->addDays(Subscription::trialDays()), $created);
             },
             'pendiente@nutrilife.test' => function (string $email) use ($delay) {
                 $this->newUser($email, [

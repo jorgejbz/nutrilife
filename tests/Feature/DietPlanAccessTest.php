@@ -14,8 +14,8 @@ use Tests\TestCase;
 
 /**
  * Planes alimenticios: quién entra según su plan y su suscripción.
- * Pro y Consultorio (pagados y vigentes) y la prueba gratuita vigente sí;
- * Esencial, prueba vencida, suscripción vencida o administrador no.
+ * Pro y Consultorio (pagados y vigentes) y la prueba gratuita vigente de Pro sí;
+ * Esencial (pagado o en prueba), prueba vencida, suscripción vencida o administrador no.
  */
 class DietPlanAccessTest extends TestCase
 {
@@ -51,8 +51,8 @@ class DietPlanAccessTest extends TestCase
             'Pro activa' => ['Pro', Subscription::STATUS_ACTIVE, 15],
             'Consultorio activa' => ['Consultorio', Subscription::STATUS_ACTIVE, 15],
             'Pro cancelada dentro del periodo pagado' => ['Pro', Subscription::STATUS_CANCELLED, 5],
-            'Prueba gratuita vigente' => ['Esencial', Subscription::STATUS_TRIAL, 3],
-            'Prueba en su último día' => ['Esencial', Subscription::STATUS_TRIAL, 0],
+            'Prueba gratuita de Pro vigente' => ['Pro', Subscription::STATUS_TRIAL, 3],
+            'Prueba de Pro en su último día' => ['Pro', Subscription::STATUS_TRIAL, 0],
         ];
     }
 
@@ -62,6 +62,7 @@ class DietPlanAccessTest extends TestCase
         return [
             'Esencial activa' => ['Esencial', Subscription::STATUS_ACTIVE, 15],
             'Esencial cancelada dentro del periodo' => ['Esencial', Subscription::STATUS_CANCELLED, 5],
+            'Prueba gratuita de Esencial' => ['Esencial', Subscription::STATUS_TRIAL, 3],
         ];
     }
 

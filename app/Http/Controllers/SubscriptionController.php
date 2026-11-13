@@ -40,7 +40,34 @@ class SubscriptionController extends Controller
                 ->map(fn ($feature) => $feature['plans'] ?? []),
             'checkoutEnabled' => PlanCheckout::isEnabled(),
             'patientCount' => $user->patients()->count(),
+            // Prueba en curso: qué paquete se está probando y a cuáles se puede cambiar
+            'trialActive' => (bool) ($subscription?->isTrial() && ! $subscription->trialHasExpired()),
+            'trialPlanId' => $subscription?->isTrial() ? (int) $subscription->subscription_plan_id : null,
+            'trialPlanNames' => Subscription::trialPlanNames(),
         ]);
+    }
+
+    /**
+     * Cambia el paquete que se está probando (Esencial ↔ Pro) durante la
+     * prueba gratuita. Las fechas no cambian: la prueba vence el mismo día.
+     */
+    public function switchTrial(SubscriptionPlan $subscriptionPlan)
+    {
+        $user = Auth::user();
+        abort_unless($user->isNutritionist() && ! $user->isClinicMember(), 403, 'Tu clínica administra la suscripción de tu cuenta.');
+
+        $subscription = $user->latestSubscription;
+
+        if (! $subscription || ! $subscription->switchTrialPlan($subscriptionPlan)) {
+            return redirect()
+                ->route('subscription.plans')
+                ->withErrors(['trial' => 'Solo puedes cambiar el paquete de prueba mientras tu prueba gratuita siga vigente, entre '.implode(' y ', Subscription::trialPlanNames()).'.']);
+        }
+
+        return redirect()
+            ->route('dashboard.index')
+            ->with('success', 'Listo: ahora estás probando el paquete '.$subscriptionPlan->name.'. Tu prueba sigue terminando el '
+                .$subscription->trialEndsAt()->format('d/m/Y').'.');
     }
 
     public function checkout(Request $request, SubscriptionPlan $subscriptionPlan)

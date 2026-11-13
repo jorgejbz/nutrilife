@@ -896,3 +896,28 @@
         max-width: none;
     }
 }
+
+/* ---------------------------------------------------------
+   admin/pages/reports.css
+   --------------------------------------------------------- */
+
+@media (max-width: 575.98px) {
+    .rp-kpis,
+    .rp-mini-kpis,
+    .rp-mini-kpis--2 {
+        grid-template-columns: 1fr;
+    }
+    .rp-header h1 {
+        font-size: 24px;
+    }
+    .rp-range,
+    .rp-range label,
+    .rp-range input,
+    .rp-actions,
+    .rp-btn {
+        width: 100%;
+    }
+    .rp-btn {
+        justify-content: center;
+    }
+}

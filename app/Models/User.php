@@ -27,7 +27,7 @@ use Illuminate\Notifications\Notifiable;
 // (AccountActivation, el registro, la clínica o el administrador con
 // forceFill), así una petición manipulada no puede activar ni verificar una
 // cuenta, volverse administrador ni unirse a otra clínica.
-#[Fillable(['name', 'email', 'password', 'access_code', 'professional_license', 'degree_number'])]
+#[Fillable(['name', 'email', 'password', 'access_code', 'professional_license', 'degree_number', 'trial_plan'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {

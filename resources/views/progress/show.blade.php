@@ -31,6 +31,17 @@
 
     <div class="d-flex flex-wrap gap-2">
 
+        @can('pdf-export')
+            <a
+                href="{{ route('progreso.pdf', $paciente) }}"
+                class="btn-progress-back"
+                title="Descargar el reporte de progreso en PDF"
+            >
+                <i class="far fa-file-pdf"></i>
+                Exportar PDF
+            </a>
+        @endcan
+
         <a
             href="{{ route('evaluaciones.create', $paciente) }}"
             class="btn-progress-add"

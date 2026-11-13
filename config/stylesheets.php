@@ -51,6 +51,7 @@ return [
                 'admin/components/interface.css',
                 'admin/components/payment-reference.css',
                 'admin/components/utilities.css',
+                'admin/pages/reports.css',
             ],
             'themes' => [
                 'light' => 'themes/admin-light.css',

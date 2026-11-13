@@ -14,6 +14,7 @@ use App\Http\Controllers\EvaluationController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProgressController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\DietPlanController;
 use App\Http\Controllers\FoodCatalogController;
@@ -104,6 +105,9 @@ Route::middleware(['auth', EnsureAccountIsActive::class, EnsureTrialSubscription
         ->name('subscription.plans');
     Route::post('/contratar/{subscriptionPlan}', [SubscriptionController::class, 'checkout'])
         ->name('subscription.checkout');
+    // Cambiar el paquete que se está probando (Esencial ↔ Pro) durante la prueba
+    Route::post('/prueba/{subscriptionPlan}', [SubscriptionController::class, 'switchTrial'])
+        ->name('subscription.trial.switch');
 
     /*
     |----------------------------------------------------------------
@@ -177,6 +181,27 @@ Route::middleware(['auth', EnsureAccountIsActive::class, EnsureTrialSubscription
         ->group(function () {
             Route::get('/', [ProgressController::class, 'index'])->name('index');
             Route::get('/{paciente}', [ProgressController::class, 'show'])->name('show');
+            Route::get('/{paciente}/pdf', [ProgressController::class, 'pdf'])
+                ->middleware('feature:pdf_export')
+                ->name('pdf');
+        });
+
+    /*
+    |----------------------------------------------------------------
+    | Reportes avanzados (solo Pro, Consultorio y prueba gratuita)
+    |----------------------------------------------------------------
+    | Rango de fechas libre y comparación con el periodo anterior
+    | (App\Services\AdvancedReport). El PDF además pide feature:pdf_export.
+    */
+    Route::prefix('reportes')
+        ->name('reports.')
+        ->middleware('feature:advanced_reports')
+        ->group(function () {
+            Route::get('/', [ReportController::class, 'index'])->name('index');
+            Route::get('/csv', [ReportController::class, 'csv'])->name('csv');
+            Route::get('/pdf', [ReportController::class, 'pdf'])
+                ->middleware('feature:pdf_export')
+                ->name('pdf');
         });
 
     /*
@@ -247,6 +272,9 @@ Route::middleware(['auth', EnsureAccountIsActive::class, EnsureTrialSubscription
             Route::get('/crear', [DietPlanController::class, 'create'])->name('create');
             Route::post('/', [DietPlanController::class, 'store'])->name('store');
             Route::get('/{plan}', [DietPlanController::class, 'show'])->name('show');
+            Route::get('/{plan}/pdf', [DietPlanController::class, 'pdf'])
+                ->middleware('feature:pdf_export')
+                ->name('pdf');
             Route::get('/{plan}/editar', [DietPlanController::class, 'edit'])->name('edit');
             Route::put('/{plan}', [DietPlanController::class, 'update'])->name('update');
             Route::delete('/{plan}', [DietPlanController::class, 'destroy'])->name('destroy');

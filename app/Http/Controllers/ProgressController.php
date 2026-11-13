@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Patient;
+use App\Support\PdfExport;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 
 class ProgressController extends Controller
@@ -243,4 +245,36 @@ class ProgressController extends Controller
         'muscleChange'
     ));
 }
+
+    /**
+     * Reporte de evolución del paciente en PDF (feature:pdf_export).
+     */
+    public function pdf(Patient $paciente)
+    {
+        abort_if($paciente->user_id !== Auth::id(), 403);
+
+        $paciente->load(['allergens', 'pathologies']);
+
+        $evaluations = $paciente->evaluations()
+            ->orderBy('evaluation_date')
+            ->orderBy('id')
+            ->get();
+
+        $consultations = $paciente->consultations()
+            ->where('user_id', Auth::id())
+            ->orderByDesc('consultation_at')
+            ->limit(5)
+            ->get();
+
+        $name = trim($paciente->first_name.' '.$paciente->last_name);
+
+        return PdfExport::download('pdf.progress', [
+            'patient' => $paciente,
+            'evaluations' => $evaluations,
+            'consultations' => $consultations,
+            'docTitle' => 'Reporte de progreso',
+            'docSubtitle' => $name,
+            'nutritionist' => Auth::user(),
+        ], 'progreso-'.Str::slug($name).'.pdf');
+    }
 }

@@ -338,6 +338,42 @@
                     @enderror
                 </div>
 
+                {{-- PAQUETE A PROBAR (users.trial_plan): la prueba gratuita da las
+                     funciones de este paquete; se puede cambiar durante la prueba. --}}
+                @if ($trialPlans->isNotEmpty())
+                    <fieldset class="form-group trial-plan-picker">
+                        <legend class="form-label">
+                            ¿Qué paquete quieres probar gratis? <span class="required-mark" aria-hidden="true">*</span>
+                        </legend>
+                        <div class="trial-plan-options">
+                            @foreach ($trialPlans as $trialPlan)
+                                @php($checked = old('trial_plan', $selectedTrialPlan) === $trialPlan->name)
+                                <label class="trial-plan-option">
+                                    <input type="radio" name="trial_plan" value="{{ $trialPlan->name }}" @checked($checked)>
+                                    <span class="trial-plan-card">
+                                        <span class="trial-plan-head">
+                                            <strong>{{ $trialPlan->name }}</strong>
+                                            <span>${{ number_format((float) $trialPlan->price, 0) }} MXN/mes después de la prueba</span>
+                                        </span>
+                                        <span class="trial-plan-limit">
+                                            {{ $trialPlan->max_patients ? 'Hasta '.$trialPlan->max_patients.' pacientes' : 'Pacientes sin límite' }}
+                                        </span>
+                                        <span class="trial-plan-features">
+                                            @foreach (collect($planFeatures[$trialPlan->name] ?? [])->where('available', true)->take(4) as $feature)
+                                                <span><i class="fas fa-check" aria-hidden="true"></i> {{ $feature['label'] }}</span>
+                                            @endforeach
+                                        </span>
+                                    </span>
+                                </label>
+                            @endforeach
+                        </div>
+                        <small class="form-hint">Puedes cambiar de paquete mientras dure tu prueba de {{ config('nutrilife.trial_days') }} días.</small>
+                        @error('trial_plan')
+                            <div class="form-error" role="alert">{{ $message }}</div>
+                        @enderror
+                    </fieldset>
+                @endif
+
                 {{-- Qué ocurre al crear la cuenta (datos reales de la BD) --}}
                 <div class="register-next">
                     <p class="register-next-title">
@@ -346,7 +382,7 @@
                     </p>
                     <ul>
                         <li>Prepararemos tu cuenta; en unos minutos podrás iniciar sesión.</li>
-                        <li>Tu prueba gratuita de {{ config('nutrilife.trial_days') }} días empieza la primera vez que entres.</li>
+                        <li>Tu prueba gratuita de {{ config('nutrilife.trial_days') }} días del paquete que elegiste empieza la primera vez que entres.</li>
                         <li>Recibirás un <strong>código de acceso de 6 dígitos</strong> para que tus pacientes entren a la app móvil.</li>
                         <li>Podrás completar y editar tus datos después desde <strong>Mi perfil</strong>.</li>
                     </ul>

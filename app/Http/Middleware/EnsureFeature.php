@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Subscription;
+use App\Models\SubscriptionPlan;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -39,9 +40,25 @@ class EnsureFeature
         return response()->view('partials.feature-locked', [
             'featureLabel' => $label,
             'plans' => $plans,
-            'includesTrial' => (bool) config('nutrilife.features.'.$feature.'.trial', false),
+            // Prueba vigente de un paquete sin la función: se ofrece probar
+            // uno que sí la tenga (p. ej. Esencial → Pro) sin esperar.
+            'trialSwitchPlan' => $this->trialSwitchPlan($user, $plans),
             'accountType' => Subscription::accountTypeFor($user),
             'isAdmin' => (bool) $user?->isAdmin(),
         ], Response::HTTP_FORBIDDEN);
+    }
+
+    /** Paquete de prueba que incluye la función, si el usuario está en prueba vigente. */
+    private function trialSwitchPlan($user, array $plans): ?SubscriptionPlan
+    {
+        $subscription = $user?->latestSubscription;
+
+        if (! $subscription || ! $subscription->isTrial() || $subscription->trialHasExpired()) {
+            return null;
+        }
+
+        $name = collect(Subscription::trialPlanNames())->first(fn ($n) => in_array($n, $plans, true));
+
+        return $name ? Subscription::trialPlanFor($name) : null;
     }
 }

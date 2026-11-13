@@ -36,6 +36,15 @@ return [
     'trial_days' => (int) env('NUTRILIFE_TRIAL_DAYS', 7),
 
     /*
+    | Paquetes que se pueden probar gratis. El nutriólogo elige uno al
+    | registrarse (users.trial_plan) y lo puede cambiar mientras dure la
+    | prueba (/contratar). La prueba da exactamente las funciones de ese
+    | paquete (ver 'features'). default_trial_plan: si no eligió ninguno.
+    */
+    'trial_plans' => ['Esencial', 'Pro'],
+    'default_trial_plan' => 'Pro',
+
+    /*
     |--------------------------------------------------------------------------
     | Activación de cuentas nuevas (simulación)
     |--------------------------------------------------------------------------
@@ -116,13 +125,26 @@ return [
     |
     | 'plans' → planes que la incluyen con suscripción pagada y vigente
     |           (status activa, o cancelada hasta que termine el periodo).
-    | 'trial' → si la prueba gratuita de 7 días también la incluye.
+    | La prueba gratuita da las funciones del paquete que se está probando
+    | (subscriptions.subscription_plan_id): probar Pro las incluye todas;
+    | probar Esencial, ninguna de estas.
     */
     'features' => [
         'diet_plans' => [
             'label' => 'Planes alimenticios',
             'plans' => ['Pro', 'Consultorio'],
-            'trial' => true,
+        ],
+        // Descarga en PDF del plan alimenticio, del progreso del paciente
+        // y del reporte avanzado.
+        'pdf_export' => [
+            'label' => 'Exportación a PDF',
+            'plans' => ['Pro', 'Consultorio'],
+        ],
+        // Sección /reportes: rango de fechas libre, comparación con el
+        // periodo anterior, desgloses y exportación a CSV.
+        'advanced_reports' => [
+            'label' => 'Reportes avanzados',
+            'plans' => ['Pro', 'Consultorio'],
         ],
     ],
 
@@ -138,8 +160,8 @@ return [
             ['label' => 'Todo lo incluido en Esencial', 'available' => true],
             ['label' => 'Planes alimenticios', 'available' => true],
             ['label' => 'Cálculo de calorías y macros', 'available' => true],
-            ['label' => 'Exportación a PDF', 'available' => false],
-            ['label' => 'Reportes avanzados', 'available' => false],
+            ['label' => 'Exportación a PDF', 'available' => true],
+            ['label' => 'Reportes avanzados', 'available' => true],
         ],
         'Consultorio' => [
             ['label' => 'Todo lo incluido en Pro', 'available' => true],

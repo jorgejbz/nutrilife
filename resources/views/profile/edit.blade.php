@@ -242,7 +242,7 @@
                     <span class="nl-eyebrow">Suscripción</span>
                     <h2>
                         @if ($type === 'trial')
-                            Prueba gratuita de 7 días
+                            Prueba gratuita del paquete {{ $subscription?->plan?->name ?? '' }}
                         @elseif ($subscription?->plan)
                             Plan {{ $subscription->plan->name }}
                         @else
@@ -270,6 +270,13 @@
                 <dl class="nl-facts nl-facts--grid">
 
                     @if ($type === 'trial')
+                        <div>
+                            <dt>Paquete en prueba</dt>
+                            <dd>
+                                {{ $subscription->plan?->name ?? '—' }}
+                                <small><a href="{{ route('subscription.plans') }}">Cambiar</a></small>
+                            </dd>
+                        </div>
                         <div>
                             <dt>Inicio de la prueba</dt>
                             <dd>{{ $fecha($subscription->starts_at) }}</dd>

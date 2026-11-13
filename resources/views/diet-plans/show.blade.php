@@ -78,6 +78,13 @@
             {{ $plan->active ? 'Plan activo' : 'Plan finalizado' }}
         </span>
 
+        @can('pdf-export')
+            <a href="{{ route('diet-plans.pdf', $plan) }}" class="dp-btn-secondary" title="Descargar el plan en PDF para el paciente">
+                <i class="far fa-file-pdf" aria-hidden="true"></i>
+                Exportar PDF
+            </a>
+        @endcan
+
         <button type="button" class="dp-btn-secondary" data-dp-open="duplicate">
             <i class="far fa-copy" aria-hidden="true"></i>
             Duplicar / asignar

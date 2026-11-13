@@ -1689,13 +1689,13 @@
 
                 <strong>
 
-                    Todos los planes incluyen 7 días gratis
+                    Prueba Esencial o Pro 7 días gratis
 
                 </strong>
 
                 <span>
 
-                    Prueba NutriLife antes de realizar tu primera contratación.
+                    Elige qué paquete probar al registrarte y cámbialo cuando quieras durante tu prueba.
 
                 </span>
 
@@ -1862,7 +1862,7 @@
 
                 <a
 
-                    href="{{ route('register') }}"
+                    href="{{ route('register', ['plan' => 'Esencial']) }}"
 
                     class="pricing-button secondary"
 
@@ -2034,7 +2034,7 @@
 
                 <a
 
-                    href="{{ route('register') }}"
+                    href="{{ route('register', ['plan' => 'Pro']) }}"
 
                     class="pricing-button primary"
 

@@ -72,18 +72,17 @@ class Subscription extends Model
     /**
      * Crea la suscripción de prueba de un nutriólogo (status = en_prueba).
      *
-     * `subscription_plan_id` es obligatorio en la BD, así que la prueba se
-     * asocia al plan activo más económico (los planes los inserta
-     * SubscriptionPlanSeeder). Si todavía no hay ningún plan NO se inventa
-     * uno: se devuelve null y el middleware EnsureTrialSubscription la
-     * creará en cuanto exista un plan.
+     * La prueba se asocia al paquete que el nutriólogo eligió probar
+     * ($planName, o users.trial_plan del registro). Si no eligió o el
+     * paquete no se puede probar, se usa config('nutrilife.default_trial_plan')
+     * y, si tampoco existe, el plan activo más económico. Si todavía no hay
+     * ningún plan NO se inventa uno: se devuelve null y el middleware
+     * EnsureTrialSubscription la creará en cuanto exista un plan.
      */
-    public static function startTrialFor(User $user): ?self
+    public static function startTrialFor(User $user, ?string $planName = null): ?self
     {
-        $plan = SubscriptionPlan::where('active', true)
-            ->orderBy('price')
-            ->orderBy('id')
-            ->first();
+        $plan = self::trialPlanFor($planName ?? $user->trial_plan)
+            ?? SubscriptionPlan::where('active', true)->orderBy('price')->orderBy('id')->first();
 
         if (! $plan) {
             return null;
@@ -100,6 +99,51 @@ class Subscription extends Model
             'starts_at' => $startedAt->toDateString(),
             'current_period_ends_at' => $startedAt->copy()->addDays(self::trialDays())->toDateString(),
         ]);
+    }
+
+    /** Paquetes que se pueden probar (config nutrilife.trial_plans). @return list<string> */
+    public static function trialPlanNames(): array
+    {
+        return array_values((array) config('nutrilife.trial_plans', []));
+    }
+
+    /**
+     * Plan activo que se puede probar con ese nombre; si el nombre no es
+     * válido, el de config('nutrilife.default_trial_plan'). Null si ninguno existe.
+     */
+    public static function trialPlanFor(?string $name): ?SubscriptionPlan
+    {
+        $allowed = self::trialPlanNames();
+
+        foreach ([$name, config('nutrilife.default_trial_plan')] as $candidate) {
+            if (is_string($candidate) && in_array($candidate, $allowed, true)) {
+                $plan = SubscriptionPlan::where('active', true)->where('name', $candidate)->first();
+
+                if ($plan) {
+                    return $plan;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Cambia el paquete que se está probando (Esencial ↔ Pro) sin tocar
+     * las fechas: la prueba sigue venciendo el mismo día. Solo mientras la
+     * prueba esté vigente y hacia un paquete de nutrilife.trial_plans.
+     */
+    public function switchTrialPlan(SubscriptionPlan $plan): bool
+    {
+        if (! $this->isTrial() || $this->trialHasExpired() || ! $plan->active
+            || ! in_array($plan->name, self::trialPlanNames(), true)) {
+            return false;
+        }
+
+        $this->forceFill(['subscription_plan_id' => $plan->id])->save();
+        $this->setRelation('plan', $plan);
+
+        return true;
     }
 
     /** Duración de la prueba (config/nutrilife.php → trial_days). */
@@ -217,8 +261,8 @@ class Subscription extends Model
      * (config/nutrilife.php → features)?
      *
      * Se distingue el PLAN (Esencial, Pro, Consultorio) del ESTADO:
-     *  - en_prueba  → solo si la función incluye la prueba ('trial' => true)
-     *                 y la prueba no ha vencido.
+     *  - en_prueba  → si el paquete que se prueba está en 'plans' y la
+     *                 prueba no ha vencido.
      *  - activa     → si el plan está en 'plans' y el periodo pagado sigue
      *                 vigente (current_period_ends_at >= hoy).
      *  - cancelada  → igual que activa: conserva el acceso hasta que termine
@@ -233,8 +277,10 @@ class Subscription extends Model
             return false;
         }
 
+        // La prueba da las funciones del paquete que se está probando.
         if ($this->isTrial()) {
-            return (bool) ($config['trial'] ?? false) && ! $this->trialHasExpired();
+            return ! $this->trialHasExpired()
+                && in_array($this->plan?->name, (array) ($config['plans'] ?? []), true);
         }
 
         if (! $this->hasPaidAccess()) {
@@ -307,7 +353,7 @@ class Subscription extends Model
         }
 
         if ($trialState === 'trial') {
-            return ['type' => 'trial', 'label' => 'Prueba gratuita', 'plan' => null];
+            return ['type' => 'trial', 'label' => $plan ? 'Prueba '.$plan : 'Prueba gratuita', 'plan' => null, 'trial_plan' => $plan];
         }
 
         if ($trialState === 'expired') {

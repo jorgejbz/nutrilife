@@ -948,6 +948,16 @@ return [
         'active' => ['pagos', 'pagos/*'],
     ],
 
+    // Reportes avanzados: Pro, Consultorio, subperfiles y prueba gratuita
+    // (Gate "advanced-reports" de AppServiceProvider).
+    [
+        'text' => 'Reportes',
+        'url'  => 'reportes',
+        'icon' => 'fas fa-fw fa-chart-pie',
+        'can' => 'advanced-reports',
+        'active' => ['reportes', 'reportes/*'],
+    ],
+
     [
         // Perfil: datos de la cuenta, información profesional, plan,
         // suscripción, uso del plan y cobros (ProfileController@edit).

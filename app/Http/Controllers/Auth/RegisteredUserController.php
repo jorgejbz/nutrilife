@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\Role;
+use App\Models\Subscription;
+use App\Models\SubscriptionPlan;
 use App\Services\AccountActivation;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
@@ -11,6 +13,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -20,9 +23,23 @@ class RegisteredUserController extends Controller
     /**
      * Display the registration view.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('auth.register');
+        // Paquetes que se pueden probar, con su precio para mostrarlo.
+        // ?plan=Pro (botones del landing) deja ese paquete preseleccionado.
+        $trialPlans = SubscriptionPlan::where('active', true)
+            ->whereIn('name', Subscription::trialPlanNames())
+            ->orderBy('price')
+            ->get();
+
+        $wanted = ucfirst(mb_strtolower((string) $request->query('plan')));
+        $selected = $trialPlans->contains('name', $wanted) ? $wanted : config('nutrilife.default_trial_plan');
+
+        return view('auth.register', [
+            'trialPlans' => $trialPlans,
+            'selectedTrialPlan' => $selected,
+            'planFeatures' => config('nutrilife.plan_features', []),
+        ]);
     }
 
     /** Pantalla "¡Gracias por registrarte!" después de crear la cuenta. */
@@ -69,6 +86,9 @@ class RegisteredUserController extends Controller
             // de Profesionistas (la verificación real queda pendiente).
             'professional_license' => ['required', 'regex:/^\d{7,8}$/', 'unique:'.User::class.',professional_license'],
             'degree_number' => ['required', 'string', 'min:3', 'max:50', 'regex:/^[A-Z0-9][A-Z0-9\-\/ ]*$/'],
+            // Paquete que quiere probar gratis (Esencial o Pro). Si no llega,
+            // al activarse se usa config('nutrilife.default_trial_plan').
+            'trial_plan' => ['nullable', Rule::in(Subscription::trialPlanNames())],
         ], [
             // La app usa APP_LOCALE=en; estos mensajes evitan que el registro
             // muestre errores en inglés (mismas reglas, solo el texto).
@@ -89,6 +109,7 @@ class RegisteredUserController extends Controller
             'degree_number.min' => 'El número de título debe tener al menos 3 caracteres.',
             'degree_number.max' => 'El número de título no puede superar 50 caracteres.',
             'degree_number.regex' => 'El número de título solo admite letras, números, guiones, diagonales y espacios.',
+            'trial_plan.in' => 'Elige Esencial o Pro para tu prueba gratuita.',
         ], [
             'name' => 'nombre',
             'email' => 'correo electrónico',
@@ -106,6 +127,7 @@ class RegisteredUserController extends Controller
                 'password' => Hash::make($request->password),
                 'professional_license' => $request->professional_license,
                 'degree_number' => $request->degree_number,
+                'trial_plan' => $request->trial_plan,
             ]);
             $user->forceFill(['role_id' => Role::NUTRITIONIST, 'clinic_id' => null])->save();
 

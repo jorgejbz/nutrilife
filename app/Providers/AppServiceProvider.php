@@ -30,6 +30,8 @@ class AppServiceProvider extends ServiceProvider
         // vistas y el middleware EnsureFeature. La propiedad de cada plan la
         // revisa App\Policies\DietPlanPolicy (se descubre sola por nombre).
         Gate::define('diet-plans', fn (User $user): bool => $user->hasFeature('diet_plans'));
+        Gate::define('pdf-export', fn (User $user): bool => $user->hasFeature('pdf_export'));
+        Gate::define('advanced-reports', fn (User $user): bool => $user->hasFeature('advanced_reports'));
 
         // Roles para el menú de AdminLTE ('can') y @can en las vistas. La
         // barrera real son los middleware admin / clinic / nutritionist.

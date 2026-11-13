@@ -8,6 +8,7 @@ use App\Models\DietPlanMeal;
 use App\Models\Food;
 use App\Models\Patient;
 use App\Services\DietPlanFoodWarnings;
+use App\Support\PdfExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -116,6 +117,40 @@ class DietPlanController extends Controller
         return redirect()
             ->route('diet-plans.show', $plan)
             ->with('success', 'Plan creado. Ahora agrega los tiempos de comida y sus alimentos.');
+    }
+
+    /**
+     * Descarga del plan en PDF para entregarlo al paciente
+     * (feature:pdf_export además de feature:diet_plans, ver routes/web.php).
+     */
+    public function pdf(DietPlan $plan)
+    {
+        Gate::authorize('view', $plan);
+
+        $plan->load(['patient.allergens', 'patient.pathologies', 'meals.items.food', 'meals.items.dish']);
+
+        // Alimentos del catálogo que contienen un alérgeno del paciente
+        $allergenIds = $plan->patient?->allergens->pluck('id') ?? collect();
+        $foodAlerts = $allergenIds->isEmpty() ? [] : DB::table('food_allergens')
+            ->join('allergens', 'allergens.id', '=', 'food_allergens.allergen_id')
+            ->whereIn('food_allergens.allergen_id', $allergenIds)
+            ->get(['food_allergens.food_id', 'allergens.name'])
+            ->groupBy('food_id')
+            ->map(fn ($rows) => $rows->pluck('name')->unique()->values()->all())
+            ->all();
+
+        $patientName = trim(($plan->patient?->first_name ?? '').' '.($plan->patient?->last_name ?? ''));
+
+        return PdfExport::download('pdf.diet-plan', [
+            'plan' => $plan,
+            'totals' => $plan->totals(),
+            'targets' => $plan->targets(),
+            'progress' => $plan->progress(),
+            'foodAlerts' => $foodAlerts,
+            'docTitle' => 'Plan alimenticio',
+            'docSubtitle' => $patientName ?: $plan->name,
+            'nutritionist' => Auth::user(),
+        ], 'plan-alimenticio-'.\Illuminate\Support\Str::slug($patientName ?: $plan->name).'.pdf');
     }
 
     public function show(DietPlan $plan)

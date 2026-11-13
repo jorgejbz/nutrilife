@@ -206,3 +206,33 @@
     margin-right: 4px;
     color: var(--accent);
 }
+
+/* Prueba gratuita en curso (paquete que se prueba y cambio Esencial ↔ Pro) */
+.plans-trial-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding: 13px 16px;
+    border: 1px solid rgba(var(--nl-accent-rgb), .3);
+    border-radius: 14px;
+    background: rgba(var(--nl-accent-rgb), .09);
+    color: var(--text-secondary);
+    font-size: 14.5px;
+}
+
+.plans-trial-banner i {
+    margin-top: 3px;
+    color: var(--accent-text);
+}
+
+.plans-trial-banner strong {
+    display: block;
+    color: var(--text-primary);
+}
+
+.plans-action {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}

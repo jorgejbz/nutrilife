@@ -37,15 +37,26 @@
                     @if($accountType)
                         Estado de tu cuenta: <strong>{{ $accountType['label'] }}</strong>.
                     @endif
-                    Para diseñar planes alimenticios para tus pacientes necesitas el plan
-                    {{ implode(' o ', $plans) }} con la suscripción vigente.
+                    {{ $featureLabel }} se incluye en el paquete {{ implode(' o ', $plans) }} con la suscripción vigente.
                 </p>
 
-                @if(($accountType['type'] ?? null) === 'expired' && ($accountType['plan'] ?? null) === null && $includesTrial)
-                    <p class="diet-muted">Tu prueba gratuita la incluía; para seguir usándola elige Pro o Consultorio.</p>
+                @if($trialSwitchPlan)
+                    <p class="diet-muted">
+                        Estás en tu prueba gratuita: puedes cambiarla al paquete {{ $trialSwitchPlan->name }} sin costo
+                        y seguirá terminando el mismo día.
+                    </p>
                 @endif
 
                 <div class="feature-locked-actions">
+                    @if($trialSwitchPlan)
+                        <form method="POST" action="{{ route('subscription.trial.switch', $trialSwitchPlan) }}" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn-consultation-primary" style="border: 0;">
+                                <i class="fas fa-seedling" aria-hidden="true"></i>
+                                Probar {{ $trialSwitchPlan->name }} gratis
+                            </button>
+                        </form>
+                    @endif
                     <a href="{{ route('perfil') }}" class="btn-consultation-primary">
                         <i class="fas fa-user-circle" aria-hidden="true"></i>
                         Ver mi plan
