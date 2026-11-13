@@ -13,7 +13,7 @@ use Illuminate\Database\Seeder;
  * subscriptions.subscription_plan_id es obligatorio.
  *
  * Precios: los mismos que muestra la landing (sección "Planes").
- * max_patients: Esencial 50, Pro 200, Consultorio sin límite (null).
+ * max_patients: Esencial 25, Pro 100, Consultorio sin límite (null).
  * Ver docs/GLOSARIO_PLANES.md.
  *
  * Se puede ejecutar varias veces sin duplicar: busca el plan por nombre.
@@ -26,8 +26,8 @@ class SubscriptionPlanSeeder extends Seeder
     {
         $plans = [
             // max_patients: único límite que guarda la BD (null = sin límite)
-            ['name' => 'Esencial', 'price' => 249.00, 'max_patients' => 50],
-            ['name' => 'Pro', 'price' => 399.00, 'max_patients' => 200],
+            ['name' => 'Esencial', 'price' => 249.00, 'max_patients' => 25],
+            ['name' => 'Pro', 'price' => 399.00, 'max_patients' => 100],
             ['name' => 'Consultorio', 'price' => 599.00, 'max_patients' => null],
         ];
 

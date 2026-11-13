@@ -1720,7 +1720,8 @@
              PLANES
         =================================================== --}}
 
-        <div class="pricing-grid">
+        @php($showConsultorio = config('nutrilife.landing.show_consultorio', false))
+        <div class="pricing-grid{{ $showConsultorio ? '' : ' pricing-grid--two' }}">
 
 
 
@@ -1803,6 +1804,15 @@
 
 
                 <div class="pricing-features">
+
+                    <div>
+
+                        <i class="fas fa-check"></i>
+
+                        Hasta 25 pacientes
+
+                    </div>
+
 
                     <div>
 
@@ -1971,6 +1981,15 @@
 
                         <i class="fas fa-check"></i>
 
+                        Hasta 100 pacientes
+
+                    </div>
+
+
+                    <div>
+
+                        <i class="fas fa-check"></i>
+
                         Todo lo incluido en Esencial
 
                     </div>
@@ -2035,6 +2054,8 @@
 
 
 
+            {{-- Paquete Consultorio oculto en el landing por ahora (config nutrilife.landing.show_consultorio). Sus funciones siguen activas. --}}
+            @if ($showConsultorio)
             {{-- ==================================================
 
                  CONSULTORIO
@@ -2183,6 +2204,7 @@
 
 
             </article>
+            @endif
 
 
 

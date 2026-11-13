@@ -152,6 +152,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Landing (sitio público)
+    |--------------------------------------------------------------------------
+    | show_consultorio: muestra la tarjeta del paquete Consultorio en /#planes.
+    | Por ahora el producto se ofrece solo a nutriólogos independientes, así
+    | que está oculta; el paquete y sus funciones siguen existiendo.
+    */
+    'landing' => [
+        'show_consultorio' => (bool) env('NUTRILIFE_LANDING_SHOW_CONSULTORIO', false),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | App móvil del paciente (routes/api.php)
     |--------------------------------------------------------------------------
     | true = el paciente solo entra si su nutriólogo (o su consultorio) tiene
