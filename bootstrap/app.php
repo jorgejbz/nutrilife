@@ -5,6 +5,7 @@ use App\Http\Middleware\EnsureClinicOwner;
 use App\Http\Middleware\EnsureFeature;
 use App\Http\Middleware\EnsureNutritionist;
 use App\Http\Middleware\EnsurePatientAccess;
+use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\UseBuiltAssetsOutsideLocalhost;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -33,6 +34,9 @@ return Application::configure(basePath: dirname(__DIR__))
                 at: array_values(array_filter(array_map('trim', explode(',', (string) env('TRUSTED_PROXIES', '127.0.0.1,::1'))))),
             );
         }
+
+        // Cabeceras de seguridad en todas las respuestas (web y API)
+        $middleware->append(SecurityHeaders::class);
 
         // Funciones por plan: ->middleware('feature:diet_plans')
         // Por el túnel se usan los JS compilados, no el servidor de `npm run dev`.
