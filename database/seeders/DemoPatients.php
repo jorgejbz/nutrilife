@@ -165,6 +165,47 @@ class DemoPatients
         ]);
     }
 
+    /* ==================================================================
+     | Pacientes nuevos para nutrilife:demo-activity (cuentas pro@ y
+     | esencial@): 'start' positivo = llegaron este mes y ya tuvieron su
+     | primera consulta; negativo = se registraron hoy y su primera cita es
+     | dentro de esos días (diciembre).
+     * ================================================================== */
+    public static function newPro(): array
+    {
+        $deficit = self::plan('Déficit moderado 1,700 kcal', 1700, [25, 45, 30], 'Pérdida de grasa gradual (0.5 kg por semana).', "Pesar los alimentos la primera semana.
+Tomar 2 L de agua natural al día.");
+        $balance = self::plan('Alimentación equilibrada 2,000 kcal', 2000, [20, 50, 30], 'Mantener el peso y mejorar la calidad de la dieta.', "Incluir verdura en comida y cena.
+Desayunar antes de las 9:00.");
+
+        return array_map([self::class, 'patient'], [
+            ['first' => 'Valeria', 'last' => 'Quintero Ávila', 'sex' => 'Femenino', 'birth' => '1992-06-17', 'phone' => '5533901122', 'email' => 'valeria.quintero@pacientes-pro.test', 'occupation' => 'Diseñadora gráfica', 'goal' => 'Bajar 6 kg y dejar de picar entre comidas.',
+                'height' => 165, 'weight' => 74.5, 'fat' => 34.0, 'waist' => 88, 'start' => 12, 'plan' => $deficit],
+            ['first' => 'Óscar', 'last' => 'Medina Robles', 'sex' => 'Masculino', 'birth' => '1984-10-02', 'phone' => '5547781200', 'email' => 'oscar.medina@pacientes-pro.test', 'occupation' => 'Contador', 'goal' => 'Bajar triglicéridos y grasa abdominal.',
+                'pathologies' => [['Dislipidemia', '2026-10-20', 'Triglicéridos de 240 mg/dL.']], 'height' => 172, 'weight' => 90.2, 'fat' => 29.5, 'muscle' => 36.0, 'waist' => 101, 'hip_ratio' => 0.99, 'start' => 9, 'plan' => $deficit],
+            ['first' => 'Paulina', 'last' => 'Ríos Escobar', 'sex' => 'Femenino', 'birth' => '2001-03-28', 'phone' => '5560014477', 'email' => 'paulina.rios@pacientes-pro.test', 'occupation' => 'Estudiante de medicina', 'goal' => 'Comer mejor durante el internado.',
+                'height' => 160, 'weight' => 56.0, 'weight_step' => 0.0, 'fat' => 26.0, 'fat_step' => -0.2, 'waist' => 69, 'waist_step' => -0.1, 'start' => 5, 'plan' => $balance],
+            ['first' => 'Héctor', 'last' => 'Villalobos Cruz', 'sex' => 'Masculino', 'birth' => '1979-01-11', 'phone' => '5512450098', 'email' => 'hector.villalobos@pacientes-pro.test', 'occupation' => 'Chef', 'goal' => 'Controlar la glucosa sin dejar de cocinar.',
+                'pathologies' => [['Prediabetes / resistencia a la insulina', '2026-11-01', null]], 'height' => 178, 'weight' => 96.0, 'fat' => 31.0, 'muscle' => 38.0, 'waist' => 106, 'hip_ratio' => 0.98, 'start' => -12, 'max_visits' => 0],
+            ['first' => 'Ximena', 'last' => 'Andrade Luna', 'sex' => 'Femenino', 'birth' => '1996-08-05', 'phone' => '5591230045', 'email' => 'ximena.andrade@pacientes-pro.test', 'occupation' => 'Corredora', 'goal' => 'Preparar su alimentación para un medio maratón.',
+                'height' => 168, 'weight' => 60.5, 'weight_step' => 0.0, 'fat' => 21.0, 'fat_step' => 0.0, 'waist' => 70, 'waist_step' => 0.0, 'start' => -26, 'max_visits' => 0],
+        ]);
+    }
+
+    public static function newEsencial(): array
+    {
+        return array_map([self::class, 'patient'], [
+            ['first' => 'Gabriela', 'last' => 'Ponce Herrera', 'sex' => 'Femenino', 'birth' => '1988-12-19', 'phone' => '4427781230', 'email' => 'gabriela.ponce@pacientes.test', 'occupation' => 'Enfermera', 'goal' => 'Bajar de peso con turnos de noche.',
+                'height' => 158, 'weight' => 71.0, 'fat' => 36.5, 'waist' => 87, 'start' => 11],
+            ['first' => 'Luis', 'last' => 'Estrada Navarro', 'sex' => 'Masculino', 'birth' => '1970-04-07', 'phone' => '4421239087', 'email' => 'luis.estrada@pacientes.test', 'occupation' => 'Comerciante', 'goal' => 'Bajar la presión arterial.',
+                'pathologies' => [['Hipertensión arterial', '2024-08-15', 'Toma enalapril.']], 'height' => 169, 'weight' => 86.4, 'fat' => 30.0, 'muscle' => 33.5, 'waist' => 100, 'hip_ratio' => 0.98, 'start' => 6],
+            ['first' => 'Renata', 'last' => 'Solís Guerrero', 'sex' => 'Femenino', 'birth' => '2003-02-14', 'phone' => '4426690011', 'email' => 'renata.solis@pacientes.test', 'occupation' => 'Estudiante', 'goal' => 'Mejorar su energía y dejar los refrescos.',
+                'height' => 163, 'weight' => 58.0, 'weight_step' => -0.2, 'fat' => 27.0, 'waist' => 71, 'waist_step' => -0.3, 'start' => -8, 'max_visits' => 0],
+            ['first' => 'Arturo', 'last' => 'Beltrán Fuentes', 'sex' => 'Masculino', 'birth' => '1965-09-30', 'phone' => '4423345678', 'email' => 'arturo.beltran@pacientes.test', 'occupation' => 'Taxista', 'goal' => 'Controlar la diabetes.',
+                'pathologies' => [['Diabetes mellitus tipo 2', '2018-05-10', 'Metformina 850 mg.']], 'height' => 171, 'weight' => 91.0, 'fat' => 32.0, 'muscle' => 34.0, 'waist' => 105, 'hip_ratio' => 0.98, 'start' => -20, 'max_visits' => 0],
+        ]);
+    }
+
     /**
      * Paciente de pro@ que ProDemoSeeder da de baja (soft delete) después de
      * cargar su historial: sirve para ver cómo quedan sus planes, pagos y

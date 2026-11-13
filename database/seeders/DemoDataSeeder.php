@@ -110,6 +110,166 @@ class DemoDataSeeder extends Seeder
     }
 
     /**
+     * Mantiene "viva" la agenda de una cuenta de demostración (lo usa el
+     * comando nutrilife:demo-activity):
+     *  1. Las citas Pendientes/Confirmadas que ya pasaron se completan con
+     *     su consulta, evaluación y pago (continuando la tendencia de la
+     *     última evaluación).
+     *  2. A cada paciente activo se le agendan citas cada 14 días desde su
+     *     última cita hasta $until (algunas canceladas), sin empalmes
+     *     (Appointment::overlapsFor).
+     * Solo toca pacientes de demostración (correo que termina en .test):
+     * los que el nutriólogo dio de alta a mano no se modifican. Es
+     * repetible: la segunda vez solo agrega lo que falte.
+     *
+     * @return array{completed: int, scheduled: int, cancelled: int}
+     */
+    public function extendAgendaFor(User $user, Carbon $until): array
+    {
+        $stats = ['completed' => 0, 'scheduled' => 0, 'cancelled' => 0];
+        $until = $until->copy()->endOfDay();
+
+        $patients = Patient::where('user_id', $user->id)
+            ->where('active', true)
+            ->where('email', 'like', '%.test')
+            ->orderBy('id')
+            ->get();
+
+        foreach ($patients as $index => $patient) {
+            DB::transaction(function () use ($user, $patient, $index, $until, &$stats) {
+                // 1. Citas abiertas que ya pasaron → completadas
+                $pastOpen = Appointment::where('user_id', $user->id)
+                    ->where('patient_id', $patient->id)
+                    ->whereIn('status', ['Pendiente', 'Confirmada'])
+                    ->where('appointment_at', '<', now())
+                    ->orderBy('appointment_at')
+                    ->get();
+
+                foreach ($pastOpen as $appointment) {
+                    $n = Consultation::where('patient_id', $patient->id)->count();
+                    $appointment->forceFill([
+                        'status' => 'Completada',
+                        'reason' => $n === 0 ? 'Consulta inicial' : 'Consulta de seguimiento',
+                        'updated_at' => Carbon::parse($appointment->appointment_at)->addMinutes(50),
+                    ])->save();
+                    $this->completedVisit($user, $patient, $this->defFromHistory($patient, $n), $appointment, $n, null, false);
+                    $stats['completed']++;
+                }
+
+                // 2. Próximas citas cada 14 días hasta $until (se cuenta también
+                // la última cancelada para no volver a agendar ese hueco)
+                $last = Appointment::where('user_id', $user->id)
+                    ->where('patient_id', $patient->id)
+                    ->max('appointment_at');
+
+                $next = $last
+                    ? $this->workday(Carbon::parse($last)->startOfDay()->addDays(14))
+                    : $this->workday(now()->startOfDay()->addDays(1 + ($index % 6)));
+
+                if ($next->lte(now())) {
+                    $next = $this->workday(now()->startOfDay()->addDays(1 + ($index % 6)));
+                }
+
+                $hour = [9, 10, 11, 12, 16, 17, 18, 13][$index % 8];
+                $first = null;
+                $k = 0;
+
+                while ($next->lte($until)) {
+                    $at = $this->freeSlot($user, $next, $hour);
+                    // Una de cada cinco citas futuras la cancela el paciente
+                    $cancelled = ($patient->id + $k) % 5 === 4;
+                    $soon = $at->diffInDays(now(), true) <= 3;
+                    $hasConsultations = Consultation::where('patient_id', $patient->id)->exists();
+
+                    $appointment = new Appointment;
+                    $appointment->forceFill([
+                        'user_id' => $user->id,
+                        'patient_id' => $patient->id,
+                        'appointment_at' => $at,
+                        'reason' => $hasConsultations ? 'Consulta de seguimiento' : 'Consulta inicial',
+                        'status' => $cancelled ? 'Cancelada' : ($soon ? 'Confirmada' : 'Pendiente'),
+                        'notes' => $cancelled ? 'El paciente avisó que no podrá asistir.' : ($soon ? 'Confirmó asistencia por WhatsApp.' : null),
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ])->save();
+
+                    $stats[$cancelled ? 'cancelled' : 'scheduled']++;
+                    $first ??= $cancelled ? null : $at;
+                    $next = $this->workday($next->copy()->addDays(14));
+                    $k++;
+                }
+
+                // La última consulta apunta a la próxima cita
+                if ($first) {
+                    Consultation::where('patient_id', $patient->id)
+                        ->latest('consultation_at')
+                        ->first()
+                        ?->forceFill(['next_visit' => $first->toDateString()])
+                        ->save();
+                }
+            });
+        }
+
+        return $stats;
+    }
+
+    /** Primer horario de ese día (de hora en hora) sin empalme con otra cita del nutriólogo. */
+    private function freeSlot(User $user, Carbon $day, int $preferredHour): Carbon
+    {
+        foreach (array_unique([$preferredHour, 9, 10, 11, 12, 13, 16, 17, 18, 19]) as $hour) {
+            $at = $day->copy()->setTime($hour, 0);
+
+            if (! Appointment::overlapsFor($user->id, $at)) {
+                return $at;
+            }
+        }
+
+        return $this->freeSlot($user, $this->workday($day->copy()->addDay()), $preferredHour);
+    }
+
+    /**
+     * Parámetros de completedVisit() a partir de la última evaluación del
+     * paciente, para que la siguiente medición continúe la tendencia.
+     */
+    private function defFromHistory(Patient $patient, int $n): array
+    {
+        $last = Evaluation::where('patient_id', $patient->id)
+            ->orderByDesc('evaluation_date')->orderByDesc('id')->first();
+
+        $steps = ['weight' => -0.5, 'fat' => -0.3, 'muscle' => 0.1, 'waist' => -0.6];
+        $current = [
+            'weight' => $last?->weight ?? 72.0,
+            'fat' => $last?->body_fat ?? 30.0,
+            'muscle' => $last?->muscle_mass ?? 26.0,
+            'waist' => $last?->waist ?? 88.0,
+        ];
+
+        // completedVisit calcula valor = base + paso × n; se elige la base
+        // para que esta visita quede un paso después de la última medición.
+        $def = [
+            'height' => $last?->height ?? 165.0,
+            'hip_ratio' => ($last?->hip && $last?->waist) ? round($last->hip / $last->waist, 2) : 1.1,
+            'goal' => (string) ($patient->goal ?: 'Mejorar sus hábitos de alimentación.'),
+            'active' => true,
+            'email' => (string) $patient->email,
+            'price' => [650, 450],
+            'last_payment_pending' => false,
+            'recommendations' => [
+                'Mantener horarios fijos de comida e hidratación de 2 L de agua al día.',
+                'Continuar con el plan y registrar cómo se siente después de cada comida.',
+                'Agregar 20 minutos de caminata diaria y dormir al menos 7 horas.',
+            ],
+        ];
+
+        foreach ($steps as $key => $step) {
+            $def[$key] = round($current[$key] + $step - $step * $n, 1);
+            $def[$key.'_step'] = $step;
+        }
+
+        return $def;
+    }
+
+    /**
      * Restricciones por patología DE EJEMPLO (food_pathology_restrictions),
      * solo para ver los avisos del constructor de planes en local. No son
      * recomendaciones clínicas.
